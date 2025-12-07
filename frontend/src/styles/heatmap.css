@@ -1,0 +1,59 @@
+.heatmap-container {
+  width: 100%;
+  padding: 20px;
+  border-radius: 12px;
+  background: #0d1117;
+  color: #c9d1d9;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.heatmap-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* GitHub-style colors */
+.color-empty {
+  fill: #161b22;
+}
+.color-github-1 {
+  fill: #0e4429;
+}
+.color-github-2 {
+  fill: #006d32;
+}
+.color-github-3 {
+  fill: #26a641;
+}
+.color-github-4 {
+  fill: #39d353;
+}
+
+/* Tooltip styling */
+.react-tooltip {
+  font-size: 12px;
+  background-color: #161b22 !important;
+  color: #c9d1d9 !important;
+  border-radius: 6px;
+  padding: 6px 8px !important;
+}
+
+/* Responsive layout */
+.react-calendar-heatmap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.react-calendar-heatmap text {
+  fill: #8b949e;
+  font-size: 9px;
+}
+
+/* Add gap between months */
+.react-calendar-heatmap-month-labels text {
+  font-weight: 600;
+  font-size: 10px;
+  fill: #c9d1d9;
+}
