@@ -442,34 +442,33 @@ jvcs push
 jvcs log`}
             </SyntaxHighlighter>
             <button
-              onClick={() => copyToClipboard(`jvcs begin\njvcs init my-project`, "example")}
-              className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
+              onClick={() => copyToClipboard(`jvcs begin\njvcs init my-awesome-project`, "example")}
+              className="absolute top-3 right-3 p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
             >
-              {copied === "example" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
+              {copied === "example" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
             </button>
           </div>
-        </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="w-full px-3 sm:px-6 py-12 sm:py-20">
-        <div className="max-w-4xl mx-auto bg-[#1a1629]/90 backdrop-blur border border-gradient-to-r from-[#ff006e]/50 to-[#00d9ff]/50 rounded-2xl p-6 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Ready to Get Started?</h2>
-          <p className="text-sm sm:text-base text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <div className="bg-[#1a1629]/90 backdrop-blur border border-gradient-to-r from-[#ff006e]/50 to-[#00d9ff]/50 rounded-2xl p-12">
+          <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
+          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
             Join developers using JVCS. Sign up now and start managing your code with our lightweight version control system.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/register")}
-              className="px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all text-sm sm:text-base"
+              className="px-8 py-3 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all"
             >
               Sign Up Now
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="px-6 sm:px-8 py-2 sm:py-3 border border-[#00d9ff]/50 text-[#00d9ff] font-semibold rounded-lg hover:bg-[#00d9ff]/10 transition-all text-sm sm:text-base"
+              className="px-8 py-3 border border-[#00d9ff]/50 text-[#00d9ff] font-semibold rounded-lg hover:bg-[#00d9ff]/10 transition-all"
             >
               Sign In
             </button>
@@ -479,39 +478,37 @@ jvcs log`}
 
       {/* Footer */}
       <footer className="border-t border-[#ff006e]/20 bg-[#0d0221]/50 backdrop-blur">
-        <div className="w-full px-3 sm:px-6 py-8 sm:py-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <GitBranch className="w-5 h-5 text-[#ff006e]" />
-                  <span className="font-bold text-[#ff006e]">JVCS</span>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-400">Personal Version Control System for developers.</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <GitBranch className="w-5 h-5 text-[#ff006e]" />
+                <span className="font-bold text-[#ff006e]">JVCS</span>
               </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
-                  <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
-                  <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Resources</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
-                  <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
-                  <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
-                </ul>
-              </div>
+              <p className="text-sm text-gray-400">Personal Version Control System for developers.</p>
             </div>
 
-            <div className="border-t border-[#ff006e]/20 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-500">
-              <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
+            <div>
+              <h4 className="font-semibold text-white mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
+                <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
+                <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
+              </ul>
             </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
+                <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
+                <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-[#ff006e]/20 pt-8 text-center text-sm text-gray-500">
+            <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
           </div>
         </div>
       </footer>

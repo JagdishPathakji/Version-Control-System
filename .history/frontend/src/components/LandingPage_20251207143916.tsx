@@ -280,113 +280,114 @@ export default function LandingPage() {
       </section>
 
       {/* Installation Section */}
-      <section id="installation" className="w-full px-3 sm:px-6 py-16 sm:py-20">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16">
-            <span className="bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
-              Get Started
-            </span>
-          </h2>
+      <section id="installation" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+        <h2 className="text-4xl font-bold text-center mb-16">
+          <span className="bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
+            Get Started
+          </span>
+        </h2>
 
-          {/* Installation Methods */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
-            {/* Global Installation */}
-            <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-4 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="p-2 sm:p-3 bg-[#ff006e]/20 rounded-lg flex-shrink-0">
-                  <Zap className="w-5 sm:w-6 h-5 sm:h-6 text-[#ff006e]" />
-                </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-[#ff006e]">Global Installation</h3>
+        {/* Installation Methods */}
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          {/* Global Installation */}
+          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-[#ff006e]/20 rounded-lg">
+                <Zap className="w-6 h-6 text-[#ff006e]" />
               </div>
-              <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">Install JVCS globally to use it anywhere on your system. Recommended for regular usage.</p>
-              
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Install Command:</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`npm install -g jvcs`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("npm install -g jvcs", "install-global")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
-                    >
-                      {copied === "install-global" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
+              <h3 className="text-2xl font-bold text-[#ff006e]">Global Installation</h3>
+            </div>
+            <p className="text-gray-400 mb-6">Install JVCS globally to use it anywhere on your system. Recommended for regular usage.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-[#00d9ff] font-semibold mb-2">Install Command:</p>
+                <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-4">
+                  <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+                    {`npm install -g jvcs`}
+                  </SyntaxHighlighter>
+                  <button
+                    onClick={() => copyToClipboard("npm install -g jvcs", "install-global")}
+                    className="absolute top-3 right-3 p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
+                  >
+                    {copied === "install-global" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                  </button>
                 </div>
+              </div>
 
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Usage Example:</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`jvcs begin
+              <div>
+                <p className="text-sm text-[#00d9ff] font-semibold mb-2">Usage Example:</p>
+                <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-4">
+                  <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+                    {`# Commands work directly without npx
+jvcs begin
 jvcs init my-project
 jvcs add .
-jvcs commit "init"
+jvcs commit "Initial commit"
 jvcs push`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("jvcs begin", "usage-global")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
-                    >
-                      {copied === "usage-global" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Local Installation */}
-            <div className="bg-[#1a1629]/90 backdrop-blur border border-[#00d9ff]/30 rounded-xl p-4 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="p-2 sm:p-3 bg-[#00d9ff]/20 rounded-lg flex-shrink-0">
-                  <Code className="w-5 sm:w-6 h-5 sm:h-6 text-[#00d9ff]" />
-                </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-[#00d9ff]">Local Installation</h3>
-              </div>
-              <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">Install JVCS locally in your project. Useful for team projects.</p>
-              
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Install Command:</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`npm install jvcs`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("npm install jvcs", "install-local")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
-                    >
-                      {copied === "install-local" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Usage (with npx):</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`npx jvcs begin
-npx jvcs init my-project
-npx jvcs add .
-npx jvcs commit "init"
-npx jvcs push`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("npx jvcs begin", "usage-local")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
-                    >
-                      {copied === "usage-local" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
+                  </SyntaxHighlighter>
+                  <button
+                    onClick={() => copyToClipboard("jvcs begin", "usage-global")}
+                    className="absolute top-3 right-3 p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
+                  >
+                    {copied === "usage-global" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Local Installation */}
+          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#00d9ff]/30 rounded-xl p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-[#00d9ff]/20 rounded-lg">
+                <Code className="w-6 h-6 text-[#00d9ff]" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#00d9ff]">Local Installation</h3>
+            </div>
+            <p className="text-gray-400 mb-6">Install JVCS locally in your project. Useful for team projects.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-[#00d9ff] font-semibold mb-2">Install Command:</p>
+                <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-4">
+                  <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+                    {`npm install jvcs`}
+                  </SyntaxHighlighter>
+                  <button
+                    onClick={() => copyToClipboard("npm install jvcs", "install-local")}
+                    className="absolute top-3 right-3 p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
+                  >
+                    {copied === "install-local" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-[#00d9ff] font-semibold mb-2">Usage Example (with npx):</p>
+                <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-4">
+                  <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+                    {`# Commands must be preceded with npx
+npx jvcs begin
+npx jvcs init my-project
+npx jvcs add .
+npx jvcs commit "Initial commit"
+npx jvcs push`}
+                  </SyntaxHighlighter>
+                  <button
+                    onClick={() => copyToClipboard("npx jvcs begin", "usage-local")}
+                    className="absolute top-3 right-3 p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
+                  >
+                    {copied === "usage-local" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Setup Steps */}
-        <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ffbe0b]/30 rounded-xl p-4 sm:p-8 mb-8 sm:mb-12">
+        <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ffbe0b]/30 rounded-xl p-8 mb-12">
           <h3 className="text-2xl font-bold text-[#ffbe0b] mb-8">Quick Setup Guide</h3>
           
           <div className="grid md:grid-cols-2 gap-8">
@@ -399,29 +400,29 @@ npx jvcs push`}
                 </div>
               </div>
 
-              <div className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-[#00d9ff] flex items-center justify-center font-bold text-sm sm:text-lg">2</div>
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#00d9ff] flex items-center justify-center font-bold text-lg">2</div>
                 <div>
-                  <p className="font-semibold text-sm sm:text-base text-white mb-1">Choose Installation Method</p>
-                  <p className="text-xs sm:text-sm text-gray-400">Global for standalone use, local for projects</p>
+                  <p className="font-semibold text-white mb-1">Choose Installation Method</p>
+                  <p className="text-sm text-gray-400">Global for standalone use, local for projects</p>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-[#ffbe0b] flex items-center justify-center font-bold text-sm sm:text-lg">3</div>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#ffbe0b] flex items-center justify-center font-bold text-lg">3</div>
                 <div>
-                  <p className="font-semibold text-sm sm:text-base text-white mb-1">Run <span className="text-[#00d9ff]">jvcs begin</span></p>
-                  <p className="text-xs sm:text-sm text-gray-400">Initialize and authenticate with your account</p>
+                  <p className="font-semibold text-white mb-1">Run <span className="text-[#00d9ff]">jvcs begin</span></p>
+                  <p className="text-sm text-gray-400">Initialize and authenticate with your account</p>
                 </div>
               </div>
 
-              <div className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-[#ff006e] flex items-center justify-center font-bold text-sm sm:text-lg">4</div>
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#ff006e] flex items-center justify-center font-bold text-lg">4</div>
                 <div>
-                  <p className="font-semibold text-sm sm:text-base text-white mb-1">Start Versioning</p>
-                  <p className="text-xs sm:text-sm text-gray-400">Initialize repos and track your code changes</p>
+                  <p className="font-semibold text-white mb-1">Start Versioning</p>
+                  <p className="text-sm text-gray-400">Initialize repos and track your code changes</p>
                 </div>
               </div>
             </div>
@@ -429,47 +430,62 @@ npx jvcs push`}
         </div>
 
         {/* Complete Project Example */}
-        <div className="bg-[#0a0b0f] border border-[#00d9ff]/30 rounded-xl p-4 sm:p-8">
-          <h4 className="text-base sm:text-lg font-bold text-[#00d9ff] mb-4 sm:mb-6">Complete Project Example</h4>
-          <div className="relative bg-[#1a1629]/50 border border-[#1f2029] rounded-lg p-3 sm:p-6 overflow-x-auto">
-            <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-              {`jvcs begin
-jvcs init my-project
+        <div className="bg-[#0a0b0f] border border-[#00d9ff]/30 rounded-xl p-8">
+          <h4 className="text-lg font-bold text-[#00d9ff] mb-6">Complete Project Example</h4>
+          <div className="relative bg-[#1a1629]/50 border border-[#1f2029] rounded-lg p-6 overflow-x-auto">
+            <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+              {`# Initialize JVCS (login/signup)
+jvcs begin
+
+# Create a new repository
+jvcs init my-awesome-project
+
+# Check status of files
 jvcs status
+
+# Stage all files
 jvcs add .
-jvcs commit "Init: Add files"
+
+# Make your first commit
+jvcs commit "Initial commit: Add project files"
+
+# Push to remote
 jvcs push
-jvcs log`}
+
+# View commit history
+jvcs log
+
+# Check status again
+jvcs status`}
             </SyntaxHighlighter>
             <button
-              onClick={() => copyToClipboard(`jvcs begin\njvcs init my-project`, "example")}
-              className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
+              onClick={() => copyToClipboard(`jvcs begin\njvcs init my-awesome-project`, "example")}
+              className="absolute top-3 right-3 p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
             >
-              {copied === "example" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
+              {copied === "example" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
             </button>
           </div>
-        </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="w-full px-3 sm:px-6 py-12 sm:py-20">
-        <div className="max-w-4xl mx-auto bg-[#1a1629]/90 backdrop-blur border border-gradient-to-r from-[#ff006e]/50 to-[#00d9ff]/50 rounded-2xl p-6 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Ready to Get Started?</h2>
-          <p className="text-sm sm:text-base text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <div className="bg-[#1a1629]/90 backdrop-blur border border-gradient-to-r from-[#ff006e]/50 to-[#00d9ff]/50 rounded-2xl p-12">
+          <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
+          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
             Join developers using JVCS. Sign up now and start managing your code with our lightweight version control system.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/register")}
-              className="px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all text-sm sm:text-base"
+              className="px-8 py-3 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all"
             >
               Sign Up Now
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="px-6 sm:px-8 py-2 sm:py-3 border border-[#00d9ff]/50 text-[#00d9ff] font-semibold rounded-lg hover:bg-[#00d9ff]/10 transition-all text-sm sm:text-base"
+              className="px-8 py-3 border border-[#00d9ff]/50 text-[#00d9ff] font-semibold rounded-lg hover:bg-[#00d9ff]/10 transition-all"
             >
               Sign In
             </button>
@@ -479,39 +495,37 @@ jvcs log`}
 
       {/* Footer */}
       <footer className="border-t border-[#ff006e]/20 bg-[#0d0221]/50 backdrop-blur">
-        <div className="w-full px-3 sm:px-6 py-8 sm:py-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <GitBranch className="w-5 h-5 text-[#ff006e]" />
-                  <span className="font-bold text-[#ff006e]">JVCS</span>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-400">Personal Version Control System for developers.</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <GitBranch className="w-5 h-5 text-[#ff006e]" />
+                <span className="font-bold text-[#ff006e]">JVCS</span>
               </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
-                  <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
-                  <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Resources</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
-                  <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
-                  <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
-                </ul>
-              </div>
+              <p className="text-sm text-gray-400">Personal Version Control System for developers.</p>
             </div>
 
-            <div className="border-t border-[#ff006e]/20 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-500">
-              <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
+            <div>
+              <h4 className="font-semibold text-white mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
+                <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
+                <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
+              </ul>
             </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
+                <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
+                <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-[#ff006e]/20 pt-8 text-center text-sm text-gray-500">
+            <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
           </div>
         </div>
       </footer>

@@ -479,39 +479,37 @@ jvcs log`}
 
       {/* Footer */}
       <footer className="border-t border-[#ff006e]/20 bg-[#0d0221]/50 backdrop-blur">
-        <div className="w-full px-3 sm:px-6 py-8 sm:py-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <GitBranch className="w-5 h-5 text-[#ff006e]" />
-                  <span className="font-bold text-[#ff006e]">JVCS</span>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-400">Personal Version Control System for developers.</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <GitBranch className="w-5 h-5 text-[#ff006e]" />
+                <span className="font-bold text-[#ff006e]">JVCS</span>
               </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
-                  <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
-                  <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Resources</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
-                  <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
-                  <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
-                </ul>
-              </div>
+              <p className="text-sm text-gray-400">Personal Version Control System for developers.</p>
             </div>
 
-            <div className="border-t border-[#ff006e]/20 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-500">
-              <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
+            <div>
+              <h4 className="font-semibold text-white mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
+                <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
+                <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
+              </ul>
             </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
+                <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
+                <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-[#ff006e]/20 pt-8 text-center text-sm text-gray-500">
+            <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
           </div>
         </div>
       </footer>
