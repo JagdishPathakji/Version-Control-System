@@ -23,7 +23,7 @@ async function login(loginData) {
         }
         
         const configPath = path.join(dirPath, "config.json");
-        fs.writeFileSync(configPath,JSON.stringify({email: loginData.email,username: loginData.username,token: data.token, CLIENT_ID:"835069827989-3spob55ioa2ocudi3mo8u2ni2ecqohh7.apps.googleusercontent.com",CLIENT_SECRET:"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",REDIRECT_URI:"https://developers.google.com/oauthplayground",REFRESH_TOKEN:"1//04PuhJXX0wCQzCgYIARAAGAQSNwF-L9IrKGCADCAiBz77fG6nZ4qQ_0mgY36o1eyGCTxAl2Rcv2qhxXuXsud21xPvvS13v_YRTIo"},null,2));        
+        fs.writeFileSync(configPath,JSON.stringify({email: loginData.email,username: loginData.username,token: data.token, CLIENT_ID:"835069827989-3spob55ioa2ocudi3mo8u2ni2ecqohh7.apps.googleusercontent.com",CLIENT_SECRET:"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",REDIRECT_URI:"https://developers.google.com/oauthplayground",REFRESH_TOKEN:"1//04K1Dngxu-L1LCgYIARAAGAQSNwF-L9IrU-ouGKWovW-4uH9M2xloDeE2oEgg8cRusediXHrX7Jec5JupLsyNBe4Yus9BbtOM1Rs"},null,2));        
     }
     else {
         throw new Error(data.message)
