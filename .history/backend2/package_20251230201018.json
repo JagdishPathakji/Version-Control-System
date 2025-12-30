@@ -2,7 +2,7 @@
   "name": "jvcs",
   "version": "1.4.0",
   "bin": {
-    "jvcs": "index.js"
+    "jvcs": "./index.js"
   },
   "keywords": [],
   "author": "",

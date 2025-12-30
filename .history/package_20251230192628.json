@@ -1,0 +1,26 @@
+{
+  "name": "version-control-system",
+  "version": "1.0.0",
+  "description": "> A lightweight, Git-like version control system with a beautiful CLI and web interface for developers.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "backend": "node backend/server.js"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JagdishPathakji/Version-Control-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JagdishPathakji/Version-Control-System/issues"
+  },
+  "homepage": "https://github.com/JagdishPathakji/Version-Control-System#readme",
+  "devDependencies": {
+    "electron": "^39.2.7"
+  }
+}

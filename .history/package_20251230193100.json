@@ -1,0 +1,48 @@
+{
+  "name": "version-control-system",
+  "version": "1.0.0",
+  "description": "A lightweight, Git-like version control system with a beautiful CLI and web interface for developers.",
+  "main": "main.js",
+
+  "scripts": {
+    "start": "electron .",
+    "backend": "node backend/server.js",
+    "build": "electron-builder"
+  },
+
+  "author": "Jagdish Pathakji",
+  "license": "ISC",
+
+  "devDependencies": {
+    "electron": "^39.2.7",
+    "electron-builder": "^24.13.3"
+  },
+
+  "build": {
+    "appId": "com.jagdish.vcs",
+    "productName": "Version Control System",
+
+    "directories": {
+      "output": "dist"
+    },
+
+    "files": [
+      "frontend/**/*",
+      "backend/**/*",
+      "main.js",
+      "package.json"
+    ],
+
+    "win": {
+      "target": "nsis"
+    },
+
+    "mac": {
+      "target": "dmg"
+    },
+
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
