@@ -11,75 +11,59 @@ import Navbar from "./Navbar";
 import { GitBranch, Star, Users, Bot, User } from "lucide-react";
 
 export default function Dashboard({ setIsAuthenticated }) {
+
   const navigate = useNavigate();
   const email = localStorage.getItem("email");
-  const username = localStorage.getItem("username") || "";
 
-  // USER DATA
-  const { data: userData, error: userError } = useQuery({
-    queryKey: ["user", email],
-    queryFn: () => getData(email),
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
+  const { 
+    data: userData,
+    error: userError
+  } = useQuery({
+    queryKey: ["user",email],
+    queryfn
+  })
 
-  // USER REPOS
-  const { data: userRepoRes } = useQuery({
-    queryKey: ["myRepos"],
-    queryFn: getRepo,
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
-  const userRepo = Array.isArray(userRepoRes?.data) ? userRepoRes.data : [];
-
-  // PUBLIC REPOS
-  const { data: publicReposRes } = useQuery({
-    queryKey: ["publicRepos"],
-    queryFn: getAllRepo,
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
-  const publicRepos = Array.isArray(publicReposRes?.data) ? publicReposRes.data : [];
-
-  // PUBLIC PROFILES
-  const { data: publicProfilesRes } = useQuery({
-    queryKey: ["publicProfiles"],
-    queryFn: getAllProfile,
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
-  const publicProfiles = Array.isArray(publicProfilesRes?.data)
-    ? publicProfilesRes.data
-    : [];
-
-  // AUTH + USERNAME SIDE EFFECT
   useEffect(() => {
-    if (userError?.message === "login" || userData?.status === "login") {
-      alert("Session expired. Please log in again.");
-      setIsAuthenticated(false);
-      navigate("/login", { replace: true });
-    }
+    const fetchAllData = async () => {
+      try {
+        const user = await getData(email);
+        if (user.status === "login") throw new Error("login");
+        setUserData(user);
+        localStorage.setItem("username", user.username);
+        setUsername(user.username);
 
-    if (userData?.username) {
-      localStorage.setItem("username", userData.username);
-    }
-  }, [userError, userData, navigate, setIsAuthenticated]);
+        const repos = await getRepo();
+        if (repos.status === "login") throw new Error("login");
+        setUserRepo(repos.data);
 
-  function openOwnRepo(repoName) {
+        const pubRepos = await getAllRepo();
+        if (pubRepos.status === "login") throw new Error("login");
+        setPublicRepos(pubRepos.data);
+
+        const pubProfiles = await getAllProfile();
+        if (pubProfiles.status === "login") throw new Error("login");
+        setPublicProfiles(pubProfiles.data);
+      } catch (err) {
+        alert("Session expired or server error. Please log in again.");
+        setIsAuthenticated(false);
+        navigate("/login", { replace: true });
+      }
+    };
+
+    fetchAllData();
+  }, [email]);
+
+  function openOwnRepo(repoName: string) {
     navigate(`/repo/${repoName}`);
   }
 
-  function getPublicRepo(repoName) {
+  function getPublicRepo(repoName: string) {
     navigate(`/repo/public/${repoName}`);
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0221] via-[#1a1629] to-[#0d0221] text-gray-200">
-      <Navbar
-        username={username}
-        setIsAuthenticated={setIsAuthenticated}
-        navigate={navigate}
-      />
+      <Navbar username={username} setIsAuthenticated={setIsAuthenticated} navigate={navigate}/>
 
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
         {/* My Repositories */}
@@ -88,9 +72,7 @@ export default function Dashboard({ setIsAuthenticated }) {
             <div className="p-2 bg-gradient-to-br from-[#ff006e]/20 to-[#00d9ff]/20 rounded-lg">
               <GitBranch className="w-6 h-6 text-[#ff006e]" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
-              My Repositories
-            </h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">My Repositories</h2>
           </div>
 
           {userRepo.length === 0 ? (
@@ -106,9 +88,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                   className="border border-[#ff006e]/20 bg-[#0d0221]/60 rounded-xl p-5 hover:border-[#ff006e]/60 transition-all cursor-pointer hover:shadow-lg hover:shadow-[#ff006e]/30 group"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-gray-100 group-hover:text-[#ff006e] transition-colors">
-                      {repo.name}
-                    </h3>
+                    <h3 className="font-semibold text-gray-100 group-hover:text-[#ff006e] transition-colors">{repo.name}</h3>
                     <span className="text-xs px-2 py-1 bg-gradient-to-r from-[#ff006e]/20 to-[#00d9ff]/20 text-gray-300 rounded-full border border-[#ff006e]/30 font-medium">
                       {repo.visibility}
                     </span>
@@ -131,14 +111,12 @@ export default function Dashboard({ setIsAuthenticated }) {
             <div className="p-2 bg-gradient-to-br from-[#00d9ff]/20 to-[#ff006e]/20 rounded-lg">
               <Users className="w-6 h-6 text-[#00d9ff]" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#00d9ff] to-[#ff006e] bg-clip-text text-transparent">
-              Public Repositories
-            </h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#00d9ff] to-[#ff006e] bg-clip-text text-transparent">Public Repositories</h2>
           </div>
 
           {publicRepos.length === 0 ? (
             <div className="text-center py-8 text-gray-500 bg-[#0d0221]/60 border border-[#00d9ff]/20 rounded-xl">
-              <p>No public Repos found.</p>
+                <p>No public Repos found.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
@@ -148,9 +126,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                   onClick={() => getPublicRepo(repo.name)}
                   className="border border-[#00d9ff]/20 bg-[#0d0221]/60 rounded-xl p-5 hover:border-[#00d9ff]/60 transition-all cursor-pointer hover:shadow-lg hover:shadow-[#00d9ff]/30 group"
                 >
-                  <h3 className="font-semibold text-gray-100 group-hover:text-[#00d9ff] transition-colors mb-2">
-                    {repo.name}
-                  </h3>
+                  <h3 className="font-semibold text-gray-100 group-hover:text-[#00d9ff] transition-colors mb-2">{repo.name}</h3>
                   <p className="text-sm text-gray-400 mb-3">{repo.description}</p>
                   <div className="flex items-center gap-4 text-xs text-gray-500 group-hover:text-gray-300 transition-colors">
                     <span className="flex items-center gap-1">
@@ -164,9 +140,7 @@ export default function Dashboard({ setIsAuthenticated }) {
 
           {/* Public Profiles */}
           <div className="border-t border-[#ff006e]/20 pt-6">
-            <h3 className="text-xl font-bold bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent mb-4">
-              Public Profiles
-            </h3>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent mb-4">Public Profiles</h3>
 
             {publicProfiles.length === 0 ? (
               <div className="text-center py-8 text-gray-500 bg-[#0d0221]/60 border border-[#ff006e]/20 rounded-xl">
@@ -177,9 +151,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                 {publicProfiles.map((profile) => (
                   <div
                     key={profile._id}
-                    onClick={() => {
-                      navigate(`/publicProfile/${profile.username}`);
-                    }}
+                    onClick={()=> {navigate(`/publicProfile/${profile.username}`)}}
                     className="flex items-start gap-3 p-4 border border-[#ff006e]/20 bg-[#0d0221]/60 rounded-lg hover:border-[#ff006e]/60 transition-all hover:shadow-lg hover:shadow-[#ff006e]/30 group cursor-pointer"
                   >
                     <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#ff006e]/20 to-[#00d9ff]/20 border border-[#ff006e]/30 rounded-full flex-shrink-0 group-hover:border-[#ff006e]/60 transition-colors">
@@ -210,9 +182,7 @@ export default function Dashboard({ setIsAuthenticated }) {
             <div className="p-2 bg-gradient-to-br from-[#ffbe0b]/20 to-[#ff006e]/20 rounded-lg">
               <Bot className="w-7 h-7 text-[#ffbe0b]" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#ffbe0b] to-[#ff006e] bg-clip-text text-transparent">
-              AI Assistant
-            </h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-[#ffbe0b] to-[#ff006e] bg-clip-text text-transparent">AI Assistant</h2>
           </div>
           <p className="text-gray-300 max-w-xl mx-auto">
             🤖 Coming soon — JVCS Space AI Assistant to help you analyze commits, generate insights,
