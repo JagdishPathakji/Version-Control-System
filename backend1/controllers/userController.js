@@ -129,6 +129,7 @@ const signup = async (req, res) => {
         // Validate email & password
         if(!validator.isEmail(userData.email))
         return res.status(422).send({ status: false, message: "Email format is invalid" });
+        const email = req.body.email;
 
         console.log("Inside signup 3")
         
