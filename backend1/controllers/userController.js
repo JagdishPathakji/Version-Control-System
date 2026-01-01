@@ -166,6 +166,41 @@ const signup = async (req, res) => {
         userData.password = await bcrypt.hash(userData.password, saltRounds);
 
         console.log("Inside signup 7")
+
+        const count = await redisClient.get(`${email}`)
+        if(count == null) {
+            await redisClient.set(`${email}`, 1, {EX: 300})
+        }
+        else {
+            const ttl = await redisClient.ttl(email); // seconds
+            if(count > 2) {
+                return res.send({
+                    status:"redis",
+                    message:`Too many OTP Request from this ${email}. Kindly try after ${ttl/60}`
+                })
+            }
+            else {
+                await redisClient.set(`${email}`,count+1, {EX: ttl})
+            }
+        }
+
+        const count = await redisClient.get(`${email}`)
+        if(count == null) {
+            await redisClient.set(`${email}`, 1, {EX: 300})
+        }
+        else {
+            const ttl = await redisClient.ttl(email); // seconds
+            if(count > 2) {
+                return res.send({
+                    status:"redis",
+                    message:`Too many OTP Request from this ${email}. Kindly try after ${ttl/60}`
+                })
+            }
+            else {
+                await redisClient.set(`${email}`,count+1, {EX: ttl})
+            }
+        }
+
         
         // Send OTP email
         const emailSent = await sendEmail(userData);
