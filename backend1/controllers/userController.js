@@ -177,7 +177,7 @@ const signup = async (req, res) => {
             if(count > 2) {
                 return res.send({
                     status:"redis",
-                    message:`Too many OTP Request from this ${email}. Kindly try after ${ttl/60}`
+                    message:`Too many OTP Request from this ${email}. Kindly try after ${ttl/60} minutes`
                 })
             }
             else {
