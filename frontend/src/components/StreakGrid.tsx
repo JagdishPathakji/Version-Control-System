@@ -10,12 +10,12 @@ interface StreakGridProps {
 export default function StreakGrid({ streak }: StreakGridProps) {
   const year = new Date().getFullYear();
 
-  // ✅ Correct inclusive date range (Jan 1 → Today)
+  // Jan 1 → Today (UTC-safe)
   const startDate = new Date(Date.UTC(year, 0, 1));
   const endDate = new Date();
   endDate.setUTCHours(0, 0, 0, 0);
 
-  // Generate all days of current year
+  // Generate all days
   const allDays: { date: string; count: number }[] = [];
   for (
     let d = new Date(startDate);
@@ -29,7 +29,7 @@ export default function StreakGrid({ streak }: StreakGridProps) {
     });
   }
 
-  // Color scale
+  // Heatmap color scale
   const getColor = (count: number) => {
     if (count === 0) return "color-empty";
     if (count < 2) return "color-scale-1";
@@ -44,7 +44,8 @@ export default function StreakGrid({ streak }: StreakGridProps) {
         Push Activity
       </h2>
 
-      <div className="overflow-x-auto">
+      {/* 🔥 IMPORTANT FIX: lock font-size so heatmap boxes don't scale */}
+      <div className="overflow-x-auto text-[11px]">
         <CalendarHeatmap
           startDate={startDate}
           endDate={endDate}
@@ -62,14 +63,15 @@ export default function StreakGrid({ streak }: StreakGridProps) {
               day: "numeric",
               year: "numeric",
             });
-            const tooltipText =
-              value.count > 0
-                ? `${dateStr}: ${value.count} push${value.count > 1 ? "es" : ""}`
-                : `${dateStr}: No activity`;
 
             return {
               "data-tooltip-id": "activity-tip",
-              "data-tooltip-content": tooltipText,
+              "data-tooltip-content":
+                value.count > 0
+                  ? `${dateStr}: ${value.count} push${
+                      value.count > 1 ? "es" : ""
+                    }`
+                  : `${dateStr}: No activity`,
             };
           }}
         />
@@ -82,39 +84,34 @@ export default function StreakGrid({ streak }: StreakGridProps) {
         <span>Less</span>
         <div className="flex gap-1">
           {[0, 1, 3, 6, 10].map((c) => (
-            <div key={c} className={`w-3 h-3 rounded-sm ${getColor(c)}`}></div>
+            <div
+              key={c}
+              className={`w-3 h-3 rounded-sm ${getColor(c)}`}
+            ></div>
           ))}
         </div>
         <span>More</span>
       </div>
 
+      {/* Heatmap Styles */}
       <style>
         {`
-        /* Themed color palette (magenta → cyan → gold) */
+        /* Color palette */
         .color-empty { fill: #0d1117; }
         .color-scale-1 { fill: #ff8fb3; }
         .color-scale-2 { fill: #ff4a87; }
         .color-scale-3 { fill: #ff006e; }
         .color-scale-4 { fill: #00d9ff; }
 
-        /* Rounded corners for each day */
+        /* Rounded day squares */
         .react-calendar-heatmap rect {
           rx: 3;
           ry: 3;
         }
 
-        /* Default week spacing */
+        /* Spacing between weeks */
         .react-calendar-heatmap .react-calendar-heatmap-week {
           margin-right: 2px;
-        }
-
-        /* Add column gap after each month */
-        .react-calendar-heatmap .react-calendar-heatmap-month {
-          position: relative;
-        }
-
-        .react-calendar-heatmap .react-calendar-heatmap-week:nth-child(5n) {
-          margin-right: 8px;
         }
 
         /* Month labels */
