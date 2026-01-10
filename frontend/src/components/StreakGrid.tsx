@@ -44,8 +44,7 @@ export default function StreakGrid({ streak }: StreakGridProps) {
         Push Activity
       </h2>
 
-      {/* 🔥 IMPORTANT FIX: lock font-size so heatmap boxes don't scale */}
-      <div className="overflow-x-auto text-[11px]">
+      <div className="overflow-x-auto">
         <CalendarHeatmap
           startDate={startDate}
           endDate={endDate}
@@ -87,15 +86,19 @@ export default function StreakGrid({ streak }: StreakGridProps) {
             <div
               key={c}
               className={`w-3 h-3 rounded-sm ${getColor(c)}`}
-            ></div>
+            />
           ))}
         </div>
         <span>More</span>
       </div>
 
-      {/* Heatmap Styles */}
+      {/* 🔥 FINAL FIX: FORCE SVG FONT SIZE */}
       <style>
         {`
+        .react-calendar-heatmap {
+          font-size: 11px;
+        }
+
         /* Color palette */
         .color-empty { fill: #0d1117; }
         .color-scale-1 { fill: #ff8fb3; }
