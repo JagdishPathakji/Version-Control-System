@@ -10,13 +10,14 @@ interface StreakGridProps {
 export default function StreakGrid({ streak }: StreakGridProps) {
   const year = new Date().getFullYear();
 
-  // Jan 1 → Today (UTC-safe)
+  // ✅ Inclusive date range (Jan 1 → Today)
   const startDate = new Date(Date.UTC(year, 0, 1));
   const endDate = new Date();
   endDate.setUTCHours(0, 0, 0, 0);
 
-  // Generate all days of the year
+  // Generate all days of current year
   const allDays: { date: string; count: number }[] = [];
+
   for (
     let d = new Date(startDate);
     d <= endDate;
@@ -44,39 +45,39 @@ export default function StreakGrid({ streak }: StreakGridProps) {
         Push Activity
       </h2>
 
-      {/* 🔥 CRITICAL FIX: width-constrained container */}
       <div className="overflow-x-auto">
-        <div className="max-w-[900px]">
-          <CalendarHeatmap
-            startDate={startDate}
-            endDate={endDate}
-            values={allDays}
-            showWeekdayLabels={false}
-            classForValue={(value) => {
-              if (!value || value.count === 0) return "color-empty";
-              return getColor(value.count);
-            }}
-            tooltipDataAttrs={(value: any) => {
-              if (!value?.date) return {};
-              const date = new Date(value.date + "T00:00:00");
-              const dateStr = date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              });
+        <CalendarHeatmap
+          startDate={startDate}
+          endDate={endDate}
+          values={allDays}
+          showWeekdayLabels={false}
+          classForValue={(value) => {
+            if (!value || value.count === 0) return "color-empty";
+            return getColor(value.count);
+          }}
+          tooltipDataAttrs={(value: any) => {
+            if (!value?.date) return {};
 
-              return {
-                "data-tooltip-id": "activity-tip",
-                "data-tooltip-content":
-                  value.count > 0
-                    ? `${dateStr}: ${value.count} push${
-                        value.count > 1 ? "es" : ""
-                      }`
-                    : `${dateStr}: No activity`,
-              };
-            }}
-          />
-        </div>
+            const date = new Date(value.date + "T00:00:00");
+            const dateStr = date.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+
+            const tooltipText =
+              value.count > 0
+                ? `${dateStr}: ${value.count} push${
+                    value.count > 1 ? "es" : ""
+                  }`
+                : `${dateStr}: No activity`;
+
+            return {
+              "data-tooltip-id": "activity-tip",
+              "data-tooltip-content": tooltipText,
+            };
+          }}
+        />
 
         <Tooltip id="activity-tip" place="top" />
       </div>
@@ -95,42 +96,43 @@ export default function StreakGrid({ streak }: StreakGridProps) {
         <span>More</span>
       </div>
 
-      {/* 🔥 FINAL, NON-NEGOTIABLE STYLES */}
-      <style>
-        {`
-        /* LOCK SVG SIZE (prevents giant boxes forever) */
-        .react-calendar-heatmap {
-          width: 900px !important;
-          height: auto;
-          font-size: 11px;
+      {/* Custom Heatmap Styling */}
+      <style jsx>{`
+        .color-empty {
+          fill: #0d1117;
+        }
+        .color-scale-1 {
+          fill: #ff8fb3;
+        }
+        .color-scale-2 {
+          fill: #ff4a87;
+        }
+        .color-scale-3 {
+          fill: #ff006e;
+        }
+        .color-scale-4 {
+          fill: #00d9ff;
         }
 
-        /* Color palette */
-        .color-empty { fill: #0d1117; }
-        .color-scale-1 { fill: #ff8fb3; }
-        .color-scale-2 { fill: #ff4a87; }
-        .color-scale-3 { fill: #ff006e; }
-        .color-scale-4 { fill: #00d9ff; }
-
-        /* Rounded squares */
         .react-calendar-heatmap rect {
           rx: 3;
           ry: 3;
         }
 
-        /* Week spacing */
         .react-calendar-heatmap .react-calendar-heatmap-week {
           margin-right: 2px;
         }
 
-        /* Month labels */
+        .react-calendar-heatmap .react-calendar-heatmap-week:nth-child(5n) {
+          margin-right: 8px;
+        }
+
         .react-calendar-heatmap-month-labels text {
           fill: #9aa4b2;
           font-size: 10px;
           font-weight: 500;
         }
-        `}
-      </style>
+      `}</style>
     </div>
   );
 }
