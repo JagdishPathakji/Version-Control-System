@@ -12,6 +12,7 @@
   font-weight: 600;
   margin-bottom: 10px;
   text-align: center;
+  transform: scale(0.9);
 }
 
 /* GitHub-style colors */
@@ -44,21 +45,24 @@
 .react-calendar-heatmap {
   width: 100%;
   overflow-x: auto;
+  transform: scale(0.75);
+  transform-origin: top left;
 }
 
 .react-calendar-heatmap svg {
   max-width: 100%;
   height: auto;
+  overflow: visible;
 }
 
 .react-calendar-heatmap text {
   fill: #8b949e;
-  font-size: 9px;
+  font-size: 8px;
 }
 
 .react-calendar-heatmap rect {
-  width: 13px;
-  height: 13px;
+  width: 10px;
+  height: 10px;
 }
 
 /* Add gap between months */
