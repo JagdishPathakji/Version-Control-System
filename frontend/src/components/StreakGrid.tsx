@@ -8,12 +8,12 @@ interface StreakGridProps {
 }
 
 export default function StreakGrid({ streak }: StreakGridProps) {
-  const year = new Date().getFullYear();
-
-  // ✅ Correct inclusive date range (Jan 1 → Today)
-  const startDate = new Date(Date.UTC(year, 0, 1));
+  // ✅ Last 365 days (previous year → Today)
   const endDate = new Date();
   endDate.setUTCHours(0, 0, 0, 0);
+
+  const startDate = new Date(endDate);
+  startDate.setUTCDate(startDate.getUTCDate() - 365);
 
   // Generate all days of current year
   const allDays: { date: string; count: number }[] = [];
