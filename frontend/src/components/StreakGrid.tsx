@@ -56,7 +56,7 @@ export default function StreakGrid({ streak }: StreakGridProps) {
             return getColor(value.count);
           }}
           tooltipDataAttrs={(value: any) => {
-            if (!value?.date) return {};
+            if (!value?.date) return { "data-tooltip-id": "activity-tip", "data-tooltip-content": "No data" };
 
             const date = new Date(value.date + "T00:00:00");
             const dateStr = date.toLocaleDateString("en-US", {
@@ -75,11 +75,12 @@ export default function StreakGrid({ streak }: StreakGridProps) {
             return {
               "data-tooltip-id": "activity-tip",
               "data-tooltip-content": tooltipText,
+              "data-tooltip-delay-show": "200",
             };
           }}
         />
 
-        <Tooltip id="activity-tip" place="top" />
+        <Tooltip id="activity-tip" place="top" openOnClick={false} />
       </div>
 
       {/* Legend */}
@@ -148,6 +149,19 @@ export default function StreakGrid({ streak }: StreakGridProps) {
 
         .react-calendar-heatmap text {
           font-size: 6px !important;
+        }
+
+        .react-tooltip {
+          background-color: #161b22 !important;
+          color: #c9d1d9 !important;
+          font-size: 12px !important;
+          padding: 8px 12px !important;
+          border-radius: 6px !important;
+          z-index: 9999 !important;
+        }
+
+        .react-tooltip.place-top {
+          margin-top: 8px !important;
         }
       `}</style>
     </div>
