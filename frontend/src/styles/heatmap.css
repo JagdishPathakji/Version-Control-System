@@ -46,9 +46,19 @@
   overflow-x: auto;
 }
 
+.react-calendar-heatmap svg {
+  max-width: 100%;
+  height: auto;
+}
+
 .react-calendar-heatmap text {
   fill: #8b949e;
   font-size: 9px;
+}
+
+.react-calendar-heatmap rect {
+  width: 13px;
+  height: 13px;
 }
 
 /* Add gap between months */
