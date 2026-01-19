@@ -40,12 +40,12 @@ export default function StreakGrid({ streak }: StreakGridProps) {
   };
 
   return (
-    <div className="bg-[#0d1117] border border-[#1f2328] rounded-xl p-5 text-gray-300">
+    <div className="bg-[#0d1117] border border-[#1f2328] rounded-xl p-5 text-gray-300 overflow-hidden">
       <h2 className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#ff006e] via-[#00d9ff] to-[#ffbe0b] mb-4">
         Push Activity
       </h2>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scale-75 origin-top-left" style={{ width: '133.33%', marginRight: '-33.33%' }}>
         <CalendarHeatmap
           startDate={startDate}
           endDate={endDate}
@@ -116,36 +116,39 @@ export default function StreakGrid({ streak }: StreakGridProps) {
 
         .react-calendar-heatmap {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+          transform: scale(0.75);
+          transform-origin: top left;
         }
 
         .react-calendar-heatmap svg {
           max-width: 100%;
           height: auto;
+          overflow: visible;
         }
 
         .react-calendar-heatmap rect {
           rx: 2;
           ry: 2;
-          width: 13px;
-          height: 13px;
+          width: 10px;
+          height: 10px;
         }
 
         .react-calendar-heatmap .react-calendar-heatmap-week {
-          margin-right: 4px;
+          margin-right: 2px;
         }
 
         .react-calendar-heatmap .react-calendar-heatmap-week:nth-child(5n) {
-          margin-right: 8px;
+          margin-right: 6px;
         }
 
         .react-calendar-heatmap-month-labels text {
           fill: #9aa4b2;
-          font-size: 11px;
+          font-size: 8px;
           font-weight: 500;
         }
 
         .react-calendar-heatmap text {
-          font-size: 11px;
+          font-size: 8px;
         }
       `}</style>
     </div>
