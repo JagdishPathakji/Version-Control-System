@@ -114,13 +114,24 @@ export default function StreakGrid({ streak }: StreakGridProps) {
           fill: #00d9ff;
         }
 
+        .react-calendar-heatmap {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        .react-calendar-heatmap svg {
+          max-width: 100%;
+          height: auto;
+        }
+
         .react-calendar-heatmap rect {
-          rx: 3;
-          ry: 3;
+          rx: 2;
+          ry: 2;
+          width: 13px;
+          height: 13px;
         }
 
         .react-calendar-heatmap .react-calendar-heatmap-week {
-          margin-right: 2px;
+          margin-right: 4px;
         }
 
         .react-calendar-heatmap .react-calendar-heatmap-week:nth-child(5n) {
@@ -129,8 +140,12 @@ export default function StreakGrid({ streak }: StreakGridProps) {
 
         .react-calendar-heatmap-month-labels text {
           fill: #9aa4b2;
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 500;
+        }
+
+        .react-calendar-heatmap text {
+          font-size: 11px;
         }
       `}</style>
     </div>
