@@ -16,17 +16,16 @@ app.use(cookieparser())
 app.use(express.json())
 
 // Default production origin
-const PROD_ORIGIN = "https://version-control-system-frontend.onrender.com";
-
+const PROD_ORIGIN1 = "https://version-control-system-frontend.onrender.com";
+const PROD_ORIGIN2 = "https://jvcs-space.netlify.app/"
 // When testing locally, set ALLOW_LOCAL=true in your .env to allow localhost origins
-const allowedOrigins = [PROD_ORIGIN];
+const allowedOrigins = [PROD_ORIGIN1, PROD_ORIGIN2];
 if (process.env.ALLOW_LOCAL === "true") {
     allowedOrigins.push(
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-        "https://jvcs-space.netlify.app/"
+        "http://127.0.0.1:3000"
     );
 }
 
