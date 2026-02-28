@@ -279,7 +279,7 @@ yargs(hideBin(process.argv))
 
                     const ignoreFiles = await new Promise((resolve) => {
                         rl.question(
-                            "Enter files/folders to ignore (comma-separated, e.g., node_modules, dist, .env) or leave empty: ",
+                            "Enter files/folders to ignore (comma-separated, e.g., node_modules/, dist/, .env) or leave empty: ",
                             (answer) => {
                                 rl.close();
                                 resolve(answer);
@@ -311,14 +311,13 @@ yargs(hideBin(process.argv))
                 console.log(chalk.green("Committing changes..."));
                 await commitCmd(commitMessage);
 
-                // Push to remote
+                // 5️⃣ Push to remote
                 console.log(chalk.green("Pushing to remote..."));
                 await pushCmd();
 
                 console.log(chalk.blue("Save version completed successfully!"));
 
-            } 
-            catch (error) {
+            } catch (error) {
                 console.log(chalk.red(error.message || error));
             }
         }

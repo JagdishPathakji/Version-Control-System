@@ -30,94 +30,94 @@ function isIgnored(relativePath, ignorePatterns = []) {
     )
 }
 
-async function hashDirectoryRecursive(dir, hashData, ignorePatterns) {
+async function hashDirectoryRecursive(dir,hashData,ignorePatterns) {
 
-    const entries = await fs.readdir(dir, { withFileTypes: true })
+    const entries = await fs.readdir(dir, {withFileTypes: true})
 
-    for (const entry of entries) {
+    for(const entry of entries) {
 
-        const fullPath = path.join(dir, entry.name)
-        const relativePath = path.relative(process.cwd(), fullPath)
+        const fullPath = path.join(dir,entry.name)
+        const relativePath = path.relative(process.cwd(),fullPath)
 
-        if (isIgnored(relativePath, ignorePatterns)) {
+        if(isIgnored(relativePath, ignorePatterns)) {
             console.log(chalk.gray(`skipped "${relativePath}" as it is present in .jvcsignore`))
             continue
         }
 
-        if (entry.isFile()) {
+        if(entry.isFile()) {
             const hash = await getFileHash(fullPath)
             hashData[relativePath] = {
                 hash,
                 time: new Date().toISOString(),
             }
         }
-        else if (entry.isDirectory()) {
-            await hashDirectoryRecursive(fullPath, hashData, ignorePatterns)
+        else if(entry.isDirectory()) {
+            await hashDirectoryRecursive(fullPath,hashData,ignorePatterns)
         }
     }
 }
 
 async function addCmd(paths) {
-
-    if (!paths || paths.length === 0) {
+    
+    if(!paths || paths.length === 0) {
         console.log(chalk.yellow("Please specify files or folders to add."));
         return
-    }
+    }  
 
-    if (!checkGlobalConfig()) {
+    if(!checkGlobalConfig()) {
         console.log(chalk.red("No existing session found. Please login or signup."))
         console.log(chalk.green("jvcs --help for help"))
         return
     }
-
+        
     let configData = getGlobalConfig()
-
-    if (!configData) {
+        
+    if(!configData) {
         console.log(chalk.red("No existing session found. Please login or signup."))
         console.log(chalk.green("jvcs --help for help"))
         return
     }
 
-    if (!checkforjvcs()) {
+    if(!checkforjvcs()) {
         console.log(chalk.red("Repository is not initialized or is deleted. Please create it."))
         return
     }
 
-    const repoPath = path.join(process.cwd(), ".jvcs")
-    const staging = path.join(repoPath, "staging")
+    const repoPath = path.join(process.cwd(),".jvcs")
+    const staging = path.join(repoPath,"staging")
 
-    if (!fssync.existsSync(staging))
-        fssync.mkdirSync(staging, { recursive: true })
+    if(!fssync.existsSync(staging)) 
+    fssync.mkdirSync(staging, {recursive: true})
 
-    const hashPath = path.join(staging, "jvcs_hashcode.json")
+    const hashPath = path.join(staging,"jvcs_hashcode.json")
     let hashData = {}
 
-    if (fssync.existsSync(hashPath)) {
-        hashData = JSON.parse(await fs.readFile(hashPath, "utf-8"))
+    if(fssync.existsSync(hashPath)) {
+        hashData = JSON.parse(await fs.readFile(hashPath,"utf-8"))
     }
 
     // load ignore patterns
     const ignorePatterns = await loadIgnorePatterns()
 
     let targets = []
-    if (paths.length === 1 && paths[0] === ".") {
-        let rootEntries = await fs.readdir(process.cwd(), { withFileTypes: true })
-        targets = rootEntries.filter((target) => target.name !== ".jvcs" && target.name !== ".jvcsignore").map((item) => path.resolve(process.cwd(), item.name))
+    if(paths.length === 1 && paths[0] === ".") {
+        let rootEntries  = await fs.readdir(process.cwd(),{withFileTypes: true})
+        targets = rootEntries.filter((target)=> target.name !== ".jvcs" && target.name !== ".jvcsignore").map((item)=> path.resolve(process.cwd(), item.name))
     }
     else {
-        targets = paths.map((p) => path.resolve(process.cwd(), p))
+        targets = paths.map((p)=> path.resolve(process.cwd(),p))
     }
 
     // copying the files and folders to staging area
-    for (const target of targets) {
+    for(const target of targets) {
 
         try {
 
-            if (!fssync.existsSync(target)) {
+            if(!fssync.existsSync(target)) {
                 console.log(chalk.red(`Path not found: ${target}`))
                 continue
             }
-
+    
             const relative = path.relative(process.cwd(), target)
             if (relative === ".jvcs" || relative.startsWith(".jvcs" + path.sep)) {
                 console.log(chalk.red(`Cannot add internal repository folder ".jvcs"`))
@@ -129,32 +129,32 @@ async function addCmd(paths) {
                 continue
             }
 
-            if (isIgnored(relative, ignorePatterns)) {
+            if(isIgnored(relative, ignorePatterns)) {
                 console.log(chalk.gray(`skipped "${relative}" as it is present in .jvcsignore`))
                 continue
             }
 
-            const destination = path.join(staging, path.relative(process.cwd(), target))
-            await fs.mkdir(path.dirname(destination), { recursive: true })
-
+            const destination = path.join(staging,path.relative(process.cwd(),target))
+            await fs.mkdir(path.dirname(destination), {recursive: true})
+    
             const stats = await fs.stat(target)
-
-            if (stats.isFile()) {
-                await fs.copyFile(target, destination)
+    
+            if(stats.isFile()) {
+                await fs.copyFile(target,destination)
                 const hash = await getFileHash(target)
-                hashData[path.relative(process.cwd(), target)] = {
+                hashData[path.relative(process.cwd(),target)] = {
                     hash,
                     time: new Date().toISOString(),
                 }
                 console.log(chalk.green(`Added file: ${path.relative(process.cwd(), target)}`));
             }
-            else if (stats.isDirectory()) {
-                await fs.cp(target, destination, { recursive: true })
-                await hashDirectoryRecursive(target, hashData, ignorePatterns)
+            else if(stats.isDirectory()) {
+                await fs.cp(target,destination,{recursive: true})
+                await hashDirectoryRecursive(target,hashData,ignorePatterns)
                 console.log(chalk.cyan(`Added folder: ${path.relative(process.cwd(), target)}`));
             }
         }
-        catch (error) {
+        catch(error) {
             console.log(chalk.red(`Unexpected error: ${error.message}`));
         }
     }

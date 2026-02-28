@@ -15,7 +15,7 @@ async function getFileHash(filepath) {
 // load .jvcsignore file
 async function loadIgnorePatterns() {
     const ignorePath = path.join(process.cwd(), ".jvcsignore")
-    if(!fssync.existsSync(ignorePath)) return []
+    if (!fssync.existsSync(ignorePath)) return []
 
     const content = await fs.readFile(ignorePath, "utf-8")
     return content

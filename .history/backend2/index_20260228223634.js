@@ -279,7 +279,7 @@ yargs(hideBin(process.argv))
 
                     const ignoreFiles = await new Promise((resolve) => {
                         rl.question(
-                            "Enter files/folders to ignore (comma-separated, e.g., node_modules, dist, .env) or leave empty: ",
+                            "Enter files/folders to ignore (comma-separated, e.g., node_modules/, dist/, .env) or leave empty: ",
                             (answer) => {
                                 rl.close();
                                 resolve(answer);
@@ -317,8 +317,7 @@ yargs(hideBin(process.argv))
 
                 console.log(chalk.blue("Save version completed successfully!"));
 
-            } 
-            catch (error) {
+            } catch (error) {
                 console.log(chalk.red(error.message || error));
             }
         }

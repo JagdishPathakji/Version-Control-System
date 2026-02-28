@@ -1,6 +1,6 @@
 {
   "name": "jvcs",
-  "version": "1.6.8",
+  "version": "1.6.5",
   "bin": {
     "jvcs": "index.js"
   },
@@ -13,7 +13,7 @@
     "blessed": "^0.1.81",
     "chalk": "^4.1.2",
     "dotenv": "^17.2.3",
-    "googleapis": "^164.1.0",
+    "googleapis": "^164.1.0",7
     "inquirer": "^8.2.7",
     "marked": "^15.0.12",
     "marked-plaintext": "^0.0.2",

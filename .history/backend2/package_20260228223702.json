@@ -1,6 +1,6 @@
 {
   "name": "jvcs",
-  "version": "1.6.8",
+  "version": "1.6.6",
   "bin": {
     "jvcs": "index.js"
   },
