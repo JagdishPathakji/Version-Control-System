@@ -44,20 +44,42 @@ While Git and GitHub are industry standards, **JVCS** introduces unique features
 
 ## 💻 CLI Commands (Backend2)
 
-| Command | One-Liner Description |
+| Command | Description |
 | :--- | :--- |
 | `jvcs begin` | **Authentication**: Initialize the system with secure Login or Signup. |
-| `jvcs init <name>` | **Initialize**: Create a new empty JVCS repository in the current directory. |
-| `jvcs add <paths>` | **Stage**: Add specific files or folders to the staging area for the next commit. |
-| `jvcs status` | **Status**: Check which files are staged, modified, or untracked. |
-| `jvcs commit <msg>` | **Commit**: Save the current staging area as a new version with a message. |
-| `jvcs unstage <paths>` | **Unstage**: Remove files or folders from the staging area. |
-| `jvcs push` | **Sync**: Upload all local commits to your Google Drive cloud storage. |
-| `jvcs log` | **History**: Display a detailed list of all commits made in the repository. |
-| `jvcs diff --mode <m>` | **AI Review**: Compare states (e.g., `stage-vs-cwd`) with **integrated AI code analysis**. |
-| `jvcs revert <id>` | **Undo**: Roll back your working directory to a specific previous commit. |
-| `jvcs clone <path>` | **Clone**: Download a remote repository (via `username/reponame`) to local. |
-| `jvcs save-version` | **Turbo**: A single command that runs `init`, `add`, `commit`, and `push` sequentially. |
+| `jvcs init` | **Initialize**: Create a new empty JVCS repository in the current directory. |
+| `jvcs add <paths...>` | **Stage**: Add files or folders to the staging area (see below for options). |
+| `jvcs commit <message>` | **Commit**: Save the current staging area as a new version with a message. |
+| `jvcs unstage <paths...>`| **Unstage**: Remove files and folders from the staging area. |
+| `jvcs log` | **History**: Show details of all commits made in the repository. |
+| `jvcs push` | **Sync**: Push all the commits to your Google Drive remote storage. |
+| `jvcs status` | **Status**: Check the status of each file/folder (modified, staged, etc.). |
+| `jvcs diff` | **AI Review**: Compare different states (AI-integrated analysis). |
+| `jvcs revert <commitId>` | **Undo**: Replace working directory with a specific previous commit. |
+| `jvcs clone <path>` | **Clone**: Clone a remote repository (username/reponame) to local. |
+| `jvcs save-version` | **Turbo**: One-click `init` + `add` + `commit` + `push`. |
+
+### **Detailed Command Usage**
+
+#### **Staging & Unstaging**
+For both `add` and `unstage`, you can specify multiple targets:
+
+| Command Pattern | Description |
+| :--- | :--- |
+| `jvcs add .` | Stage all files/folders in the current directory. |
+| `jvcs add <file1> <file2>` | Stage specific multiple files. |
+| `jvcs add <folder1> <folder2>` | Stage multiple folders. |
+| `jvcs add <file> <folder>` | Stage a mix of files and folders. |
+| `jvcs unstage .` | Unstage everything. |
+| `jvcs unstage <file1> <file2>` | Unstage specific multiple files. |
+
+#### **AI-Powered Diff**
+Compare states with integrated AI analysis:
+```bash
+jvcs diff --mode stage-vs-cwd          # Compare staging with current work
+jvcs diff --mode commit-vs-stage --commitId <id> # Compare commit with stage
+jvcs diff --mode commit-vs-commit --commitA <id> --commitB <id> # Compare two commits
+```
 
 ---
 
