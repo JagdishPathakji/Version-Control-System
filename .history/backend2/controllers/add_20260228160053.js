@@ -18,11 +18,10 @@ async function loadIgnorePatterns() {
     const ignorePath = path.join(process.cwd(), ".jvcsignore")
     if(!fssync.existsSync(ignorePath)) return []
 
-    const content = await fs.readFile(ignorePath, "utf-8")
-    return content.split("\n").map(line => line.trim()).filter(line => line.length > 0 && !line.startsWith("#"))
+    return content.split("\n").map(line => line && !line.startsWith("#"))
 }
 
-function isIgnored(relativePath, ignorePatterns = []) {
+function isIgnored(relativePath, ignorePatterns) {
     return ignorePatterns.some(pattern =>
         minimatch(relativePath, pattern, { dot: true })
     )
@@ -100,7 +99,7 @@ async function addCmd(paths) {
     let targets = []
     if(paths.length === 1 && paths[0] === ".") {
         let rootEntries  = await fs.readdir(process.cwd(),{withFileTypes: true})
-        targets = rootEntries.filter((target)=> target.name !== ".jvcs" && target.name !== ".jvcsignore").map((item)=> path.resolve(process.cwd(), item.name))
+        targets = rootEntries.filter((target))
     }
     else {
         targets = paths.map((p)=> path.resolve(process.cwd(),p))
@@ -116,22 +115,6 @@ async function addCmd(paths) {
                 continue
             }
     
-            const relative = path.relative(process.cwd(), target)
-            if (relative === ".jvcs" || relative.startsWith(".jvcs" + path.sep)) {
-                console.log(chalk.red(`Cannot add internal repository folder ".jvcs"`))
-                continue
-            }
-
-            if (relative === ".jvcsignore") {
-                console.log(chalk.red(`Cannot add ".jvcsignore" file`))
-                continue
-            }
-
-            if(isIgnored(relative, ignorePatterns)) {
-                console.log(chalk.gray(`skipped "${relative}" as it is present in .jvcsignore`))
-                continue
-            }
-
             const destination = path.join(staging,path.relative(process.cwd(),target))
             await fs.mkdir(path.dirname(destination), {recursive: true})
     
@@ -148,7 +131,7 @@ async function addCmd(paths) {
             }
             else if(stats.isDirectory()) {
                 await fs.cp(target,destination,{recursive: true})
-                await hashDirectoryRecursive(target,hashData,ignorePatterns)
+                await hashDirectoryRecursive(target,hashData)
                 console.log(chalk.cyan(`Added folder: ${path.relative(process.cwd(), target)}`));
             }
         }

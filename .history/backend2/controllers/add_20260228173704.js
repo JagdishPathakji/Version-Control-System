@@ -117,16 +117,6 @@ async function addCmd(paths) {
             }
     
             const relative = path.relative(process.cwd(), target)
-            if (relative === ".jvcs" || relative.startsWith(".jvcs" + path.sep)) {
-                console.log(chalk.red(`Cannot add internal repository folder ".jvcs"`))
-                continue
-            }
-
-            if (relative === ".jvcsignore") {
-                console.log(chalk.red(`Cannot add ".jvcsignore" file`))
-                continue
-            }
-
             if(isIgnored(relative, ignorePatterns)) {
                 console.log(chalk.gray(`skipped "${relative}" as it is present in .jvcsignore`))
                 continue
