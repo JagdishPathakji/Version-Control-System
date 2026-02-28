@@ -1,328 +1,153 @@
 # 🚀 JVCS - Personal Version Control System
 
-> A lightweight, Git-like version control system with a beautiful CLI and web interface for developers.
+> A lightweight, AI-enhanced version control system with a powerful CLI and a vibrant web interface, using Google Drive as cloud storage.
 
-**Live Demo:** https://version-control-system-frontend.onrender.com/
+**Live Demo:** [https://version-control-system-frontend.onrender.com/](https://version-control-system-frontend.onrender.com/)
 
 ---
 
-## ✨ Features
+## ✨ How JVCS is Uniquely and Better
+
+While Git and GitHub are industry standards, **JVCS** introduces unique features tailored for modern, social-first development:
+
+1.  **🤖 Integrated AI Code Review**: Unlike Git, JVCS has built-in AI support (`jvcs diff`) that analyzes your changes and provides instant feedback, suggestions, and risk assessments.
+2.  **☁️ Google Drive as Cloud Provider**: JVCS uses your own Google Drive for storage. No need for complex server setups or worrying about private repo limits on external platforms.
+3.  **🔥 Social-First Architecture**: Features like contribution heatmaps, user following, and repository starring are core to the platform, making it feel like a social network for developers from day one.
+4.  **⚡ Lightweight & Modern**: Built with a sleek React + TypeScript frontend and a Node.js backend, offering a "glassmorphism" aesthetic that feels premium and state-of-the-art.
+
+---
+
+## 🛠 Features
 
 ### 🎯 Core Features
-- **Repository Management** - Create, manage, and organize repositories
-- **Version Control** - Track file changes with commits and history
-- **Public/Private Repos** - Share repositories publicly with the community
-- **File Browsing** - Browse and preview files with syntax highlighting
-- **Commit History** - View complete commit timeline with messages
-- **Status Tracking** - Check file status and staging area
+- **Repository Management** - Create, manage, and organize repositories through CLI or Web.
+- **Version Control** - Track file changes with UUID-based commits and persistent history.
+- **Public/Private Repos** - Toggle visibility to share with the community or keep projects private.
+- **File Browsing** - High-performance file tree explorer with syntax highlighting.
+- **Commit History** - Detailed timeline of all changes with metadata and parent tracking.
+- **Status Tracking** - Real-time monitoring of staged, unstaged, and modified files.
 
-### 🌐 Web Interface
-- Beautiful, modern dashboard
-- Public repository discovery
-- User profiles with contribution tracking
-- Repository starring system
-- Responsive design (mobile-friendly)
-- Dark theme with vibrant accents
+### 🌐 Web Interface (Frontend)
+- **Glassmorphic Dashboard**: A beautiful, modern UI with vibrant gradients (Magenta, Cyan, Gold).
+- **Contribution Heatmap**: Track your daily push activity with a GitHub-style streak grid.
+- **Social Ecosystem**: Follow/unfollow users and discover trending public repositories.
+- **Responsive Design**: Fully optimized for mobile, tablet, and desktop experiences.
+- **Syntax Highlighting**: Preview code files directly in the browser with `react-syntax-highlighter`.
 
-### 💻 CLI Package
-- Lightweight command-line interface
-- Easy-to-use commands (init, add, commit, push, etc.)
-- Global and local installation options
-- Authentication via terminal
-
-### 👥 Social Features
-- Public user profiles
-- Follow/unfollow users
-- Contribution heatmap calendar
-- Repository discovery
+### 💻 CLI Package (Backend2)
+- **Command-Line Interface**: A robust CLI built with `yargs` and `chalk`.
+- **Local Staging Area**: Manage local changes before committing, similar to Git's staging.
+- **AI-Powered Diff**: Automated code analysis using `ChatOllama` (GPT-OSS models).
+- **Secure Auth**: OTP-based authentication via terminal for enhanced security.
 
 ---
 
-## 🛠 Tech Stack
+## 💻 CLI Commands (Backend2)
 
-### **Frontend**
-- React + TypeScript
-- Vite (build tool)
-- Tailwind CSS (styling)
-- React Router (navigation)
-- React Syntax Highlighter (code preview)
-- Lucide React (icons)
-
-### **Backend**
-- **Backend1 (REST API):** Node.js + Express
-  - MongoDB (database)
-  - Redis (caching)
-  - JWT (authentication)
-  - Google Drive API (file storage)
-  - Brevo (email service)
-
-- **Backend2 (CLI Package):** Node.js
-  - Yargs (CLI framework)
-  - Chalk (colored output)
-  - Google Drive integration
-  - OAuth 2.0 authentication
-
-### **Infrastructure**
-- MongoDB Atlas (cloud database)
-- Redis Cloud (caching)
-- Google Drive (file storage)
-- Render (deployment)
+| Command | One-Liner Description |
+| :--- | :--- |
+| `jvcs begin` | **Authentication**: Initialize the system with secure Login or Signup. |
+| `jvcs init <name>` | **Initialize**: Create a new empty JVCS repository in the current directory. |
+| `jvcs add <paths>` | **Stage**: Add specific files or folders to the staging area for the next commit. |
+| `jvcs status` | **Status**: Check which files are staged, modified, or untracked. |
+| `jvcs commit <msg>` | **Commit**: Save the current staging area as a new version with a message. |
+| `jvcs unstage <paths>` | **Unstage**: Remove files or folders from the staging area. |
+| `jvcs push` | **Sync**: Upload all local commits to your Google Drive cloud storage. |
+| `jvcs log` | **History**: Display a detailed list of all commits made in the repository. |
+| `jvcs diff --mode <m>` | **AI Review**: Compare states (e.g., `stage-vs-cwd`) with **integrated AI code analysis**. |
+| `jvcs revert <id>` | **Undo**: Roll back your working directory to a specific previous commit. |
+| `jvcs clone <path>` | **Clone**: Download a remote repository (via `username/reponame`) to local. |
+| `jvcs save-version` | **Turbo**: A single command that runs `init`, `add`, `commit`, and `push` sequentially. |
 
 ---
 
-## 📦 Installation
+## 📂 Project Structure
 
-### **For Web (Frontend)**
-
-```bash
-# Clone the repository
-git clone https://github.com/JagdishPathakji/Version-Control-System.git
-cd Version-Control-System/frontend
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
+### 🌐 Frontend
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── Dashboard.tsx        # Main user dashboard with stats & repos
+│   │   ├── OwnRepo.tsx          # Detailed repository view & file explorer
+│   │   ├── LandingPage.tsx      # Premium landing page with animations
+│   │   ├── Navbar.tsx           # Responsive navigation component
+│   │   ├── StreakGrid.tsx       # Contribution heatmap calendar
+│   │   ├── Profile.tsx          # User profile management
+│   │   ├── PublicProfile.tsx    # Viewing other users' profiles
+│   │   ├── getPublicRepo.tsx    # Public repository discovery
+│   │   └── Documentation.tsx    # In-app help & command guide
+│   ├── functionalities/         # API abstraction layer
+│   │   ├── getAllProfile.tsx
+│   │   ├── getAllRepo.tsx
+│   │   └── handleLogout.tsx
+│   ├── App.tsx                  # Main routing & state
+│   └── main.tsx                 # Entry point
+├── tailwind.config.js           # Styling configuration
+└── vite.config.ts               # Build tool configuration
 ```
 
-### **For CLI (NPM Package)**
-
-```bash
-# Global Installation
-npm install -g jvcs
-
-# Local Installation (in your project)
-npm install jvcs
+### ⚙️ Backend1 (REST API)
+```
+backend1/
+├── controllers/
+│   ├── userController.js        # Auth, Profiles, Streaks, Following
+│   ├── repoController.js        # Repository CRUD, Starring, Visibility
+│   └── issueController.js       # Issue tracking logic
+├── routes/
+│   ├── user.router.js           # User-related endpoints
+│   ├── repo.router.js           # Repository-related endpoints
+│   └── main.router.js           # General API routing
+├── database/
+│   ├── models/                  # Mongoose Schemas (User, Repo, Content)
+│   └── redisConnection.js       # Redis caching for OTP & performance
+├── externals/
+│   └── sendEmail.js             # Brevo integration for OTP emails
+├── config/
+│   └── drive-config.js          # Google Drive API configuration
+└── index.js                     # Main Express server entry
 ```
 
-### **For Backend**
-
-```bash
-# Backend1 (REST API)
-cd backend1
-npm install
-npm start
-
-# Backend2 (CLI)
-cd backend2
-npm install
-npm link  # For global installation
+### 🛠 Backend2 (CLI Utility)
+```
+backend2/
+├── controllers/
+│   ├── diff-engine/             # 🤖 AI Analysis & Diff Logic
+│   │   ├── aiAnalyzer.js        # AI Code Review integration
+│   │   ├── diffEngine.js        # File comparison logic
+│   │   └── ui.js                # CLI Diff visualization
+│   ├── add.js                   # Staging logic with .jvcsignore support
+│   ├── commit.js                # UUID-based local commit system
+│   ├── push.js                  # Google Drive syncing logic
+│   ├── status.js                # File state detection
+│   └── begin.js                 # CLI Auth flow
+├── apicall/
+│   └── handleDbForRepo.js       # Syncing local state with Backend1 DB
+├── config/
+│   └── drive-config.js          # Client-side Drive API setup
+└── index.js                     # Yargs CLI entry point (`jvcs`)
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### **Web Interface**
-
-1. **Sign Up** - Create a new account at https://version-control-system-frontend.onrender.com/
-2. **Dashboard** - View your repositories and public repos
-3. **View Repo** - Click on your repo view your repository
-4. **Explore** - Browse public repositories and user profiles
-
-### **CLI Usage**
-
+### **1. Install CLI**
 ```bash
-# 1. Authenticate
+npm install -g jvcs
+```
+
+### **2. Authenticate**
+```bash
 jvcs begin
+```
 
-# 2. Create a repository
-jvcs init my-project
-
-# 3. Check status
-jvcs status
-
-# 4. Stage files
+### **3. Start Versioning**
+```bash
+jvcs init
 jvcs add .
-
-# 5. Commit changes
-jvcs commit "Initial commit: Add project files"
-
-# 6. Push to remote
+jvcs commit "Initial commit with AI check"
 jvcs push
-
-# 7. View history
-jvcs log
-
-# 8. Check status again
-jvcs status
-```
-
----
-
-## 📝 Commands
-
-### **Authentication**
-```bash
-jvcs begin          # Login/Signup
-```
-
-### **Repository Management**
-```bash
-jvcs init <name>    # Initialize new repository
-jvcs clone <name>   # Clone existing repository
-```
-
-### **File Operations**
-```bash
-jvcs add <paths>    # Stage files for commit
-jvcs unstage <paths> # Remove from staging
-jvcs status         # Check file status
-```
-
-### **Commits**
-```bash
-jvcs commit <msg>   # Create a commit
-jvcs revert <id>        # Undo commits
-jvcs log            # View commit history
-```
-
-### **Remote Operations**
-```bash
-jvcs push           # Push to remote
-```
-
----
-
-## 🏗 Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│              Frontend (React + TypeScript)          │
-│  - Landing Page, Dashboard, Repo Views, Profiles    │
-│  - Responsive UI with Tailwind CSS                  │
-└─────────────────────────────────────────────────────┘
-                         ↓
-┌─────────────────────────────────────────────────────┐
-│         Backend1 (Express REST API)                 │
-│  - User Management, Repo Operations                 │
-│  - Authentication & Authorization                   │
-│  - File Management via Google Drive                 │
-└─────────────────────────────────────────────────────┘
-       ↓                    ↓                    ↓
-   MongoDB          Redis Cache         Google Drive
-   (Database)      (Performance)        (File Storage)
-                         ↑
-┌─────────────────────────────────────────────────────┐
-│         Backend2 (CLI Node Package)                 │
-│  - Command Line Interface                           │
-│  - Local Operations & Sync                          │
-└─────────────────────────────────────────────────────┘
-```
-
----
-
-## 📁 Project Structure
-
-```
-Version-Control-System/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── Login.tsx
-│   │   │   ├── Register.tsx
-│   │   │   ├── OwnRepo.tsx
-│   │   │   ├── getPublicRepo.tsx
-│   │   │   ├── Profile.tsx
-│   │   │   ├── PublicProfile.tsx
-│   │   │   ├── Documentation.tsx
-│   │   │   ├── LandingPage.tsx
-│   │   │   └── Navbar.tsx
-│   │   ├── functionalities/
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── vite.config.ts
-│   ├── tailwind.config.js
-│   └── package.json
-│
-├── backend1/
-│   ├── controllers/
-│   │   ├── userController.js
-│   │   ├── repoController.js
-│   │   └── issueController.js
-│   ├── routes/
-│   ├── models/
-│   ├── database/
-│   ├── config/
-│   ├── externals/
-│   ├── index.js
-│   └── package.json
-│
-├── backend2/
-│   ├── controllers/
-│   │   ├── init.js
-│   │   ├── add.js
-│   │   ├── commit.js
-│   │   ├── push.js
-│   │   ├── status.js
-│   │   ├── log.js
-│   │   └── ...
-│   ├── apicall/
-│   ├── config/
-│   ├── index.js
-│   └── package.json
-│
-└── README.md
-```
-
----
-
-## 🎨 UI Features
-
-### **Vibrant Color Scheme**
-- Primary: Magenta (`#ff006e`)
-- Secondary: Cyan (`#00d9ff`)
-- Accent: Gold (`#ffbe0b`)
-- Background: Deep Purple Gradient
-
-### **Responsive Design**
-- Mobile-first approach
-- Desktop optimized
-- Smooth animations
-- Dark theme with gradient backgrounds
-
-### **Key Components**
-- Dashboard with repo cards
-- File tree explorer with syntax highlighting
-- Code preview modals
-- Contribution heatmap calendar
-- User profiles with stats
-- Public repository discovery
-- Responsive navigation bar
-- Comprehensive documentation page
-
----
-
-## 🔐 Security Features
-
-- JWT-based authentication
-- Secure password hashing
-- OAuth 2.0 integration
-- CORS protection with dynamic origin validation
-- Input validation & sanitization
-- Session management
-- Credential storage (cookies)
-
----
-
-## 🚢 Deployment
-
-### **Frontend (Render)**
-```bash
-cd frontend
-npm run build
-# Deploy dist/ folder to Render with auto-deploy from GitHub
-```
-
-### **Backend (Render)**
-```bash
-# Set environment variables in Render dashboard
-# Deploy to Render with auto-deploy from GitHub
 ```
 
 ---
@@ -335,30 +160,7 @@ npm run build
 - LinkedIn: [Jagdish Pathakji](https://www.linkedin.com/in/jagdishpathakji)
 - Email: pathakjijagdish1@gmail.com
 
-
----
-
-## 📞 Support
-
-For support, questions, or feature requests:
-- Email: pathakjijagdish1@gmail.com
-- Open an issue on GitHub
-- Check the [Documentation](https://version-control-system-frontend.onrender.com/documentation)
-
----
-
-## 🔗 Quick Links
-
-- **Live Demo:** https://version-control-system-frontend.onrender.com/
-- **GitHub Repository:** https://github.com/JagdishPathakji/Version-Control-System
-- **NPM Package:** https://www.npmjs.com/package/jvcs
-- **Documentation:** Visit `/documentation` on the web app
-
----
-
-
 ---
 
 **Made with ❤️ by Jagdish Pathakji**
-
-*Last Updated: December 7, 2025*
+*Last Updated: February 2026*
