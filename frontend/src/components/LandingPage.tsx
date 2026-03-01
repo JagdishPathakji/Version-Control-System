@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Code, GitBranch, Users, Lock, Zap, Copy, Check } from "lucide-react";
+import { 
+  ArrowRight, Code, GitBranch, Users, Lock, Zap, Copy, Check,
+  Terminal, History, Search, RefreshCw, Layers, ShieldCheck,
+  ChevronRight, Database, Globe
+} from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -19,497 +23,286 @@ export default function LandingPage() {
     element?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const jvcsCommands = [
+    { cmd: "jvcs begin", icon: <ShieldCheck className="w-5 h-5" />, desc: "Secure authentication. Start your developer session.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs init", icon: <Database className="w-5 h-5" />, desc: "Initialize a fresh JVCS repository in your folder.", color: "text-[#ff006e]" },
+    { cmd: "jvcs add", icon: <Layers className="w-5 h-5" />, desc: "Stage your local changes for the next commit.", color: "text-[#ffbe0b]" },
+    { cmd: "jvcs commit", icon: <Zap className="w-5 h-5" />, desc: "Capture a snapshot of your staged files permanently.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs push", icon: <Globe className="w-5 h-5" />, desc: "Synchronize local commits with your remote Space.", color: "text-[#ff006e]" },
+    { cmd: "jvcs save-version", icon: <RefreshCw className="w-5 h-5" />, desc: "Streamlined backup: init, add, commit, & push at once.", color: "text-[#ffbe0b]" },
+    { cmd: "jvcs diff", icon: <Search className="w-5 h-5" />, desc: "Compare versions with stage-vs-cwd or commit-vs-stage.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs clone", icon: <RefreshCw className="w-5 h-5" />, desc: "Download any public or private repository from the cloud.", color: "text-[#ff006e]" },
+    { cmd: "jvcs status", icon: <Terminal className="w-5 h-5" />, desc: "Real-time overview of modified and tracked files.", color: "text-[#ffbe0b]" },
+    { cmd: "jvcs log", icon: <History className="w-5 h-5" />, desc: "Browse through your entire versioning history.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs unstage", icon: <Layers className="w-5 h-5" />, desc: "Safely remove files from the staging area.", color: "text-[#ff006e]" },
+    { cmd: "jvcs revert", icon: <History className="w-5 h-5" />, desc: "Roll back your repository to any specific commit.", color: "text-[#ffbe0b]" }
+  ];
+
   return (
-    <div className="w-screen min-h-screen bg-gradient-to-br from-[#0d0221] via-[#1a1629] to-[#0d0221] text-gray-200 overflow-x-hidden">
+    <div className="w-screen min-h-screen bg-[#0d0221] text-gray-200 overflow-x-hidden selection:bg-[#ff006e]/30 selection:text-[#00d9ff]">
+      {/* Dynamic Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff006e] blur-[150px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#00d9ff] blur-[150px] rounded-full"></div>
+      </div>
+
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-[#ff006e]/20 bg-[#0d0221]/90">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <GitBranch className="w-6 h-6 text-[#ff006e]" />
-            <span className="text-xl font-bold bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
-              JVCS
+      <nav className="sticky top-0 z-50 backdrop-blur-2xl border-b border-[#ff006e]/20 bg-[#0d0221]/80">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate("/")}>
+            <div className="p-1.5 bg-gradient-to-br from-[#ff006e] to-[#00d9ff] rounded-lg">
+              <GitBranch className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-2xl font-black bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent tracking-tighter">
+              JVCS SPACE
             </span>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-4 items-center">
             <button
               onClick={() => navigate("/login")}
-              className="px-4 py-2 text-[#00d9ff] hover:text-white transition-colors"
+              className="px-5 py-2 text-sm font-bold text-[#00d9ff] hover:text-[#ff006e] transition-all"
             >
-              Sign In
+              SIGN IN
             </button>
             <button
               onClick={() => navigate("/register")}
-              className="px-4 py-2 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white rounded-lg hover:opacity-90 transition-opacity"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white text-sm font-black rounded-full hover:shadow-[0_0_20px_rgba(255,0,110,0.5)] transition-all"
             >
-              Sign Up
+              JOIN NOW
             </button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center">
-        <div className="space-y-6">
-          <h1 className="text-5xl sm:text-6xl font-bold">
-            <span className="bg-gradient-to-r from-[#ff006e] via-[#00d9ff] to-[#ffbe0b] bg-clip-text text-transparent">
-              JVCS
-            </span>
-            <br />
-            <span className="text-gray-300">Your Personal Version Control System</span>
-          </h1>
-          
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            A lightweight, powerful version control system that works like Git. Track your code changes, manage repositories, and collaborate with a beautiful CLI and web interface.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <button
-              onClick={() => navigate("/register")}
-              className="px-8 py-3 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all flex items-center justify-center gap-2"
-            >
-              Get Started <ArrowRight className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => scrollToSection("how-it-works")}
-              className="px-8 py-3 border border-[#00d9ff]/50 text-[#00d9ff] font-semibold rounded-lg hover:bg-[#00d9ff]/10 transition-all"
-            >
-              Learn More
-            </button>
-          </div>
+      <section className="relative max-w-7xl mx-auto px-6 pt-24 pb-32 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff006e]/10 border border-[#ff006e]/30 mb-8 animate-bounce-slow">
+            <span className="w-2 h-2 rounded-full bg-[#ff006e]"></span>
+            <span className="text-xs font-bold text-[#ff006e] tracking-widest uppercase">The Future of Local Versioning</span>
         </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <h2 className="text-4xl font-bold text-center mb-16">
-          <span className="bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
-            How It Works
+        
+        <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[1]">
+          <span className="text-white">CONTROL YOUR</span>
+          <br />
+          <span className="bg-gradient-to-r from-[#ff006e] via-[#ffbe0b] to-[#00d9ff] bg-clip-text text-transparent">
+            CODE UNIVERSE.
           </span>
-        </h2>
+        </h1>
+        
+        <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-12 font-medium leading-relaxed">
+          JVCS is a high-performance, decentralized version control system designed for developers who demand speed, style, and absolute control over their local history.
+        </p>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Init Command */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-6 hover:shadow-[0_0_30px_rgba(255,0,110,0.15)] transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-[#ff006e]/20 rounded-lg">
-                <GitBranch className="w-6 h-6 text-[#ff006e]" />
-              </div>
-              <h3 className="text-xl font-bold text-[#ff006e]">Initialize</h3>
-            </div>
-            <p className="text-gray-400 mb-4">Create a new repository</p>
-            <div className="relative">
-              <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
-                {`jvcs init my-repo`}
-              </SyntaxHighlighter>
-              <button
-                onClick={() => copyToClipboard("jvcs init my-repo", "init")}
-                className="absolute top-0 right-0 p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
-              >
-                {copied === "init" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Add Command */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#00d9ff]/30 rounded-xl p-6 hover:shadow-[0_0_30px_rgba(0,217,255,0.15)] transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-[#00d9ff]/20 rounded-lg">
-                <Code className="w-6 h-6 text-[#00d9ff]" />
-              </div>
-              <h3 className="text-xl font-bold text-[#00d9ff]">Stage Files</h3>
-            </div>
-            <p className="text-gray-400 mb-4">Add files to staging area</p>
-            <div className="relative">
-              <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
-                {`jvcs add . \njvcs add file.js`}
-              </SyntaxHighlighter>
-              <button
-                onClick={() => copyToClipboard("jvcs add .", "add")}
-                className="absolute top-0 right-0 p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
-              >
-                {copied === "add" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Commit Command */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ffbe0b]/30 rounded-xl p-6 hover:shadow-[0_0_30px_rgba(255,190,11,0.15)] transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-[#ffbe0b]/20 rounded-lg">
-                <Zap className="w-6 h-6 text-[#ffbe0b]" />
-              </div>
-              <h3 className="text-xl font-bold text-[#ffbe0b]">Commit</h3>
-            </div>
-            <p className="text-gray-400 mb-4">Create a checkpoint with message</p>
-            <div className="relative">
-              <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
-                {`jvcs commit "Add new feature"`}
-              </SyntaxHighlighter>
-              <button
-                onClick={() => copyToClipboard(`jvcs commit "Add new feature"`, "commit")}
-                className="absolute top-0 right-0 p-2 hover:bg-[#ffbe0b]/10 rounded transition-colors"
-              >
-                {copied === "commit" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Push Command */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-6 hover:shadow-[0_0_30px_rgba(255,0,110,0.15)] transition-all">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-[#ff006e]/20 rounded-lg">
-                <ArrowRight className="w-6 h-6 text-[#ff006e]" />
-              </div>
-              <h3 className="text-xl font-bold text-[#ff006e]">Push</h3>
-            </div>
-            <p className="text-gray-400 mb-4">Push changes to remote</p>
-            <div className="relative">
-              <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
-                {`jvcs push`}
-              </SyntaxHighlighter>
-              <button
-                onClick={() => copyToClipboard("jvcs push", "push")}
-                className="absolute top-0 right-0 p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
-              >
-                {copied === "push" ? <Check className="w-4 h-4 text-[#ffbe0b]" /> : <Copy className="w-4 h-4 text-gray-400" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* More Commands */}
-        <div className="bg-[#0a0b0f] border border-[#00d9ff]/30 rounded-xl p-8">
-          <h4 className="text-lg font-bold text-[#00d9ff] mb-6">Additional Commands</h4>
-          <div className="grid md:grid-cols-2 gap-6 text-sm font-mono">
-            <div className="space-y-3">
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs save-version</span>
-                <span className="text-gray-500">Auto init/add/commit/push</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs diff</span>
-                <span className="text-gray-500">Compare file changes</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs status</span>
-                <span className="text-gray-500">Check file status</span>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs log</span>
-                <span className="text-gray-500">View commit history</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs revert</span>
-                <span className="text-gray-500">Undo commits</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs clone</span>
-                <span className="text-gray-500">Clone a repository</span>
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <button
+            onClick={() => navigate("/register")}
+            className="group px-10 py-5 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-black rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,0,110,0.3)]"
+          >
+            START DEPLOYING <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </button>
+          <button
+            onClick={() => scrollToSection("commands")}
+            className="px-10 py-5 border-2 border-[#00d9ff]/30 text-[#00d9ff] font-black rounded-2xl hover:bg-[#00d9ff]/5 hover:border-[#00d9ff] transition-all"
+          >
+            VIEW COMMANDS
+          </button>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <h2 className="text-4xl font-bold text-center mb-16">
-          <span className="bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
-            Powerful Features
-          </span>
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Feature 1 */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-8 hover:shadow-[0_0_30px_rgba(255,0,110,0.15)] transition-all">
-            <div className="p-4 bg-[#ff006e]/20 rounded-lg w-fit mb-4">
-              <GitBranch className="w-8 h-8 text-[#ff006e]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-white">Repository Management</h3>
-            <p className="text-gray-400">Create, manage, and organize your repositories with ease. Full control over your code versioning.</p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#00d9ff]/30 rounded-xl p-8 hover:shadow-[0_0_30px_rgba(0,217,255,0.15)] transition-all">
-            <div className="p-4 bg-[#00d9ff]/20 rounded-lg w-fit mb-4">
-              <Code className="w-8 h-8 text-[#00d9ff]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-white">Commit History</h3>
-            <p className="text-gray-400">Track every change with detailed commit history. Browse files at any point in time with full context.</p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ffbe0b]/30 rounded-xl p-8 hover:shadow-[0_0_30px_rgba(255,190,11,0.15)] transition-all">
-            <div className="p-4 bg-[#ffbe0b]/20 rounded-lg w-fit mb-4">
-              <Lock className="w-8 h-8 text-[#ffbe0b]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-white">Public & Private Repos</h3>
-            <p className="text-gray-400">Control your repository visibility. Share public repos or keep them private with secure authentication.</p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-8 hover:shadow-[0_0_30px_rgba(255,0,110,0.15)] transition-all">
-            <div className="p-4 bg-[#ff006e]/20 rounded-lg w-fit mb-4">
-              <Users className="w-8 h-8 text-[#ff006e]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-white">User Profiles</h3>
-            <p className="text-gray-400">Create beautiful profiles, showcase your work, and connect with other developers in the community.</p>
-          </div>
-
-          {/* Feature 5 */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#00d9ff]/30 rounded-xl p-8 hover:shadow-[0_0_30px_rgba(0,217,255,0.15)] transition-all">
-            <div className="p-4 bg-[#00d9ff]/20 rounded-lg w-fit mb-4">
-              <Zap className="w-8 h-8 text-[#00d9ff]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-white">Real-time Sync</h3>
-            <p className="text-gray-400">Instant synchronization between CLI and web interface. Never miss an update, always stay in sync.</p>
-          </div>
-
-          {/* Feature 6 */}
-          <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ffbe0b]/30 rounded-xl p-8 hover:shadow-[0_0_30px_rgba(255,190,11,0.15)] transition-all">
-            <div className="p-4 bg-[#ffbe0b]/20 rounded-lg w-fit mb-4">
-              <ArrowRight className="w-8 h-8 text-[#ffbe0b]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 text-white">Contribution Tracking</h3>
-            <p className="text-gray-400">View your contribution streak after every push you make.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Installation Section */}
-      <section id="installation" className="w-full px-3 sm:px-6 py-16 sm:py-20">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 sm:mb-16">
-            <span className="bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent">
-              Get Started
-            </span>
+      {/* Command Reference Section */}
+      <section id="commands" className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+            COMMAND <span className="text-[#00d9ff]">REFERENCE</span>
           </h2>
-
-          {/* Installation Methods */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
-            {/* Global Installation */}
-            <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ff006e]/30 rounded-xl p-4 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="p-2 sm:p-3 bg-[#ff006e]/20 rounded-lg flex-shrink-0">
-                  <Zap className="w-5 sm:w-6 h-5 sm:h-6 text-[#ff006e]" />
-                </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-[#ff006e]">Global Installation</h3>
-              </div>
-              <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">Install JVCS globally to use it anywhere on your system. Recommended for regular usage.</p>
-              
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Install Command:</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`npm install -g jvcs`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("npm install -g jvcs", "install-global")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
-                    >
-                      {copied === "install-global" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Usage Example:</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`jvcs begin
-jvcs init my-project
-jvcs add .
-jvcs commit "init"
-jvcs push`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("jvcs begin", "usage-global")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#ff006e]/10 rounded transition-colors"
-                    >
-                      {copied === "usage-global" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Local Installation */}
-            <div className="bg-[#1a1629]/90 backdrop-blur border border-[#00d9ff]/30 rounded-xl p-4 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="p-2 sm:p-3 bg-[#00d9ff]/20 rounded-lg flex-shrink-0">
-                  <Code className="w-5 sm:w-6 h-5 sm:h-6 text-[#00d9ff]" />
-                </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-[#00d9ff]">Local Installation</h3>
-              </div>
-              <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">Install JVCS locally in your project. Useful for team projects.</p>
-              
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Install Command:</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`npm install jvcs`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("npm install jvcs", "install-local")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
-                    >
-                      {copied === "install-local" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs sm:text-sm text-[#00d9ff] font-semibold mb-2">Usage (with npx):</p>
-                  <div className="relative bg-[#0a0b0f] border border-[#1f2029] rounded-lg p-2 sm:p-4 overflow-x-auto">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-                      {`npx jvcs begin
-npx jvcs init my-project
-npx jvcs add .
-npx jvcs commit "init"
-npx jvcs push`}
-                    </SyntaxHighlighter>
-                    <button
-                      onClick={() => copyToClipboard("npx jvcs begin", "usage-local")}
-                      className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
-                    >
-                      {copied === "usage-local" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        {/* Setup Steps */}
-        <div className="bg-[#1a1629]/90 backdrop-blur border border-[#ffbe0b]/30 rounded-xl p-4 sm:p-8 mb-8 sm:mb-12">
-          <h3 className="text-2xl font-bold text-[#ffbe0b] mb-8">Quick Setup Guide</h3>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#ff006e] flex items-center justify-center font-bold text-lg">1</div>
-                <div>
-                  <p className="font-semibold text-white mb-1">Create Your Account</p>
-                  <p className="text-sm text-gray-400">Sign up on JVCS web interface to get started</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-[#00d9ff] flex items-center justify-center font-bold text-sm sm:text-lg">2</div>
-                <div>
-                  <p className="font-semibold text-sm sm:text-base text-white mb-1">Choose Installation Method</p>
-                  <p className="text-xs sm:text-sm text-gray-400">Global for standalone use, local for projects</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-[#ffbe0b] flex items-center justify-center font-bold text-sm sm:text-lg">3</div>
-                <div>
-                  <p className="font-semibold text-sm sm:text-base text-white mb-1">Run <span className="text-[#00d9ff]">jvcs begin</span></p>
-                  <p className="text-xs sm:text-sm text-gray-400">Initialize and authenticate with your account</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 sm:gap-4">
-                <div className="flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-[#ff006e] flex items-center justify-center font-bold text-sm sm:text-lg">4</div>
-                <div>
-                  <p className="font-semibold text-sm sm:text-base text-white mb-1">Start Versioning</p>
-                  <p className="text-xs sm:text-sm text-gray-400">Initialize repos and track your code changes</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p className="text-gray-400 max-w-2xl mx-auto uppercase tracking-[0.2em] font-bold text-sm">
+            Master the 12 core operations of JVCS Space
+          </p>
         </div>
 
-        {/* Complete Project Example */}
-        <div className="bg-[#0a0b0f] border border-[#00d9ff]/30 rounded-xl p-4 sm:p-8">
-          <h4 className="text-base sm:text-lg font-bold text-[#00d9ff] mb-4 sm:mb-6">Complete Project Example</h4>
-          <div className="relative bg-[#1a1629]/50 border border-[#1f2029] rounded-lg p-3 sm:p-6 overflow-x-auto">
-            <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", fontSize: "12px" }}>
-              {`jvcs begin
-jvcs init my-project
-jvcs status
-jvcs add .
-jvcs commit "Init: Add files"
-jvcs push
-jvcs log`}
-            </SyntaxHighlighter>
-            <button
-              onClick={() => copyToClipboard(`jvcs begin\njvcs init my-project`, "example")}
-              className="absolute top-2 sm:top-3 right-2 sm:right-3 p-1.5 sm:p-2 hover:bg-[#00d9ff]/10 rounded transition-colors"
+        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {jvcsCommands.map((command, idx) => (
+            <div 
+              key={idx} 
+              className="group bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 rounded-3xl hover:bg-white/[0.08] hover:border-[#00d9ff]/50 transition-all duration-300"
             >
-              {copied === "example" ? <Check className="w-3 sm:w-4 h-3 sm:h-4 text-[#ffbe0b]" /> : <Copy className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />}
-            </button>
-          </div>
+              <div className={`mb-4 transition-transform group-hover:scale-110 ${command.color}`}>
+                {command.icon}
+              </div>
+              <h3 className="text-lg font-black text-white mb-2 group-hover:text-[#00d9ff] transition-colors">
+                {command.cmd}
+              </h3>
+              <p className="text-sm text-gray-500 leading-relaxed font-medium">
+                {command.desc}
+              </p>
+            </div>
+          ))}
         </div>
+      </section>
+
+      {/* How It Works (Visual Flow) */}
+      <section id="how-it-works" className="max-w-7xl mx-auto px-6 py-32 rounded-[4rem] bg-white/[0.02] border border-white/5 shadow-inner">
+        <h2 className="text-4xl font-black text-center mb-20 text-white">
+          THE <span className="text-[#ff006e]">WORKFLOW</span>
+        </h2>
+
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-12">
+                <div className="flex gap-8 group">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#ff006e] to-[#ff006e]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(255,0,110,0.3)]">01</div>
+                    <div>
+                        <h4 className="text-2xl font-black text-white mb-3">Initialize & Track</h4>
+                        <p className="text-gray-400 font-medium italic">"jvcs init && jvcs begin"</p>
+                        <p className="text-gray-500 mt-2">Initialize your Space and link it to your developer profile in seconds.</p>
+                    </div>
+                </div>
+
+                <div className="flex gap-8 group">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#00d9ff] to-[#00d9ff]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(0,217,255,0.3)]">02</div>
+                    <div>
+                        <h4 className="text-2xl font-black text-white mb-3">Stage & Snapshot</h4>
+                        <p className="text-gray-400 font-medium italic">"jvcs add . && jvcs commit \"message\""</p>
+                        <p className="text-gray-500 mt-2">Capture changes with atomic precision. Track everything from lines to binary assets.</p>
+                    </div>
+                </div>
+
+                <div className="flex gap-8 group">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#ffbe0b] to-[#ffbe0b]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(255,190,11,0.3)]">03</div>
+                    <div>
+                        <h4 className="text-2xl font-black text-white mb-3">Synchronize</h4>
+                        <p className="text-gray-400 font-medium italic">"jvcs push"</p>
+                        <p className="text-gray-500 mt-2">Instantly sync your local history to JVCS Space for cloud-based accessibility.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-[#0a0b0f] border border-[#ff006e]/30 rounded-[3rem] p-4 shadow-[0_0_60px_rgba(255,0,110,0.1)] overflow-hidden">
+                <div className="flex bg-white/5 p-4 items-center gap-2 rounded-t-[2rem]">
+                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                    <span className="text-[10px] text-gray-500 font-black ml-4">TERMINAL v2.0</span>
+                </div>
+                <div className="p-8 font-mono text-sm overflow-x-auto min-h-[400px]">
+                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+{`$ jvcs begin
+ Authenticating user... Success!
+ Welcome back, Developer.
+
+$ jvcs init web-app
+ New repository created: web-app
+
+$ jvcs status
+ M index.tsx (Modified)
+ A components/Card.tsx (Added)
+
+$ jvcs save-version
+ Running auto-pipeline...
+ [+] Staging 2 files
+ [+] Creating commit: Auto-Save
+ [+] Pushing to cloud
+ Done! Space updated.`}
+                    </SyntaxHighlighter>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section id="features" className="max-w-7xl mx-auto px-6 py-32">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#ff006e]/40 transition-all shadow-2xl">
+            <div className="bg-[#ff006e]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#ff006e] transition-all">
+              <Zap className="w-8 h-8 text-[#ff006e] group-hover:text-white" />
+            </div>
+            <h3 className="text-2xl font-black text-white mb-4">Warp-Speed Push</h3>
+            <p className="text-gray-400 font-medium leading-relaxed">Compressed binary transfers ensure your code reaches the space station in milliseconds.</p>
+          </div>
+
+          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#00d9ff]/40 transition-all shadow-2xl">
+            <div className="bg-[#00d9ff]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#00d9ff] transition-all">
+              <Lock className="w-8 h-8 text-[#00d9ff] group-hover:text-white" />
+            </div>
+            <h3 className="text-2xl font-black text-white mb-4">Zero-Trust Security</h3>
+            <p className="text-gray-400 font-medium leading-relaxed">End-to-end encrypted repositories ensure your intellectual property stays yours.</p>
+          </div>
+
+          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#ffbe0b]/40 transition-all shadow-2xl">
+            <div className="bg-[#ffbe0b]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#ffbe0b] transition-all">
+              <History className="w-8 h-8 text-[#ffbe0b] group-hover:text-white" />
+            </div>
+            <h3 className="text-2xl font-black text-white mb-4">Deep History Log</h3>
+            <p className="text-gray-400 font-medium leading-relaxed">Traverse through time with complete lineage tracking and atomic diffing visualizations.</p>
+          </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="w-full px-3 sm:px-6 py-12 sm:py-20">
-        <div className="max-w-4xl mx-auto bg-[#1a1629]/90 backdrop-blur border border-gradient-to-r from-[#ff006e]/50 to-[#00d9ff]/50 rounded-2xl p-6 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Ready to Get Started?</h2>
-          <p className="text-sm sm:text-base text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto">
-            Join developers using JVCS. Sign up now and start managing your code with our lightweight version control system.
-          </p>
+      <section className="max-w-7xl mx-auto px-6 py-20 pb-40">
+        <div className="relative group bg-gradient-to-r from-[#ff006e]/10 to-[#00d9ff]/10 border border-white/10 rounded-[4rem] p-20 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#ff006e]/5 to-[#00d9ff]/5 group-hover:scale-110 transition-transform duration-700"></div>
+          <h2 className="text-5xl font-black text-white mb-8 relative z-10">THE SPACE IS WAITING.</h2>
+          <p className="text-gray-400 max-w-xl mx-auto mb-12 text-lg relative z-10 font-medium italic">"Join 5,000+ developers tracking their progress with JVCS."</p>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
             <button
               onClick={() => navigate("/register")}
-              className="px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all text-sm sm:text-base"
+              className="px-12 py-5 bg-white text-[#0d0221] font-black rounded-2xl hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)]"
             >
-              Sign Up Now
+              CREATE FREE ACCOUNT
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="px-6 sm:px-8 py-2 sm:py-3 border border-[#00d9ff]/50 text-[#00d9ff] font-semibold rounded-lg hover:bg-[#00d9ff]/10 transition-all text-sm sm:text-base"
+              className="px-12 py-5 border border-white/20 text-white font-black rounded-2xl hover:bg-white/10 transition-all"
             >
-              Sign In
+              LOGIN TO SPACE
             </button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#ff006e]/20 bg-[#0d0221]/50 backdrop-blur">
-        <div className="w-full px-3 sm:px-6 py-8 sm:py-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <GitBranch className="w-5 h-5 text-[#ff006e]" />
-                  <span className="font-bold text-[#ff006e]">JVCS</span>
-                </div>
-                <p className="text-xs sm:text-sm text-gray-400">Personal Version Control System for developers.</p>
+      <footer className="border-t border-white/5 bg-[#0a0b0f]/80 backdrop-blur-2xl py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-16">
+            <div className="col-span-2">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-1 px-3 bg-gradient-to-br from-[#ff006e] to-[#00d9ff] rounded-lg text-white font-black text-xl italic">J</div>
+                <span className="text-2xl font-black text-white">JVCS SPACE</span>
               </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#00d9ff] transition-colors">How It Works</button></li>
-                  <li><button onClick={() => scrollToSection("features")} className="hover:text-[#00d9ff] transition-colors">Features</button></li>
-                  <li><button onClick={() => scrollToSection("installation")} className="hover:text-[#00d9ff] transition-colors">Installation</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Resources</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><button onClick={() => navigate("/documentation")} className="hover:text-[#00d9ff] transition-colors">Documentation</button></li>
-                  <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
-                  <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
-                </ul>
+              <p className="text-gray-500 max-w-sm mb-8 leading-relaxed font-medium">
+                The ultimate version control orbit for modern software architects. Fast, safe, and visually elite.
+              </p>
+              <div className="flex gap-4">
+                  {/* Social placeholders could go here */}
               </div>
             </div>
 
-            <div className="border-t border-[#ff006e]/20 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-500">
-              <p>Built with ❤️ for developers by Jagdish Pathakji.</p>
+            <div>
+              <h4 className="text-white font-black text-lg mb-8 uppercase tracking-widest">Orbit</h4>
+              <ul className="space-y-4 text-gray-500 font-bold">
+                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-white transition-colors">WORKFLOW</button></li>
+                <li><button onClick={() => scrollToSection("features")} className="hover:text-white transition-colors">SECURITY</button></li>
+                <li><button onClick={() => scrollToSection("commands")} className="hover:text-white transition-colors">COMMANDS</button></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-black text-lg mb-8 uppercase tracking-widest">Resources</h4>
+              <ul className="space-y-4 text-gray-500 font-bold">
+                <li><button onClick={() => navigate("/documentation")} className="hover:text-[#00d9ff] transition-colors">DOCUMENTATION</button></li>
+                <li><a href="https://github.com/JagdishPathakji" target="_blank" className="hover:text-[#ff006e] transition-colors">GITHUB</a></li>
+                <li><a href="#" className="hover:text-[#ffbe0b] transition-colors">SUPPORT</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-white/5 mt-20 pt-10 text-center flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-gray-600 font-black text-sm tracking-widest">© 2026 JVCS SPACE. ENGINEERED BY JAGDISH PATHAKJI.</p>
+            <div className="flex gap-8 text-xs font-black text-gray-700 tracking-[0.3em]">
+                <a href="#">PRIVACY</a>
+                <a href="#">TERMS</a>
+                <a href="#">COOKIES</a>
             </div>
           </div>
         </div>
