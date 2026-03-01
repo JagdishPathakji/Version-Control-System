@@ -73,7 +73,6 @@ export default function OwnRepo({
   const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
   
-  // README States
   const [isEditingReadme, setIsEditingReadme] = useState(false);
   const [editedReadme, setEditedReadme] = useState("");
 
@@ -264,7 +263,7 @@ export default function OwnRepo({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0d0221] via-[#1a1629] to-[#0d0221] text-gray-200 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0d0221] via-[#1a1629] to-[#0d0221] text-gray-200 flex flex-col relative">
       <Navbar username={username} setIsAuthenticated={setIsAuthenticated} navigate={navigate} />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-10 space-y-10">
         
@@ -394,24 +393,30 @@ export default function OwnRepo({
             </div>
           )}
         </div>
+      </main>
 
-        {/* Modal Overlay */}
-        {showModal && selectedFile && (
-          <div className="fixed inset-0 z-[999999] flex flex-col bg-[#0b0c10] text-white w-screen h-screen">
-            <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 bg-[#0f1114]">
-              <h3 className="text-[#00d9ff] font-black text-xs uppercase tracking-widest truncate">{selectedFile.name}</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-white text-lg">✕</button>
-            </div>
-            <div className="flex-1 overflow-auto p-8">
-              <div className="border border-white/10 bg-[#0a0b0f] p-8 no-scrollbar">
-                <SyntaxHighlighter language={selectedFile.name.split(".").pop() || "text"} style={oneDark} showLineNumbers={true} wrapLongLines={true} customStyle={{ background: "transparent", margin: 0, fontSize: "0.85rem" }}>
-                  {selectedFile.content || "No content available."}
-                </SyntaxHighlighter>
-              </div>
+      {/* FIXED FILE VIEW MODAL (Outside Main to avoid gap) */}
+      {showModal && selectedFile && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 z-[99999] flex flex-col bg-[#0b0c10] text-white w-full h-full">
+          <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 bg-[#0f1114]">
+            <h3 className="text-[#00d9ff] font-black text-xs uppercase tracking-widest truncate">{selectedFile.name}</h3>
+            <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-white text-lg">✕</button>
+          </div>
+          <div className="flex-1 overflow-auto p-8">
+            <div className="border border-white/10 bg-[#0a0b0f] p-8">
+              <SyntaxHighlighter 
+                language={selectedFile.name.split(".").pop() || "text"} 
+                style={oneDark} 
+                showLineNumbers={true} 
+                wrapLongLines={true} 
+                customStyle={{ background: "transparent", margin: 0, fontSize: "0.85rem" }}
+              >
+                {selectedFile.content || "No content available."}
+              </SyntaxHighlighter>
             </div>
           </div>
-        )}
-      </main>
+        </div>
+      )}
     </div>
   );
 }
