@@ -7,7 +7,13 @@ import {
   GitBranch,
   Star,
   Globe,
+  FileText,
+  Settings,
 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface Repository {
   _id: string;
@@ -26,6 +32,7 @@ interface PublicUserProfile {
   followedUser: number;
   followingUser: number;
   description: string;
+  readme: string;
 }
 
 export default function PublicProfile({
@@ -148,12 +155,22 @@ export default function PublicProfile({
                 {profile.description || "No bio available."}
               </p>
 
-              <button
-                className="mt-5 px-5 py-2 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] hover:from-[#ff1a7e] hover:to-[#1ae5ff] text-white font-semibold transition-all shadow-lg shadow-[#ff006e]/40 active:scale-95"
-                onClick={() => addAFollower(profile.username)}
-              >
-                {followstatus ? "Following" : "Follow"}
-              </button>
+              <div className="flex gap-3 mt-5">
+                <button
+                  className="px-5 py-2 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] hover:from-[#ff1a7e] hover:to-[#1ae5ff] text-white font-semibold transition-all shadow-lg shadow-[#ff006e]/40 active:scale-95 flex-1"
+                  onClick={() => addAFollower(profile.username)}
+                >
+                  {followstatus ? "Following" : "Follow"}
+                </button>
+                {username === localStorage.getItem("username") && (
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="px-5 py-2 bg-[#1a1629] border border-[#ff006e]/30 text-gray-300 hover:text-white hover:border-[#ff006e] transition-all flex items-center gap-2"
+                  >
+                    <Settings className="w-4 h-4" /> Manage Profile
+                  </button>
+                )}
+              </div>
 
               <div className="grid grid-cols-2 gap-4 mt-6">
                 <div className="flex flex-col items-center justify-center text-center border border-[#ff006e]/20 px-4 py-4">
@@ -175,6 +192,44 @@ export default function PublicProfile({
             </div>
           </div>
         </div>
+
+        {/* ---- PROFILE README SECTION ---- */}
+        {profile.readme && (
+          <div className="bg-[#1a1629]/90 backdrop-blur-xl border border-[#ff006e]/30 shadow-2xl overflow-hidden transition-all duration-300">
+            <div className="px-6 py-4 border-b border-[#ff006e]/20 flex items-center gap-2 text-sm font-mono text-gray-400 bg-[#0d0221]/40">
+              <FileText className="w-4 h-4 text-[#ff006e]" />
+              <span>{profile.username} / README.md</span>
+            </div>
+            <div className="p-6">
+              <div className="prose prose-invert max-w-none text-gray-300 prose-headings:text-[#00d9ff] prose-a:text-[#ff006e] prose-strong:text-[#ffbe0b] prose-code:text-[#ff006e] prose-pre:bg-[#0d0221]/80">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code({ node, inline, className, children, ...props }: any) {
+                      const match = /language-(\w+)/.exec(className || "");
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          style={oneDark}
+                          language={match[1]}
+                          PreTag="div"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {profile.readme}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ---- PUBLIC REPOS ---- */}
         <div className="bg-[#1a1629]/90 backdrop-blur-xl border border-[#00d9ff]/30 shadow-2xl transition-all duration-300">
@@ -208,7 +263,7 @@ export default function PublicProfile({
                   <div className="flex justify-between items-center text-xs text-gray-500 mt-3">
                     <div className="flex items-center gap-3">
                       <span className="flex items-center gap-1">
-                        <Star className="w-3 h-3 text-[#ffbe0b]" /> {repo.starred.length}
+                        <Star className="w-3 h-3 text-[#ffbe0b]" /> {typeof repo.starred === 'number' ? repo.starred : (Array.isArray(repo.starred) ? (repo.starred as any).length : 0)}
                       </span>
                       <span>
                         Updated on {new Date(repo.updatedAt).toLocaleDateString()}

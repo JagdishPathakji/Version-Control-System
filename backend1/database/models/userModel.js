@@ -52,8 +52,12 @@ const userSchema = new Schema({
     description: {
         type: String,
         default: "My Description"
+    },
+    readme: {
+        type: String,
+        default: ""
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 const User = mongoose.model("User", userSchema)
 module.exports = User
