@@ -498,8 +498,9 @@ const deleteRepo = async (req, res) => {
 const updateRepo = async (req, res) => {
     try {
         const { reponame } = req.params;
-        const { description } = req.body;
+        const { description, readme } = req.body; // Accept readme
         const token = req.cookies.token;
+        
         if (!token)
             return res.status(401).send({ status: false, message: "Unauthorized: Token not found" });
 
@@ -509,21 +510,32 @@ const updateRepo = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).send({ status: false, message: "User not found" });
 
+        // Build update object dynamically
+        const updateData = {};
+        if (description !== undefined) updateData.description = description;
+        if (readme !== undefined) updateData.readme = readme;
+
         const repo = await Repository.findOneAndUpdate(
             { name: reponame, owner: user._id },
-            { description: description },
+            updateData,
             { new: true }
         );
 
         if (!repo) return res.status(404).send({ status: false, message: "Repository not found or not owned by you" });
 
-        return res.status(200).send({ status: true, message: "Repository updated successfully", description: repo.description });
+        return res.status(200).send({ 
+            status: true, 
+            message: "Repository updated successfully", 
+            description: repo.description,
+            readme: repo.readme // Return updated readme
+        });
     }
     catch (error) {
         console.error("Update repo error:", error);
         res.status(500).send({ status: false, message: "Internal server error in repository update" });
     }
 }
+
 
 const updateVisbility = async (req, res) => {
 
