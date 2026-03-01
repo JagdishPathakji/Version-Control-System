@@ -11,6 +11,9 @@ import {
   Folder,
   ChevronRight,
   ChevronDown,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -63,6 +66,8 @@ export default function OwnRepo({
   const [showModal, setShowModal] = useState(false);
   const [isStarred, setIsStarred] = useState<boolean | null>(null);
   const [visibility, setVisibility] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
 
   useEffect(() => {
     const fetchRepo = async () => {
@@ -127,6 +132,40 @@ export default function OwnRepo({
     } catch (error: any) {
       alert(error?.message || "Error while starring repo");
     }
+  };
+
+  const handleSaveDescription = async () => {
+    try {
+      const response = await fetch(`https://version-control-system-mebn.onrender.com/updateRepo/${repoName}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: editedDescription }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        if (repo) {
+          setRepo({ ...repo, description: editedDescription });
+        }
+        setIsEditing(false);
+      } else {
+        alert(data.message || "Failed to update repository description");
+      }
+    } catch (error) {
+      console.error("Error updating repository description:", error);
+      alert("An error occurred while updating the repository description");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedDescription(repo?.description || "");
+  };
+
+  const startEditing = () => {
+    setEditedDescription(repo?.description || "");
+    setIsEditing(true);
   };
 
   // lock/unlock body scroll when modal opens/closes
@@ -250,9 +289,46 @@ export default function OwnRepo({
                 {repo.name}
               </h1>
             </div>
-            <p className="text-gray-400 mt-4">
-              {repo.description || "No description provided."}
-            </p>
+            <div className="relative group mt-4">
+              {isEditing ? (
+                <div className="space-y-3">
+                  <textarea
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    className="w-full bg-[#0d0221]/50 border border-[#ff006e]/30 p-3 rounded text-sm text-gray-200 focus:outline-none focus:border-[#ff006e] transition-all"
+                    rows={3}
+                    placeholder="Describe this repository..."
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleSaveDescription}
+                      className="flex items-center gap-1 px-3 py-1 bg-[#ff006e] text-white text-xs font-semibold rounded hover:bg-[#ff006e]/80 transition-all shadow-lg shadow-[#ff006e]/20"
+                    >
+                      <Check className="w-3 h-3" /> Save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="flex items-center gap-1 px-3 py-1 bg-gray-700 text-white text-xs font-semibold rounded hover:bg-gray-600 transition-all"
+                    >
+                      <X className="w-3 h-3" /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2">
+                  <p className="text-gray-400 text-sm leading-relaxed flex-1">
+                    {repo.description || "No description provided."}
+                  </p>
+                  <button
+                    onClick={startEditing}
+                    className="p-1.5 text-gray-500 hover:text-[#ff006e] transition-colors"
+                    title="Edit repository description"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Star + Visibility */}
@@ -321,42 +397,42 @@ export default function OwnRepo({
 
         {/* File Preview Modal */}
         {showModal && selectedFile && (
-        <div
-          className="fixed inset-0 z-[999999] flex flex-col bg-[#0b0c10] text-white overflow-hidden w-screen h-screen m-0 p-0"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: "100vw",
-            height: "100vh",
-            margin: 0,
-            padding: 0,
-            zIndex: 999999,
-          }}
-          aria-modal="true"
-          role="dialog"
-        >
-          {/* Header */}
-          <div className="sticky top-0 flex justify-between items-center px-4 sm:px-6 py-3 border-b border-[#1f2029] bg-[#0f1114]/95 backdrop-blur-sm">
-            <h3 className="text-[#00d9ff] font-semibold text-sm sm:text-base truncate max-w-[80%]">
-              {selectedFile.name}
-            </h3>
-            <button
-              onClick={() => setShowModal(false)}
-              className="text-gray-400 hover:text-gray-200 text-xl"
-              aria-label="Close file preview"
-              title="Close"
-            >
-              ✕
-            </button>
-          </div>
+          <div
+            className="fixed inset-0 z-[999999] flex flex-col bg-[#0b0c10] text-white overflow-hidden w-screen h-screen m-0 p-0"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: "100vw",
+              height: "100vh",
+              margin: 0,
+              padding: 0,
+              zIndex: 999999,
+            }}
+            aria-modal="true"
+            role="dialog"
+          >
+            {/* Header */}
+            <div className="sticky top-0 flex justify-between items-center px-4 sm:px-6 py-3 border-b border-[#1f2029] bg-[#0f1114]/95 backdrop-blur-sm">
+              <h3 className="text-[#00d9ff] font-semibold text-sm sm:text-base truncate max-w-[80%]">
+                {selectedFile.name}
+              </h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-gray-200 text-xl"
+                aria-label="Close file preview"
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
 
-          {/* File Content */}
-          <div className="flex-1 overflow-auto p-3 sm:p-6">
-            <style>
-              {`
+            {/* File Content */}
+            <div className="flex-1 overflow-auto p-3 sm:p-6">
+              <style>
+                {`
                 pre, code {
                   white-space: pre-wrap !important;
                   word-wrap: break-word !important;
@@ -368,30 +444,30 @@ export default function OwnRepo({
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
               `}
-            </style>
+              </style>
 
-            <div className="rounded-xl border border-[#1f2029] bg-[#0a0b0f] shadow-[0_0_24px_rgba(0,255,213,0.12)] p-3 sm:p-5 overflow-auto no-scrollbar">
-              <SyntaxHighlighter
-                language={selectedFile.name.split(".").pop() || "text"}
-                style={oneDark}
-                showLineNumbers={true}
-                wrapLongLines={true}
-                customStyle={{
-                  background: "transparent",
-                  margin: 0,
-                  padding: 0,
-                  fontSize: "0.85rem",
-                  width: "100%",
-                  overflowX: "hidden",
-                  wordBreak: "break-word",
-                }}
-              >
-                {selectedFile.content || "No content"}
-              </SyntaxHighlighter>
+              <div className="rounded-xl border border-[#1f2029] bg-[#0a0b0f] shadow-[0_0_24px_rgba(0,255,213,0.12)] p-3 sm:p-5 overflow-auto no-scrollbar">
+                <SyntaxHighlighter
+                  language={selectedFile.name.split(".").pop() || "text"}
+                  style={oneDark}
+                  showLineNumbers={true}
+                  wrapLongLines={true}
+                  customStyle={{
+                    background: "transparent",
+                    margin: 0,
+                    padding: 0,
+                    fontSize: "0.85rem",
+                    width: "100%",
+                    overflowX: "hidden",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {selectedFile.content || "No content"}
+                </SyntaxHighlighter>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
 
       </main>

@@ -10,6 +10,9 @@ import {
   Star,
   Lock,
   Globe,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 
 interface Repository {
@@ -45,6 +48,8 @@ export default function Profile({
   const [repos, setRepos] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -90,7 +95,41 @@ export default function Profile({
 
     fetchProfileData();
     fetchStreak();
-  }, []);
+  }, [username]);
+
+  const handleSaveDescription = async () => {
+    try {
+      const response = await fetch("https://version-control-system-mebn.onrender.com/updateProfile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: editedDescription }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        if (profile) {
+          setProfile({ ...profile, description: editedDescription });
+        }
+        setIsEditing(false);
+      } else {
+        alert(data.message || "Failed to update description");
+      }
+    } catch (error) {
+      console.error("Error updating description:", error);
+      alert("An error occurred while updating the description");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedDescription(profile?.description || "");
+  };
+
+  const startEditing = () => {
+    setEditedDescription(profile?.description || "");
+    setIsEditing(true);
+  };
 
   if (loading)
     return (
@@ -141,10 +180,47 @@ export default function Profile({
                 <span>{profile.email}</span>
               </div>
 
-              <p className="text-gray-400 italic text-sm leading-relaxed">
-                {profile.description ||
-                  "No bio provided yet. You can add one to tell the world who you are."}
-              </p>
+              <div className="relative group">
+                {isEditing ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={editedDescription}
+                      onChange={(e) => setEditedDescription(e.target.value)}
+                      className="w-full bg-[#0d0221]/50 border border-[#ff006e]/30 p-3 rounded text-sm text-gray-200 focus:outline-none focus:border-[#ff006e] transition-all"
+                      rows={3}
+                      placeholder="Tell the world who you are..."
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={handleSaveDescription}
+                        className="flex items-center gap-1 px-3 py-1 bg-[#ff006e] text-white text-xs font-semibold rounded hover:bg-[#ff006e]/80 transition-all shadow-lg shadow-[#ff006e]/20"
+                      >
+                        <Check className="w-3 h-3" /> Save
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className="flex items-center gap-1 px-3 py-1 bg-gray-700 text-white text-xs font-semibold rounded hover:bg-gray-600 transition-all"
+                      >
+                        <X className="w-3 h-3" /> Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2">
+                    <p className="text-gray-400 italic text-sm leading-relaxed flex-1">
+                      {profile.description ||
+                        "No bio provided yet. You can add one to tell the world who you are."}
+                    </p>
+                    <button
+                      onClick={startEditing}
+                      className="p-1.5 text-gray-500 hover:text-[#ff006e] transition-colors"
+                      title="Edit description"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="flex flex-col items-center justify-center text-center border border-[#ff006e]/20 px-4 py-4">

@@ -12,7 +12,7 @@ const getStreak = async (req,res)=> {
         const {username} = req.params
 
         const token = req.cookies.token
-        if (!token) 
+        if (!token)
         return res.status(401).send({status:"login",message:"Unauthorized: Token not found, Please Login again"});
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
@@ -31,7 +31,7 @@ const getStreak = async (req,res)=> {
         for(const commit of allCommits) {
             const date = new Date(commit.createdAt).toISOString().split("T")[0]
             dailyCommits[date] = (dailyCommits[date] || 0 ) + 1
-        }   
+        }
 
         console.log(dailyCommits)
 
@@ -48,7 +48,7 @@ const follow = async (req,res)=> {
         const { username } = req.params
 
         const token = req.cookies.token
-        if (!token) 
+        if (!token)
         return res.status(401).send({status:"login",message:"Unauthorized: Token not found, Please Login again"});
 
         if(!username)
@@ -62,7 +62,7 @@ const follow = async (req,res)=> {
 
         const realUser = await User.findOne({username})
         if (!realUser)
-        return res.status(404).send({ status: false, message: "Target user not found" });
+            return res.status(404).send({ status: false, message: "Target user not found" });
 
         const followers = realUser.followingUser || []
         const following = user.followedUser || []
@@ -91,7 +91,7 @@ const getAllUsers = async (req,res)=> {
 
     try {
         const token = req.cookies.token
-        if (!token) 
+        if (!token)
         return res.status(401).send({status:"login",message:"Unauthorized: Token not found, Please Login again"});
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
@@ -110,7 +110,7 @@ const getAllUsers = async (req,res)=> {
     catch(error) {
         res.status(500).send({status:"login",message:"Internal server error occured in getting all users"})
     }
-} 
+}
 
 const signup = async (req, res) => {
     try {
@@ -118,21 +118,21 @@ const signup = async (req, res) => {
         const requiredFields = ["username", "email", "password"];
 
         console.log("Inside signup 1")
-        
+
         // Check required fields
         if(!requiredFields.every((f) => userData[f])) {
             return res.status(400).send({ status: false, message: "Please fill all required fields" });
         }
 
         console.log("Inside signup 2")
-        
+
         // Validate email & password
         if(!validator.isEmail(userData.email))
-        return res.status(422).send({ status: false, message: "Email format is invalid" });
+            return res.status(422).send({ status: false, message: "Email format is invalid" });
         const email = req.body.email;
 
         console.log("Inside signup 3")
-        
+
         if(!validator.isStrongPassword(userData.password, {
             minLength: 8,
             maxLength: 20,
@@ -141,21 +141,21 @@ const signup = async (req, res) => {
             minNumbers: 1,
             minSymbols: 1,
         }))
-        return res.status(422).send({ status: false, message: "Password is weak" });
+            return res.status(422).send({ status: false, message: "Password is weak" });
 
         console.log("Inside signup 4")
-        
+
         // Check email or username duplicate
         const existing = await User.findOne({
             $or: [{ email: userData.email }, { username: userData.username }],
         });
 
         console.log("Inside signup 5")
-        
+
         if(existing) {
 
             console.log("Inside signup 6")
-            
+
             return res.status(409).send({
                 status: false,
                 message: "This username or email already exists. Please select a different credentials or login if it is yours.",
@@ -184,12 +184,12 @@ const signup = async (req, res) => {
                 await redisClient.set(`${email}`,count+1, {EX: ttl})
             }
         }
-        
+
         // Send OTP email
         const emailSent = await sendEmail(userData);
         if(!emailSent) {
             console.log("Inside signup 9")
-            
+
             return res.status(422).send({
                 status: false,
                 message: `Failed to send OTP to ${userData.email}`,
@@ -197,7 +197,7 @@ const signup = async (req, res) => {
         }
 
         console.log("Inside signup 10")
-        
+
         return res.status(200).send({
             status: true,
             message: "OTP sent to your email for verification",
@@ -216,9 +216,9 @@ const signup = async (req, res) => {
 const verifyEmail = async (req,res)=> {
 
     try {
-        
+
         let userData = req.body
-        
+
         const requiredFields = ["email","otp"]
 
         // check if all the required fields are present or not
@@ -247,14 +247,14 @@ const verifyEmail = async (req,res)=> {
 
         const userDataRaw = await redisClient.get(`user:${userData.email}`);
         if (!userDataRaw) return res.status(404).send({status:"user",message:"User data not found. Please signup again"});
-        
+
         const data = JSON.parse(userDataRaw)
         userData = {...userData,...data}
         await User.create(userData);
-        
+
         await redisClient.del(`otp:${userData.email}`);
         await redisClient.del(`user:${userData.email}`);
-        
+
         let token = null
         if(req.body.cli === true) {
             token =  jwt.sign({email: req.body.email}, process.env.JWT_SECRET_KEY)
@@ -270,7 +270,7 @@ const verifyEmail = async (req,res)=> {
 }
 
 const login = async (req,res)=> {
-    
+
     try {
 
         console.log("Inside Login")
@@ -304,11 +304,11 @@ const login = async (req,res)=> {
             token = jwt.sign({email: req.body.email}, process.env.JWT_SECRET_KEY ,{expiresIn:"1d"})
             res.cookie("token",token, {
                 httpOnly: true,
-                secure: true,    
-                sameSite: "none", 
+                secure: true,
+                sameSite: "none",
                 maxAge: 24 * 60 * 60 * 1000, // 1 day
             })
-    
+
             res.status(200).send({status:true,message:"User Login Successfull"})
         }
     }
@@ -329,7 +329,7 @@ const logout = async (req,res)=> {
         });
 
         return res.status(200).send({status:true,message:"Logout successfull"})
-    }   
+    }
     catch(errror) {
         return res.status(500).send({status:false,message:"Internal server error in logout"})
     }
@@ -340,13 +340,13 @@ const verifyToken = async (req,res)=> {
     try {
 
         const token = req.cookies.token
-        if (!token) 
+        if (!token)
         return res.status(401).send({status:false,message:"Unauthorized: Token not found, Please Login again"});
 
         let decoded
         try {
-           decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        } 
+            decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        }
         catch (err) {
             return res.status(401).json({
                 status: false,
@@ -359,64 +359,64 @@ const verifyToken = async (req,res)=> {
         if (!user) return res.status(404).send({message:"User not found",status:false});
 
         return res.status(200).send({message:"authenicated user",status:true})
-    }   
+    }
     catch(error) {
         return res.status(500).send({message:"Internal server error during token verification", staus:false})
     }
 }
 
 const getUserProfile = async (req, res) => {
-  try {
-    const token = req.cookies.token;
-    if (!token)
-      return res
-        .status(401)
-        .send({
-          status: "login",
-          message: "Unauthorized: Token not found, Please Login again",
+    try {
+        const token = req.cookies.token;
+        if (!token)
+            return res
+                .status(401)
+                .send({
+                    status: "login",
+                    message: "Unauthorized: Token not found, Please Login again",
+                });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        console.log(decoded);
+        const decodedemail = decoded.email;
+
+        const user = await User.findOne({ email: decodedemail });
+        if (!user)
+            return res
+                .status(401)
+                .send({ status: "email", message: "User not found" });
+
+        const email = req.params.email;
+        if (!email)
+            return res
+                .status(400)
+                .send({
+                    status: "login",
+                    message: "Please provide email to fetch profile",
+                });
+
+        const userData = await User.findOne({ email: email }).select("-password");
+        if (!userData)
+            return res
+                .status(401)
+                .send({ status: "login", message: "No such user exists" });
+
+        userData.status = true;
+        res.status(200).json(userData);
+    } catch (error) {
+        res.status(500).send({
+            status: "login",
+            message: "Internal Server error in getting user profile by email",
         });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log(decoded);
-    const decodedemail = decoded.email;
-
-    const user = await User.findOne({ email: decodedemail });
-    if (!user)
-      return res
-        .status(401)
-        .send({ status: "email", message: "User not found" });
-
-    const email = req.params.email;
-    if (!email)
-      return res
-        .status(400)
-        .send({
-          status: "login",
-          message: "Please provide email to fetch profile",
-        });
-
-    const userData = await User.findOne({ email: email }).select("-password");
-    if (!userData)
-      return res
-        .status(401)
-        .send({ status: "login", message: "No such user exists" });
-
-    userData.status = true;
-    res.status(200).json(userData);
-  } catch (error) {
-    res.status(500).send({
-      status: "login",
-      message: "Internal Server error in getting user profile by email",
-    });
-  }
+    }
 }
 
 
 const getOwnProfile = async (req,res)=> {
-   
+
     try {
         const token = req.cookies.token
-        if (!token) 
+        if (!token)
         return res.status(401).send({status:"login",message:"Unauthorized: Token not found, Please Login again"});
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
@@ -426,7 +426,7 @@ const getOwnProfile = async (req,res)=> {
         if (!user) return res.status(404).send({status:"email",message:"User not found"});
 
         const repositories = await Repository.find({ owner: user._id }).select("_id name description visibility starred createdAt updatedAt")
-        .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 });
 
         const profile = {
             _id: user._id,
@@ -453,12 +453,12 @@ const getOwnProfile = async (req,res)=> {
 }
 
 const getPublicProfile = async (req,res)=> {
-   
+
     try {
         const { username } = req.params;
 
         const token = req.cookies.token
-        if (!token) 
+        if (!token)
         return res.status(401).send({status:"login",message:"Unauthorized: Token not found, Please Login again"});
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
@@ -469,14 +469,14 @@ const getPublicProfile = async (req,res)=> {
 
         const targetUser = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } }); // ignores case
         if (!targetUser)
-        return res.status(404).send({ status: "username", message: "Requested user not found" });
+            return res.status(404).send({ status: "username", message: "Requested user not found" });
 
         let followstatus = false
-         if (targetUser.followingUser && targetUser.followingUser.map((id) => id.toString()).includes(user._id.toString())) 
-        followstatus = true;
-        
+        if (targetUser.followingUser && targetUser.followingUser.map((id) => id.toString()).includes(user._id.toString()))
+            followstatus = true;
+
         const repositories = await Repository.find({ owner: targetUser._id, visibility: "public"}).select("_id name description visibility starred createdAt updatedAt")
-        .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 });
 
         const profile = {
             _id: targetUser._id,
@@ -502,21 +502,38 @@ const getPublicProfile = async (req,res)=> {
     }
 }
 
-const updateProfile = (req,res)=> {
+const updateProfile = async (req, res) => {
     try {
-        res.status(200).send("Update successful")
-    }   
-    catch(error) {
-        res.status(500).send('Internal server error in profile updation')
+        const { description } = req.body;
+        const token = req.cookies.token;
+        if (!token)
+            return res.status(401).send({ status: false, message: "Unauthorized: Token not found" });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const email = decoded.email;
+
+        const user = await User.findOneAndUpdate(
+            { email: email },
+            { description: description },
+            { new: true }
+        );
+
+        if (!user) return res.status(404).send({ status: false, message: "User not found" });
+
+        return res.status(200).send({ status: true, message: "Profile updated successfully", description: user.description });
+    }
+    catch (error) {
+        console.error("Update profile error:", error);
+        res.status(500).send({ status: false, message: "Internal server error in profile updation" });
     }
 }
 
-const deleteProfile = async (req,res)=> {
+const deleteProfile = async (req, res) => {
     try {
 
         const token = req.cookies.token
-        if (!token) 
-        return res.status(401).send("Unauthorized: Token not found, Please Login again");
+        if (!token)
+            return res.status(401).send("Unauthorized: Token not found, Please Login again");
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
         console.log(decoded)
@@ -533,8 +550,8 @@ const deleteProfile = async (req,res)=> {
         res.clearCookie("token");
 
         return res.status(200).send("User and all linked repositories deleted successfully");
-    }   
-    catch(error) {
+    }
+    catch (error) {
         res.status(500).send("Internal server error in deleting profile")
     }
 }
