@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Code, GitBranch, Users, Lock, Zap, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function LandingPage() {
@@ -184,30 +183,30 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-6 text-sm font-mono">
             <div className="space-y-3">
               <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs log</span>
-                <span className="text-gray-500">View commit history</span>
+                <span className="text-[#ffbe0b]">jvcs save-version</span>
+                <span className="text-gray-500">Auto init/add/commit/push</span>
+              </div>
+              <div className="flex justify-between text-gray-300">
+                <span className="text-[#ffbe0b]">jvcs diff</span>
+                <span className="text-gray-500">Compare file changes</span>
               </div>
               <div className="flex justify-between text-gray-300">
                 <span className="text-[#ffbe0b]">jvcs status</span>
                 <span className="text-gray-500">Check file status</span>
               </div>
-              <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs unstage</span>
-                <span className="text-gray-500">Remove from staging</span>
-              </div>
             </div>
             <div className="space-y-3">
               <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs clone</span>
-                <span className="text-gray-500">Clone a repository</span>
+                <span className="text-[#ffbe0b]">jvcs log</span>
+                <span className="text-gray-500">View commit history</span>
               </div>
               <div className="flex justify-between text-gray-300">
                 <span className="text-[#ffbe0b]">jvcs revert</span>
                 <span className="text-gray-500">Undo commits</span>
               </div>
               <div className="flex justify-between text-gray-300">
-                <span className="text-[#ffbe0b]">jvcs begin</span>
-                <span className="text-gray-500">Login/Signup</span>
+                <span className="text-[#ffbe0b]">jvcs clone</span>
+                <span className="text-gray-500">Clone a repository</span>
               </div>
             </div>
           </div>
@@ -502,7 +501,7 @@ jvcs log`}
               <div>
                 <h4 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Resources</h4>
                 <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-[#00d9ff] transition-colors">Documentation</a></li>
+                  <li><button onClick={() => navigate("/documentation")} className="hover:text-[#00d9ff] transition-colors">Documentation</button></li>
                   <li><a href="https://github.com/JagdishPathakji/Version-Control-System" className="hover:text-[#00d9ff] transition-colors">GitHub</a></li>
                   <li><a href="www.linkedin.com/in/jagdishpathakji" className="hover:text-[#00d9ff] transition-colors">Connect</a></li>
                 </ul>
