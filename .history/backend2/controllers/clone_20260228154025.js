@@ -135,6 +135,11 @@ async function cloneCmd(username,reponame) {
     console.log(chalk.green(`Found repository, downloading...`));
 
     const destPath = path.join(process.cwd(), reponame);
+    if(fs.existsSync(destPath)) {
+        console.log(chalk.red(`Destination '${reponame}' already exists. Remove or rename it and retry.`));
+        return;
+    }
+
     await downloadFolderFromDrive(commitFolder, destPath);
     
     console.log(chalk.green(`Repository cloned successfully into ./${reponame}`));
