@@ -14,6 +14,9 @@ export default function Documentation({
   const [copied, setCopied] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("installation");
 
+  // Dynamically get username from localStorage (as seen in Login.tsx/Dashboard.tsx)
+  const username = localStorage.getItem("username") || "User";
+
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopied(id);
@@ -134,7 +137,8 @@ export default function Documentation({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0221] via-[#1a1629] to-[#0d0221] text-gray-200">
-      <Navbar username="Jagdish" setIsAuthenticated={setIsAuthenticated} navigate={navigate} />
+      {/* Navbar with dynamic username */}
+      <Navbar username={username} setIsAuthenticated={setIsAuthenticated} navigate={navigate} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
