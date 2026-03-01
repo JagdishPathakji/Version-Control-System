@@ -59,10 +59,22 @@ export default function Documentation({
       notes: "Always write meaningful commit messages.",
     },
     {
+      cmd: "jvcs save-version",
+      desc: "A powerful combination of init, add, commit, and push in a single command. It also helps you set up .jvcsignore.",
+      example: "jvcs save-version",
+      notes: "Follow the terminal prompts to complete the process.",
+    },
+    {
       cmd: "jvcs push",
       desc: "Push local commits to remote repository.",
       example: "jvcs push",
       notes: "Make sure you are authenticated and have initialized the repo.",
+    },
+    {
+      cmd: "jvcs diff",
+      desc: "Compare different states of your repository to see what changed.",
+      example: 'jvcs diff --mode stage-vs-cwd\njvcs diff --mode commit-vs-stage --commitId <id>\njvcs diff --mode commit-vs-commit --commitA <id1> --commitB <id2>',
+      notes: "Modes: stage-vs-cwd, commit-vs-stage, commit-vs-commit.",
     },
     {
       cmd: "jvcs clone",
@@ -103,6 +115,10 @@ export default function Documentation({
       a: "Run 'jvcs begin' to login or signup. It will prompt you in the terminal for credentials.",
     },
     {
+      q: "What is .jvcsignore and how do I use it?",
+      a: "Similar to .gitignore, .jvcsignore is a file that tells JVCS which files or folders to ignore (e.g., node_modules). You can create it manually or via 'jvcs save-version'.",
+    },
+    {
       q: "Can I undo a commit?",
       a: "Yes, 'jvcs revert <commit-hash>' allows you to revert a commit.",
     },
@@ -118,13 +134,10 @@ export default function Documentation({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0d0221] via-[#1a1629] to-[#0d0221] text-gray-200">
-      {/* Navbar */}
       <Navbar username="Jagdish" setIsAuthenticated={setIsAuthenticated} navigate={navigate} />
 
-      {/* Main Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 bg-gradient-to-b from-[#1a1629]/95 to-[#0d0221]/95 backdrop-blur-xl border border-[#ff006e]/40 p-6 shadow-2xl shadow-[#ff006e]/5">
               <h3 className="text-sm font-bold text-[#ff006e] uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -151,14 +164,9 @@ export default function Documentation({
             </div>
           </div>
 
-          {/* Content */}
           <div className="lg:col-span-4 space-y-12">
-            {/* Installation */}
             <section id="installation" className="scroll-mt-20 space-y-6">
-              <h2 className="text-4xl font-bold text-white mb-6">
-                Installation
-              </h2>
-
+              <h2 className="text-4xl font-bold text-white mb-6">Installation</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                   {
@@ -178,11 +186,8 @@ export default function Documentation({
                     key={idx}
                     className="bg-[#0d0221] border border-[#ff006e]/40 p-6 shadow-md hover:shadow-lg transition-all"
                   >
-                    <h3 className="text-2xl font-bold text-[#ff006e] mb-2">
-                      {inst.title}
-                    </h3>
+                    <h3 className="text-2xl font-bold text-[#ff006e] mb-2">{inst.title}</h3>
                     <p className="text-gray-300 mb-3">{inst.desc}</p>
-
                     <div className="relative mb-2">
                       <SyntaxHighlighter
                         language="bash"
@@ -194,7 +199,6 @@ export default function Documentation({
                       >
                         {inst.cmd}
                       </SyntaxHighlighter>
-
                       <button
                         onClick={() => copyToClipboard(inst.cmd, `install-${idx}`)}
                         className="absolute top-4 right-4 p-2.5 hover:bg-[#ff006e]/20 transition-all"
@@ -206,17 +210,14 @@ export default function Documentation({
                         )}
                       </button>
                     </div>
-
                     <p className="text-yellow-400 text-sm">{inst.note}</p>
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Commands */}
             <section id="commands" className="scroll-mt-20 space-y-6">
               <h2 className="text-4xl font-bold text-white mb-6">Commands</h2>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {commands.map((cmd, idx) => (
                   <div
@@ -224,14 +225,9 @@ export default function Documentation({
                     className="bg-[#0d0221] border border-[#ff006e]/40 p-6 shadow-md hover:shadow-lg transition-all"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-2xl font-bold text-[#ff006e]">
-                        {cmd.cmd}
-                      </h3>
-
+                      <h3 className="text-2xl font-bold text-[#ff006e]">{cmd.cmd}</h3>
                       <button
-                        onClick={() =>
-                          copyToClipboard(cmd.example, `cmd-${idx}`)
-                        }
+                        onClick={() => copyToClipboard(cmd.example, `cmd-${idx}`)}
                         className="p-2 bg-[#ff006e]/20 hover:bg-[#ff006e]/40 transition-colors"
                       >
                         {copied === `cmd-${idx}` ? (
@@ -241,9 +237,7 @@ export default function Documentation({
                         )}
                       </button>
                     </div>
-
                     <p className="text-gray-300 mb-3">{cmd.desc}</p>
-
                     <div className="overflow-hidden mb-2">
                       <SyntaxHighlighter
                         language="bash"
@@ -256,21 +250,14 @@ export default function Documentation({
                         {cmd.example}
                       </SyntaxHighlighter>
                     </div>
-
-                    {cmd.notes && (
-                      <p className="text-yellow-400 text-sm">{cmd.notes}</p>
-                    )}
+                    {cmd.notes && <p className="text-yellow-400 text-sm">{cmd.notes}</p>}
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Workflow */}
             <section id="workflow" className="scroll-mt-20 space-y-6">
-              <h2 className="text-4xl font-bold text-white mb-6">
-                Basic Workflow
-              </h2>
-
+              <h2 className="text-4xl font-bold text-white mb-6">Basic Workflow</h2>
               <div className="bg-[#0a0b0f] border border-[#1f2029] p-6 overflow-x-auto">
                 <SyntaxHighlighter
                   language="bash"
@@ -280,40 +267,34 @@ export default function Documentation({
                     padding: "16px",
                   }}
                 >
-{`# 1. Authenticate
+{`# Option A: The Manual Flow
 jvcs begin
-
-# 2. Initialize repository
 jvcs init my-project
-
-# 3. Stage files
 jvcs add .
-
-# 4. Commit changes
 jvcs commit "Initial commit"
-
-# 5. Push to remote
 jvcs push
 
-# 6. View history
+# Option B: The Streamlined Flow
+jvcs begin
+jvcs save-version
+
+# View Changes & History
+jvcs diff --mode stage-vs-cwd
+jvcs status
 jvcs log`}
                 </SyntaxHighlighter>
               </div>
             </section>
 
-            {/* FAQ */}
             <section id="faq" className="scroll-mt-20 space-y-6">
               <h2 className="text-4xl font-bold text-white mb-6">FAQ</h2>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {faq.map((item, idx) => (
                   <div
                     key={idx}
                     className="bg-[#0d0221] border border-[#ff006e]/40 p-6 shadow-md hover:shadow-lg transition-all"
                   >
-                    <h4 className="text-lg font-bold text-[#ff006e] mb-2">
-                      ❓ {item.q}
-                    </h4>
+                    <h4 className="text-lg font-bold text-[#ff006e] mb-2">❓ {item.q}</h4>
                     <p className="text-gray-300">{item.a}</p>
                   </div>
                 ))}
