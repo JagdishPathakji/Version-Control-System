@@ -39,6 +39,10 @@ const repoSchema = new Schema({
     parentId: {
         type: String,
         required: true
+    },
+    readme: {
+        type: String,
+        default: ""
     }
 }, {timestamps: true})
 
