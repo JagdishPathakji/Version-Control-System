@@ -77,11 +77,8 @@ export default function LandingPage() {
       <section className="max-w-7xl mx-auto px-6 pt-16 sm:pt-24 pb-20 sm:pb-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center text-left">
           <div className="space-y-6 sm:space-y-8">
-            <div className="inline-block px-4 py-1 border border-[#ffbe0b]/50 bg-[#ffbe0b]/5 text-[#ffbe0b] text-[9px] sm:text-[10px] font-black tracking-[0.2em] sm:tracking-[0.3em] uppercase">
-              Production Ready v2.0
-            </div>
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black leading-tight sm:leading-none">
-              <span className="text-white">TRACK YOUR</span>
+              <span className="text-white">TRACK YOUR </span>
               <br className="hidden sm:block" />
               <span className="bg-gradient-to-r from-[#ff006e] via-[#ffbe0b] to-[#00d9ff] bg-clip-text text-transparent italic ml-0 sm:ml-2 lg:ml-0">
                 CODE HISTORY.
