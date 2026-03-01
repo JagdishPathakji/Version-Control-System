@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { 
-  ArrowRight, Code, GitBranch, Users, Lock, Zap, Copy, Check,
+  ArrowRight, Code, GitBranch, Users, Zap, Copy, Check,
   Terminal, History, Search, RefreshCw, Layers, ShieldCheck,
-  ChevronRight, Database, Globe
+  Database, Globe
 } from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -24,115 +24,133 @@ export default function LandingPage() {
   };
 
   const jvcsCommands = [
-    { cmd: "jvcs begin", icon: <ShieldCheck className="w-5 h-5" />, desc: "Secure authentication. Start your developer session.", color: "text-[#00d9ff]" },
-    { cmd: "jvcs init", icon: <Database className="w-5 h-5" />, desc: "Initialize a fresh JVCS repository in your folder.", color: "text-[#ff006e]" },
-    { cmd: "jvcs add", icon: <Layers className="w-5 h-5" />, desc: "Stage your local changes for the next commit.", color: "text-[#ffbe0b]" },
-    { cmd: "jvcs commit", icon: <Zap className="w-5 h-5" />, desc: "Capture a snapshot of your staged files permanently.", color: "text-[#00d9ff]" },
-    { cmd: "jvcs push", icon: <Globe className="w-5 h-5" />, desc: "Synchronize local commits with your remote Space.", color: "text-[#ff006e]" },
-    { cmd: "jvcs save-version", icon: <RefreshCw className="w-5 h-5" />, desc: "Streamlined backup: init, add, commit, & push at once.", color: "text-[#ffbe0b]" },
-    { cmd: "jvcs diff", icon: <Search className="w-5 h-5" />, desc: "Compare versions with stage-vs-cwd or commit-vs-stage.", color: "text-[#00d9ff]" },
-    { cmd: "jvcs clone", icon: <RefreshCw className="w-5 h-5" />, desc: "Download any public or private repository from the cloud.", color: "text-[#ff006e]" },
-    { cmd: "jvcs status", icon: <Terminal className="w-5 h-5" />, desc: "Real-time overview of modified and tracked files.", color: "text-[#ffbe0b]" },
-    { cmd: "jvcs log", icon: <History className="w-5 h-5" />, desc: "Browse through your entire versioning history.", color: "text-[#00d9ff]" },
-    { cmd: "jvcs unstage", icon: <Layers className="w-5 h-5" />, desc: "Safely remove files from the staging area.", color: "text-[#ff006e]" },
-    { cmd: "jvcs revert", icon: <History className="w-5 h-5" />, desc: "Roll back your repository to any specific commit.", color: "text-[#ffbe0b]" }
+    { cmd: "jvcs begin", icon: <ShieldCheck className="w-5 h-5" />, desc: "Authentication: Login or Signup to sync with the cloud Space.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs init", icon: <Database className="w-5 h-5" />, desc: "Initialize: Create a new local repository metadata in current folder.", color: "text-[#ff006e]" },
+    { cmd: "jvcs add", icon: <Layers className="w-5 h-5" />, desc: "Stage: Prepare files or entire folders for the next commit.", color: "text-[#ffbe0b]" },
+    { cmd: "jvcs commit", icon: <Zap className="w-5 h-5" />, desc: "Snapshot: Permanently save staged changes with a message.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs unstage", icon: <Layers className="w-5 h-5" />, desc: "Unstage: Safely remove files from the staging area before committing.", color: "text-[#ff006e]" },
+    { cmd: "jvcs status", icon: <Terminal className="w-5 h-5" />, desc: "Observer: Check which files are modified, staged, or untracked.", color: "text-[#ffbe0b]" },
+    { cmd: "jvcs log", icon: <History className="w-5 h-5" />, desc: "History: Browse through the complete timeline of your commits.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs diff", icon: <Search className="w-5 h-5" />, desc: "Compare: Analyze line-by-line differences between states.", color: "text-[#ff006e]" },
+    { cmd: "jvcs push", icon: <Globe className="w-5 h-5" />, desc: "Sync: Upload local commits to your remote repository on the server.", color: "text-[#ffbe0b]" },
+    { cmd: "jvcs revert", icon: <History className="w-5 h-5" />, desc: "Rollback: Restore your working directory to a previous commit state.", color: "text-[#00d9ff]" },
+    { cmd: "jvcs clone", icon: <RefreshCw className="w-5 h-5" />, desc: "Download: Pull an existing repository from the server to local.", color: "text-[#ff006e]" },
+    { cmd: "jvcs save-version", icon: <RefreshCw className="w-5 h-5" />, desc: "Auto-Pilot: Combines init, add, commit, and push in one command.", color: "text-[#ffbe0b]" }
   ];
 
   return (
     <div className="w-screen min-h-screen bg-[#0d0221] text-gray-200 overflow-x-hidden selection:bg-[#ff006e]/30 selection:text-[#00d9ff]">
-      {/* Dynamic Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ff006e] blur-[150px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#00d9ff] blur-[150px] rounded-full"></div>
+      {/* Background Glow */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#ff006e]/20 via-transparent to-transparent"></div>
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 backdrop-blur-2xl border-b border-[#ff006e]/20 bg-[#0d0221]/80">
+      <nav className="sticky top-0 z-50 backdrop-blur-xl border-b border-[#ff006e]/30 bg-[#0d0221]/90">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate("/")}>
-            <div className="p-1.5 bg-gradient-to-br from-[#ff006e] to-[#00d9ff] rounded-lg">
-              <GitBranch className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+            <div className="p-1 px-3 bg-gradient-to-br from-[#ff006e] to-[#00d9ff] rounded-none border border-white/20">
+              <span className="text-xl font-black text-white italic">J</span>
             </div>
-            <span className="text-2xl font-black bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent tracking-tighter">
+            <span className="text-xl font-black bg-gradient-to-r from-[#ff006e] to-[#00d9ff] bg-clip-text text-transparent tracking-tighter">
               JVCS SPACE
             </span>
           </div>
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4">
             <button
               onClick={() => navigate("/login")}
-              className="px-5 py-2 text-sm font-bold text-[#00d9ff] hover:text-[#ff006e] transition-all"
+              className="px-4 py-2 text-sm font-bold text-[#00d9ff] hover:bg-[#00d9ff]/10 rounded-none border border-transparent hover:border-[#00d9ff]/30 transition-all"
             >
-              SIGN IN
+              LOGIN
             </button>
             <button
               onClick={() => navigate("/register")}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white text-sm font-black rounded-full hover:shadow-[0_0_20px_rgba(255,0,110,0.5)] transition-all"
+              className="px-6 py-2 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white text-sm font-bold rounded-none hover:shadow-[0_0_20px_rgba(255,0,110,0.5)] transition-all"
             >
-              JOIN NOW
+              GET STARTED
             </button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 pt-24 pb-32 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff006e]/10 border border-[#ff006e]/30 mb-8 animate-bounce-slow">
-            <span className="w-2 h-2 rounded-full bg-[#ff006e]"></span>
-            <span className="text-xs font-bold text-[#ff006e] tracking-widest uppercase">The Future of Local Versioning</span>
-        </div>
-        
-        <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[1]">
-          <span className="text-white">CONTROL YOUR</span>
-          <br />
-          <span className="bg-gradient-to-r from-[#ff006e] via-[#ffbe0b] to-[#00d9ff] bg-clip-text text-transparent">
-            CODE UNIVERSE.
-          </span>
-        </h1>
-        
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-12 font-medium leading-relaxed">
-          JVCS is a high-performance, decentralized version control system designed for developers who demand speed, style, and absolute control over their local history.
-        </p>
+      <section className="max-w-7xl mx-auto px-6 pt-24 pb-32">
+        <div className="grid lg:grid-cols-2 gap-16 items-center text-left">
+          <div className="space-y-8">
+            <div className="inline-block px-4 py-1 border border-[#ffbe0b]/50 bg-[#ffbe0b]/5 text-[#ffbe0b] text-[10px] font-black tracking-[0.3em] uppercase">
+              Production Ready v2.0
+            </div>
+            <h1 className="text-6xl md:text-7xl font-black leading-none">
+              <span className="text-white">TRACK YOUR</span>
+              <br />
+              <span className="bg-gradient-to-r from-[#ff006e] via-[#ffbe0b] to-[#00d9ff] bg-clip-text text-transparent italic">
+                CODE HISTORY.
+              </span>
+            </h1>
+            <p className="text-lg text-gray-400 font-medium leading-relaxed max-w-xl">
+              A professional-grade version control system for local development. Track changes, manage repositories, and sync to the cloud with a minimal terminal footprint.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate("/register")}
+                className="px-10 py-4 bg-white text-[#0d0221] font-black rounded-none hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+              >
+                DEPLOY NOW
+              </button>
+              <button
+                onClick={() => scrollToSection("commands")}
+                className="px-10 py-4 border-2 border-[#00d9ff]/50 text-[#00d9ff] font-black rounded-none hover:bg-[#00d9ff]/10 transition-all"
+              >
+                VIEW CMDS
+              </button>
+            </div>
+          </div>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
-          <button
-            onClick={() => navigate("/register")}
-            className="group px-10 py-5 bg-gradient-to-r from-[#ff006e] to-[#00d9ff] text-white font-black rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,0,110,0.3)]"
-          >
-            START DEPLOYING <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <button
-            onClick={() => scrollToSection("commands")}
-            className="px-10 py-5 border-2 border-[#00d9ff]/30 text-[#00d9ff] font-black rounded-2xl hover:bg-[#00d9ff]/5 hover:border-[#00d9ff] transition-all"
-          >
-            VIEW COMMANDS
-          </button>
+          <div className="bg-[#0a0b0f] border border-[#ff006e]/30 rounded-none p-2 shadow-[20px_20px_0px_rgba(255,0,110,0.1)]">
+            <div className="bg-white/5 p-4 flex gap-2 border-b border-white/10">
+              <div className="w-2 h-2 bg-red-500"></div>
+              <div className="w-2 h-2 bg-yellow-500"></div>
+              <div className="w-2 h-2 bg-green-500"></div>
+            </div>
+            <div className="p-8 font-mono text-sm overflow-x-auto min-h-[300px]">
+              <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
+{`$ jvcs status
+ M frontend/App.tsx
+ A backend/server.js
+
+$ jvcs save-version
+ [+] Checking for .jvcsignore... Found.
+ [+] Staging changes... Done.
+ [+] Committing: "Feature updated"...
+ [+] Syncing to Space... Success.
+
+$ jvcs log
+ commit: a72b38 (Current)
+ commit: 9f1e02 (2 hours ago)`}
+              </SyntaxHighlighter>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Command Reference Section */}
-      <section id="commands" className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            COMMAND <span className="text-[#00d9ff]">REFERENCE</span>
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto uppercase tracking-[0.2em] font-bold text-sm">
-            Master the 12 core operations of JVCS Space
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* Commands Grid */}
+      <section id="commands" className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 bg-white/[0.01]">
+        <h2 className="text-3xl font-black text-white mb-16 tracking-tighter">
+          THE <span className="text-[#00d9ff]">COMMAND</span> SUITE
+        </h2>
+        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-[1px] bg-white/10 border border-white/10">
           {jvcsCommands.map((command, idx) => (
             <div 
               key={idx} 
-              className="group bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 rounded-3xl hover:bg-white/[0.08] hover:border-[#00d9ff]/50 transition-all duration-300"
+              className="bg-[#0d0221] p-8 hover:bg-white/[0.03] transition-all group border border-transparent hover:border-[#00d9ff]/30"
             >
-              <div className={`mb-4 transition-transform group-hover:scale-110 ${command.color}`}>
+              <div className={`mb-4 ${command.color} group-hover:scale-110 transition-transform`}>
                 {command.icon}
               </div>
-              <h3 className="text-lg font-black text-white mb-2 group-hover:text-[#00d9ff] transition-colors">
+              <h3 className="text-md font-black text-white mb-2 tracking-tight group-hover:text-[#00d9ff]">
                 {command.cmd}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed font-medium">
+              <p className="text-xs text-gray-500 leading-relaxed font-bold uppercase tracking-wider">
                 {command.desc}
               </p>
             </div>
@@ -140,170 +158,77 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works (Visual Flow) */}
-      <section id="how-it-works" className="max-w-7xl mx-auto px-6 py-32 rounded-[4rem] bg-white/[0.02] border border-white/5 shadow-inner">
-        <h2 className="text-4xl font-black text-center mb-20 text-white">
-          THE <span className="text-[#ff006e]">WORKFLOW</span>
-        </h2>
-
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
-                <div className="flex gap-8 group">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#ff006e] to-[#ff006e]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(255,0,110,0.3)]">01</div>
-                    <div>
-                        <h4 className="text-2xl font-black text-white mb-3">Initialize & Track</h4>
-                        <p className="text-gray-400 font-medium italic">"jvcs init && jvcs begin"</p>
-                        <p className="text-gray-500 mt-2">Initialize your Space and link it to your developer profile in seconds.</p>
-                    </div>
-                </div>
-
-                <div className="flex gap-8 group">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#00d9ff] to-[#00d9ff]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(0,217,255,0.3)]">02</div>
-                    <div>
-                        <h4 className="text-2xl font-black text-white mb-3">Stage & Snapshot</h4>
-                        <p className="text-gray-400 font-medium italic">"jvcs add . && jvcs commit \"message\""</p>
-                        <p className="text-gray-500 mt-2">Capture changes with atomic precision. Track everything from lines to binary assets.</p>
-                    </div>
-                </div>
-
-                <div className="flex gap-8 group">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#ffbe0b] to-[#ffbe0b]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(255,190,11,0.3)]">03</div>
-                    <div>
-                        <h4 className="text-2xl font-black text-white mb-3">Synchronize</h4>
-                        <p className="text-gray-400 font-medium italic">"jvcs push"</p>
-                        <p className="text-gray-500 mt-2">Instantly sync your local history to JVCS Space for cloud-based accessibility.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-[#0a0b0f] border border-[#ff006e]/30 rounded-[3rem] p-4 shadow-[0_0_60px_rgba(255,0,110,0.1)] overflow-hidden">
-                <div className="flex bg-white/5 p-4 items-center gap-2 rounded-t-[2rem]">
-                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                    <span className="text-[10px] text-gray-500 font-black ml-4">TERMINAL v2.0</span>
-                </div>
-                <div className="p-8 font-mono text-sm overflow-x-auto min-h-[400px]">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
-{`$ jvcs begin
- Authenticating user... Success!
- Welcome back, Developer.
-
-$ jvcs init web-app
- New repository created: web-app
-
-$ jvcs status
- M index.tsx (Modified)
- A components/Card.tsx (Added)
-
-$ jvcs save-version
- Running auto-pipeline...
- [+] Staging 2 files
- [+] Creating commit: Auto-Save
- [+] Pushing to cloud
- Done! Space updated.`}
-                    </SyntaxHighlighter>
-                </div>
-            </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-32">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#ff006e]/40 transition-all shadow-2xl">
-            <div className="bg-[#ff006e]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#ff006e] transition-all">
-              <Zap className="w-8 h-8 text-[#ff006e] group-hover:text-white" />
-            </div>
-            <h3 className="text-2xl font-black text-white mb-4">Warp-Speed Push</h3>
-            <p className="text-gray-400 font-medium leading-relaxed">Compressed binary transfers ensure your code reaches the space station in milliseconds.</p>
+      {/* Core Features */}
+      <section className="max-w-7xl mx-auto px-6 py-32 border-b border-white/5">
+        <div className="grid md:grid-cols-3 gap-12">
+          <div className="space-y-6">
+            <div className="w-12 h-1 bg-[#ff006e]"></div>
+            <h3 className="text-2xl font-black text-white">LOCAL FIRST</h3>
+            <p className="text-gray-400 font-medium">Track versions even when you are offline. All snapshots are stored locally in your .jvcs directory.</p>
           </div>
-
-          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#00d9ff]/40 transition-all shadow-2xl">
-            <div className="bg-[#00d9ff]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#00d9ff] transition-all">
-              <Lock className="w-8 h-8 text-[#00d9ff] group-hover:text-white" />
-            </div>
-            <h3 className="text-2xl font-black text-white mb-4">Zero-Trust Security</h3>
-            <p className="text-gray-400 font-medium leading-relaxed">End-to-end encrypted repositories ensure your intellectual property stays yours.</p>
+          <div className="space-y-6">
+            <div className="w-12 h-1 bg-[#00d9ff]"></div>
+            <h3 className="text-2xl font-black text-white">SPACE SYNC</h3>
+            <p className="text-gray-400 font-medium">One push moves your entire repository history to your remote dashboard. Access your code from anywhere.</p>
           </div>
-
-          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#ffbe0b]/40 transition-all shadow-2xl">
-            <div className="bg-[#ffbe0b]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#ffbe0b] transition-all">
-              <History className="w-8 h-8 text-[#ffbe0b] group-hover:text-white" />
-            </div>
-            <h3 className="text-2xl font-black text-white mb-4">Deep History Log</h3>
-            <p className="text-gray-400 font-medium leading-relaxed">Traverse through time with complete lineage tracking and atomic diffing visualizations.</p>
+          <div className="space-y-6">
+            <div className="w-12 h-1 bg-[#ffbe0b]"></div>
+            <h3 className="text-2xl font-black text-white">AUTO PIPELINE</h3>
+            <p className="text-gray-400 font-medium">Use the save-version command to automate your deployment cycle. Perfect for rapid prototyping.</p>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20 pb-40">
-        <div className="relative group bg-gradient-to-r from-[#ff006e]/10 to-[#00d9ff]/10 border border-white/10 rounded-[4rem] p-20 text-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#ff006e]/5 to-[#00d9ff]/5 group-hover:scale-110 transition-transform duration-700"></div>
-          <h2 className="text-5xl font-black text-white mb-8 relative z-10">THE SPACE IS WAITING.</h2>
-          <p className="text-gray-400 max-w-xl mx-auto mb-12 text-lg relative z-10 font-medium italic">"Join 5,000+ developers tracking their progress with JVCS."</p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+      {/* CTA */}
+      <section className="max-w-7xl mx-auto px-6 py-40">
+        <div className="bg-gradient-to-r from-[#ff006e]/10 to-[#00d9ff]/10 border border-white/10 p-16 text-center">
+          <h2 className="text-5xl font-black text-white mb-8">READY TO SNAPSHOT?</h2>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/register")}
-              className="px-12 py-5 bg-white text-[#0d0221] font-black rounded-2xl hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)]"
+              className="px-12 py-4 bg-[#ff006e] text-white font-black rounded-none hover:shadow-[0_0_30px_rgba(255,0,110,0.4)] transition-all"
             >
-              CREATE FREE ACCOUNT
+              CREATE REPOS
             </button>
             <button
-              onClick={() => navigate("/login")}
-              className="px-12 py-5 border border-white/20 text-white font-black rounded-2xl hover:bg-white/10 transition-all"
+              onClick={() => navigate("/documentation")}
+              className="px-12 py-4 border border-white/20 text-white font-black rounded-none hover:bg-white/10 transition-all"
             >
-              LOGIN TO SPACE
+              READ DOCS
             </button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 bg-[#0a0b0f]/80 backdrop-blur-2xl py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-16">
-            <div className="col-span-2">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-1 px-3 bg-gradient-to-br from-[#ff006e] to-[#00d9ff] rounded-lg text-white font-black text-xl italic">J</div>
-                <span className="text-2xl font-black text-white">JVCS SPACE</span>
-              </div>
-              <p className="text-gray-500 max-w-sm mb-8 leading-relaxed font-medium">
-                The ultimate version control orbit for modern software architects. Fast, safe, and visually elite.
-              </p>
-              <div className="flex gap-4">
-                  {/* Social placeholders could go here */}
-              </div>
+      <footer className="bg-[#0a0b0f] border-t border-white/10 py-20">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
+          <div>
+            <div className="flex items-center gap-3 mb-6 font-black text-xl italic text-white">
+              JVCS SPACE
             </div>
-
-            <div>
-              <h4 className="text-white font-black text-lg mb-8 uppercase tracking-widest">Orbit</h4>
-              <ul className="space-y-4 text-gray-500 font-bold">
-                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-white transition-colors">WORKFLOW</button></li>
-                <li><button onClick={() => scrollToSection("features")} className="hover:text-white transition-colors">SECURITY</button></li>
-                <li><button onClick={() => scrollToSection("commands")} className="hover:text-white transition-colors">COMMANDS</button></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-black text-lg mb-8 uppercase tracking-widest">Resources</h4>
-              <ul className="space-y-4 text-gray-500 font-bold">
-                <li><button onClick={() => navigate("/documentation")} className="hover:text-[#00d9ff] transition-colors">DOCUMENTATION</button></li>
-                <li><a href="https://github.com/JagdishPathakji" target="_blank" className="hover:text-[#ff006e] transition-colors">GITHUB</a></li>
-                <li><a href="#" className="hover:text-[#ffbe0b] transition-colors">SUPPORT</a></li>
-              </ul>
-            </div>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-loose">
+              Advanced version control engine for elite developers. Built for performance.
+            </p>
           </div>
-
-          <div className="border-t border-white/5 mt-20 pt-10 text-center flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="text-gray-600 font-black text-sm tracking-widest">© 2026 JVCS SPACE. ENGINEERED BY JAGDISH PATHAKJI.</p>
-            <div className="flex gap-8 text-xs font-black text-gray-700 tracking-[0.3em]">
-                <a href="#">PRIVACY</a>
-                <a href="#">TERMS</a>
-                <a href="#">COOKIES</a>
-            </div>
+          <div className="space-y-4">
+            <h4 className="text-white font-black text-sm uppercase tracking-widest">Navigation</h4>
+            <ul className="text-xs text-gray-500 space-y-2 font-bold uppercase">
+              <li><button onClick={() => scrollToSection("commands")} className="hover:text-white transition-colors">All Commands</button></li>
+              <li><button onClick={() => navigate("/documentation")} className="hover:text-white transition-colors">Documentation</button></li>
+              <li><button onClick={() => navigate("/login")} className="hover:text-white transition-colors">User Login</button></li>
+            </ul>
+          </div>
+          <div className="space-y-4">
+            <h4 className="text-white font-black text-sm uppercase tracking-widest">Connect</h4>
+            <ul className="text-xs text-gray-500 space-y-2 font-bold uppercase">
+              <li><a href="https://github.com/JagdishPathakji" className="hover:text-white transition-colors tracking-[0.2em]">Github</a></li>
+              <li><a href="#" className="hover:text-white transition-colors tracking-[0.2em]">LinkedIn</a></li>
+            </ul>
+          </div>
+          <div className="text-right">
+             <p className="text-[#ff006e] font-black text-2xl italic tracking-tighter hover:text-white transition-colors cursor-default">JAGDISH PATHAKJI</p>
+             <p className="text-[10px] text-gray-700 font-black tracking-widest mt-2 uppercase">Core Architect @ 2026</p>
           </div>
         </div>
       </footer>
