@@ -7,74 +7,104 @@ const redisClient = require("../database/redisConnection")
 const jwt = require("jsonwebtoken")
 
 const follow = async (req, res) => {
-
     try {
         const username = req.params.username || req.body?.username;
 
-        const token = req.cookies.token
+        const token = req.cookies.token;
         if (!token)
             return res.status(401).send({ status: "login", message: "Unauthorized: Token not found, Please Login again" });
 
         if (!username)
-            return res.status(404).send({ status: false, message: "username not found for following" })
+            return res.status(400).send({ status: false, message: "Username not found for following" });
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const email = decoded.email
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const email = decoded.email;
 
         const user = await User.findOne({ email });
         if (!user) return res.status(401).send({ status: "login", message: "User not found" });
 
-        const realUser = await User.findOne({ username })
+        const cleanUsername = username.trim();
+        let realUser = await User.findOne({ username: cleanUsername.toLowerCase() });
+        if (!realUser) {
+            realUser = await User.findOne({ username: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
+        }
         if (!realUser)
             return res.status(404).send({ status: false, message: "Target user not found" });
 
-        const followers = realUser.followingUser || []
-        const following = user.followedUser || []
-
-        if (followers.includes(user._id.toString())) {
-            realUser.followingUser = followers.filter((id) => id.toString() !== user._id.toString())
-            user.followedUser = following.filter((id) => id.toString() !== realUser._id.toString())
-            await realUser.save()
-            await user.save()
-            return res.send({ status: true, message: "Followed successfully", count: realUser.followingUser.length, followstatus: false })
+        if (realUser._id.toString() === user._id.toString()) {
+            return res.status(400).send({ status: false, message: "You cannot follow yourself" });
         }
 
-        realUser.followingUser.push(user._id)
-        user.followedUser.push(realUser._id)
-        await realUser.save()
-        await user.save()
+        const followers = (realUser.followingUser || []).map(id => id.toString());
+        const following = (user.followedUser || []).map(id => id.toString());
 
-        return res.send({ status: true, message: "Followed successfully", count: realUser.followingUser.length, followstatus: true })
+        const isCurrentlyFollowing = followers.includes(user._id.toString()) || following.includes(realUser._id.toString());
+
+        if (isCurrentlyFollowing) {
+            // Unfollow
+            realUser.followingUser = (realUser.followingUser || []).filter((id) => id.toString() !== user._id.toString());
+            user.followedUser = (user.followedUser || []).filter((id) => id.toString() !== realUser._id.toString());
+            await realUser.save();
+            await user.save();
+            return res.send({ 
+                status: true, 
+                message: "Unfollowed successfully", 
+                count: realUser.followingUser.length, 
+                followstatus: false, 
+                isFollowing: false 
+            });
+        } else {
+            // Follow
+            if (!followers.includes(user._id.toString())) realUser.followingUser.push(user._id);
+            if (!following.includes(realUser._id.toString())) user.followedUser.push(realUser._id);
+            await realUser.save();
+            await user.save();
+            return res.send({ 
+                status: true, 
+                message: "Followed successfully", 
+                count: realUser.followingUser.length, 
+                followstatus: true, 
+                isFollowing: true 
+            });
+        }
+    } catch (error) {
+        return res.status(500).send({ status: false, message: "Error in follow/unfollow: " + error.message });
     }
-    catch (error) {
-        return res.status(500).send({ status: false, message: "Internal server error during following the user" })
-    }
-}
+};
 
 const getAllUsers = async (req, res) => {
-
     try {
-        const token = req.cookies.token
+        const token = req.cookies.token;
         if (!token)
             return res.status(401).send({ status: "login", message: "Unauthorized: Token not found, Please Login again" });
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        console.log(decoded)
-        const email = decoded.email
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const email = decoded.email;
 
         const user = await User.findOne({ email: email });
         if (!user) return res.status(401).send({ status: "login", message: "User not found" });
 
         const allUsers = await User.find({ email: { $ne: email } }).select("-password");
-        if (allUsers.length)
-            res.status(200).json({ data: allUsers, status: true })
-        else
-            res.status(200).json({ data: [], status: true })
+        
+        const userFollowedIds = (user.followedUser || []).map(id => id.toString());
+
+        const usersWithFollow = allUsers.map(u => {
+            const uObj = u.toObject ? u.toObject() : { ...u };
+            const uId = u._id.toString();
+            const targetFollowers = (u.followingUser || []).map(id => id.toString());
+            const isFollowing = userFollowedIds.includes(uId) || targetFollowers.includes(user._id.toString());
+            return {
+                ...uObj,
+                isFollowing: Boolean(isFollowing)
+            };
+        });
+
+        return res.status(200).json({ data: usersWithFollow, status: true });
     }
     catch (error) {
-        res.status(500).send({ status: "login", message: "Internal server error occured in getting all users" })
+        res.status(500).send({ status: "login", message: "Internal server error occurred in getting all users: " + error.message });
     }
-}
+};
 
 const signup = async (req, res) => {
     try {
@@ -448,14 +478,22 @@ const getPublicProfile = async (req, res) => {
             }
         }
 
-        const targetUser = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } }); // ignores case
+        const cleanUsername = username.trim();
+        let targetUser = await User.findOne({ username: cleanUsername.toLowerCase() });
+        if (!targetUser) {
+            targetUser = await User.findOne({ username: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
+        }
         if (!targetUser)
-            return res.status(404).send({ status: "username", message: "Requested user not found" });
+            return res.status(404).send({ status: "username", message: `Requested user "${cleanUsername}" not found` });
 
         let followstatus = false;
-        if (currentUser && targetUser.followingUser && targetUser.followingUser.map((id) => id.toString()).includes(currentUser._id.toString())) {
-            followstatus = true;
+        if (currentUser) {
+            const targetFollowers = (targetUser.followingUser || []).map(id => id.toString());
+            const currentFollowed = (currentUser.followedUser || []).map(id => id.toString());
+            followstatus = targetFollowers.includes(currentUser._id.toString()) || currentFollowed.includes(targetUser._id.toString());
         }
+
+        const isOwnProfile = Boolean(currentUser && currentUser._id.toString() === targetUser._id.toString());
 
         const profile = {
             _id: targetUser._id,
@@ -464,22 +502,24 @@ const getPublicProfile = async (req, res) => {
             createdAt: targetUser.createdAt,
             description: targetUser.description || "",
             readme: targetUser.readme || "",
-            repositories: await Repository.countDocuments({ owner: targetUser._id, isPrivate: false }),
+            repositories: await Repository.countDocuments({ owner: targetUser._id, ...(isOwnProfile ? {} : { isPrivate: false }) }),
             followedUser: targetUser.followedUser ? targetUser.followedUser.length : 0,
             followingUser: targetUser.followingUser ? targetUser.followingUser.length : 0,
+            isOwnProfile
         };
 
         return res.status(200).json({
             status: true,
             profile,
             repos: [],
-            followstatus
+            followstatus,
+            isFollowing: followstatus
         });
     }
     catch (error) {
         res.status(500).send({ status: false, message: "Internal Server error in getting user public profile: " + error.message });
     }
-}
+};
 
 const updateProfile = async (req, res) => {
     try {

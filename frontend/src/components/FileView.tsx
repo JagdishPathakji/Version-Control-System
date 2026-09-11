@@ -129,7 +129,7 @@ const FileView = () => {
                 <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center flex-wrap gap-2 text-sm sm:text-base">
                         <BookOpen className="w-4 h-4 text-[#57606a] shrink-0" />
-                        <Link to={`/publicProfile/${username}`} className="text-[#0969da] hover:underline">
+                        <Link to={username?.toLowerCase() === localStorage.getItem("username")?.toLowerCase() ? "/profile" : `/publicProfile/${username}`} className="text-[#0969da] hover:underline">
                             {username}
                         </Link>
                         <span className="text-[#57606a]">/</span>

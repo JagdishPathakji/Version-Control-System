@@ -257,7 +257,7 @@ const RepositoryView = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
                         <div className="flex items-center flex-wrap gap-2 text-xl">
                             <BookOpen className="w-5 h-5 text-[#57606a] shrink-0" />
-                            <Link to={`/publicProfile/${username}`} className="text-[#0969da] hover:underline font-normal">
+                            <Link to={username?.toLowerCase() === localStorage.getItem("username")?.toLowerCase() ? "/profile" : `/publicProfile/${username}`} className="text-[#0969da] hover:underline font-normal">
                                 {username}
                             </Link>
                             <span className="text-[#57606a]">/</span>

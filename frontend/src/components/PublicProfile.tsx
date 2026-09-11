@@ -63,6 +63,12 @@ export default function PublicProfile({
   useEffect(() => {
     if (!username) return;
 
+    const loggedInUser = localStorage.getItem("username");
+    if (loggedInUser && username.toLowerCase() === loggedInUser.toLowerCase()) {
+      navigate("/profile", { replace: true });
+      return;
+    }
+
     const fetchPublicProfile = async () => {
       try {
         setLoading(true);
@@ -92,6 +98,10 @@ export default function PublicProfile({
         }
 
         if (data && data.status && data.profile) {
+          if (data.profile.isOwnProfile) {
+            navigate("/profile", { replace: true });
+            return;
+          }
           setProfile(data.profile);
           setFollower(data.profile.followingUser);
           setFollowstatus(Boolean(data.followstatus));
