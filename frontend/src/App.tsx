@@ -13,6 +13,7 @@ import CreateRepo from "./components/CreateRepo";
 import RepositoryView from "./components/RepositoryView";
 import FileView from "./components/FileView";
 import CommitHistory from "./components/CommitHistory";
+import CommitDiff from "./components/CommitDiff";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

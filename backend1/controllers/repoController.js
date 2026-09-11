@@ -271,7 +271,8 @@ const editFile = async (req, res) => {
 }
 
 const adminCleanup,
-    mergeBranches = async (req, res) => {
+    mergeBranches,
+    getCommitDiff = async (req, res) => {
     try {
         const result = await Repository.deleteMany({ name: { $ne: "project-test" } });
         await Repository.updateMany({ name: "project-test" }, { isPrivate: false });
@@ -282,7 +283,8 @@ const adminCleanup,
 }
 
 
-const mergeBranches = async (req, res) => {
+const mergeBranches,
+    getCommitDiff = async (req, res) => {
     try {
         const user = await getUser(req);
         if (!user) return res.status(401).json({ status: false, message: "Unauthorized" });
@@ -336,6 +338,79 @@ const mergeBranches = async (req, res) => {
     }
 };
 
+
+const getCommitDiff = async (req, res) => {
+    try {
+        const { username, repoName, oid } = req.params;
+        const owner = await User.findOne({ username });
+        const repo = await Repository.findOne({ name: repoName, owner: owner?._id });
+        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+
+        const commitObj = await s3Git.getGitObject(repo.s3Prefix, oid);
+        if (!commitObj) return res.status(404).json({ status: false, message: "Commit not found" });
+
+        const commit = s3Git.parseCommit(commitObj.content);
+        const parentOid = commit.parents && commit.parents.length > 0 ? commit.parents[0] : null;
+
+        const currentTreeObj = await s3Git.getGitObject(repo.s3Prefix, commit.tree);
+        const currentEntries = currentTreeObj ? s3Git.parseTree(currentTreeObj.content) : [];
+
+        let parentEntries = [];
+        if (parentOid) {
+            const parentCommitObj = await s3Git.getGitObject(repo.s3Prefix, parentOid);
+            if (parentCommitObj) {
+                const parentCommit = s3Git.parseCommit(parentCommitObj.content);
+                const parentTreeObj = await s3Git.getGitObject(repo.s3Prefix, parentCommit.tree);
+                if (parentTreeObj) {
+                    parentEntries = s3Git.parseTree(parentTreeObj.content);
+                }
+            }
+        }
+
+        const diffs = [];
+        const allNames = new Set([...currentEntries.map(e => e.name), ...parentEntries.map(e => e.name)]);
+
+        for (const name of allNames) {
+            const currentEntry = currentEntries.find(e => e.name === name);
+            const parentEntry = parentEntries.find(e => e.name === name);
+
+            if (currentEntry && parentEntry && currentEntry.oid === parentEntry.oid) {
+                continue; // Unchanged
+            }
+
+            let oldContent = "";
+            let newContent = "";
+
+            if (parentEntry && parentEntry.type === "blob") {
+                const oldBlob = await s3Git.getGitObject(repo.s3Prefix, parentEntry.oid);
+                oldContent = oldBlob ? oldBlob.content.toString("utf-8") : "";
+            }
+
+            if (currentEntry && currentEntry.type === "blob") {
+                const newBlob = await s3Git.getGitObject(repo.s3Prefix, currentEntry.oid);
+                newContent = newBlob ? newBlob.content.toString("utf-8") : "";
+            }
+
+            // Skip if both are trees
+            if ((currentEntry && currentEntry.type === "tree") || (parentEntry && parentEntry.type === "tree")) {
+                continue;
+            }
+
+            diffs.push({
+                filename: name,
+                oldContent,
+                newContent,
+                status: !parentEntry ? "added" : !currentEntry ? "removed" : "modified"
+            });
+        }
+
+        return res.status(200).json({ status: true, diffs });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
 module.exports = {
     createRepo,
     getUserRepos,
@@ -347,5 +422,6 @@ module.exports = {
     getPublicRepos,
     editFile,
     adminCleanup,
-    mergeBranches
+    mergeBranches,
+    getCommitDiff
 };

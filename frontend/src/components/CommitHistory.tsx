@@ -73,6 +73,13 @@ const CommitHistory = () => {
                                     {commit.oid.substring(0, 7)}
                                 </button>
                                 <button 
+                                    onClick={() => navigate(`/repo/${username}/${repoName}/commit/${commit.oid}/diff`)}
+                                    title="View what changed in this commit"
+                                    className="px-3 py-1 bg-white hover:bg-green-50 border border-green-200 text-green-600 font-semibold text-sm rounded transition-colors"
+                                >
+                                    View Diff
+                                </button>
+                                <button 
                                     onClick={() => navigate(`/repo/${username}/${repoName}?oid=${commit.oid}`)}
                                     title="Browse repository at this point in history"
                                     className="px-3 py-1 bg-white hover:bg-blue-50 border border-blue-200 text-blue-600 font-semibold text-sm rounded transition-colors"
