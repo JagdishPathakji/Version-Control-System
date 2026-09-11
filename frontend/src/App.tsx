@@ -121,6 +121,10 @@ function App() {
             path="/repo/:username/:repoName/commits/:branch"
             element={<CommitHistory />}
           />
+          <Route 
+            path="/repo/:username/:repoName/commit/:oid/diff"
+            element={<CommitDiff />}
+          />
         </Route>
 
         <Route
