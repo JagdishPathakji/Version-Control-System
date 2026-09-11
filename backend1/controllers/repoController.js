@@ -2,6 +2,7 @@ const User = require("../database/models/userModel");
 const Repository = require("../database/models/repoModel");
 const jwt = require("jsonwebtoken");
 const s3Git = require("./s3GitHelper");
+const archiver = require("archiver");
 
 // Helper to authenticate user from cookie
 const getUser = async (req) => {
@@ -422,6 +423,86 @@ const getCommitDiff = async (req, res) => {
     }
 };
 
+// Recursively traverse git tree objects to collect all files with relative paths
+async function collectTreeFiles(prefix, treeOid, currentPath = "") {
+    const treeObj = await s3Git.getGitObject(prefix, treeOid);
+    if (!treeObj || treeObj.type !== 'tree') return [];
+    
+    const entries = s3Git.parseTree(treeObj.content);
+    const files = [];
+    
+    for (const entry of entries) {
+        const filePath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
+        if (entry.type === 'blob') {
+            const blobObj = await s3Git.getGitObject(prefix, entry.oid);
+            if (blobObj && blobObj.content) {
+                files.push({
+                    path: filePath,
+                    content: blobObj.content
+                });
+            }
+        } else if (entry.type === 'tree') {
+            const subFiles = await collectTreeFiles(prefix, entry.oid, filePath);
+            files.push(...subFiles);
+        }
+    }
+    
+    return files;
+}
+
+const downloadZip = async (req, res) => {
+    try {
+        const { username, repoName } = req.params;
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
+
+        let oid = req.query.oid;
+        const branch = req.query.branch || "master";
+
+        if (!oid) {
+            let refPath = `refs/heads/${branch}`;
+            oid = await s3Git.getRefOid(repo.s3Prefix, refPath);
+            if (!oid) {
+                const headRef = await s3Git.getHeadRef(repo.s3Prefix);
+                if (headRef) oid = await s3Git.getRefOid(repo.s3Prefix, headRef);
+            }
+        }
+
+        if (!oid) {
+            return res.status(404).json({ status: false, message: "Repository has no commits or branch not found" });
+        }
+
+        // If oid is a commit, resolve its root tree
+        let commitObj = await s3Git.getGitObject(repo.s3Prefix, oid);
+        let treeOid = oid;
+        if (commitObj && commitObj.type === 'commit') {
+            const commit = s3Git.parseCommit(commitObj.content);
+            treeOid = commit.tree;
+        }
+
+        const files = await collectTreeFiles(repo.s3Prefix, treeOid);
+
+        const archive = archiver('zip', { zlib: { level: 9 } });
+        const zipFilename = `${repoName}-${branch}.zip`;
+
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename="${zipFilename}"`);
+
+        archive.pipe(res);
+
+        for (const file of files) {
+            archive.append(file.content, { name: `${repoName}/${file.path}` });
+        }
+
+        await archive.finalize();
+    } catch (error) {
+        console.error("Error generating zip:", error);
+        if (!res.headersSent) {
+            res.status(500).json({ status: false, message: "Failed to generate ZIP archive" });
+        }
+    }
+};
+
 module.exports = {
     createRepo,
     getUserRepos,
@@ -433,5 +514,6 @@ module.exports = {
     getPublicRepos,
     editFile,
     mergeBranches,
-    getCommitDiff
+    getCommitDiff,
+    downloadZip
 };

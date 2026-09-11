@@ -11,6 +11,7 @@ repoRouter.get("/repo/:username/:repoName/files", repoController.getRepoFiles);
 repoRouter.get("/repo/:username/:repoName/commits", repoController.getRepoCommits);
 repoRouter.get("/repo/:username/:repoName/commit/:oid/diff", repoController.getCommitDiff);
 repoRouter.get("/repo/:username/:repoName/blob/:oid", repoController.getBlobContent);
+repoRouter.get("/repo/:username/:repoName/zip", repoController.downloadZip);
 repoRouter.post("/repo/:username/:repoName/edit", repoController.editFile);
 repoRouter.post("/repo/:username/:repoName/merge", repoController.mergeBranches);
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import { cachedFetch, clearCache } from '../utils/apiCache';
+import { Copy, Check, Download } from 'lucide-react';
 
 const RepositoryView = () => {
     const { username, repoName } = useParams();
@@ -22,6 +23,23 @@ const RepositoryView = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isMerging, setIsMerging] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    const s3Url = `s3://girgit-project/${username}/${repoName}`;
+
+    const handleCopyClone = () => {
+        navigator.clipboard.writeText(s3Url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleDownloadZip = () => {
+        setIsDownloading(true);
+        const downloadUrl = `https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/zip?branch=${selectedBranch}${targetOid ? `&oid=${targetOid}` : ''}`;
+        window.location.href = downloadUrl;
+        setTimeout(() => setIsDownloading(false), 2000);
+    };
 
     const handleMerge = async () => {
         if (!confirm(`Are you sure you want to merge ${selectedBranch} into master?`)) return;
@@ -155,8 +173,6 @@ const RepositoryView = () => {
         </div>
     );
 
-    const s3Url = `s3://girgit-project/${username}/${repoName}`;
-
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
             <Navbar username={localStorage.getItem("username")} setIsAuthenticated={()=>{}} navigate={navigate} />
@@ -177,6 +193,17 @@ const RepositoryView = () => {
                             </span>
                         </div>
                         {repoInfo?.description && <p className="text-gray-500 text-sm">{repoInfo.description}</p>}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={handleCopyClone}
+                            className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-700 font-mono text-xs rounded-lg transition-all shadow-sm"
+                            title="Click to copy S3 clone URL"
+                        >
+                            {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5 text-gray-500" />}
+                            <span>{copied ? 'Copied URL!' : s3Url}</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -240,19 +267,41 @@ const RepositoryView = () => {
                                         )) : <option value="master">master</option>}
                                     </select>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex items-center gap-2.5 flex-wrap">
                                     {selectedBranch !== 'master' && !targetOid && (
                                         <button 
                                             onClick={handleMerge}
                                             disabled={isMerging}
-                                            className="px-3 py-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 font-semibold text-sm rounded transition-colors"
+                                            className="px-3 py-1.5 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 font-semibold text-sm rounded transition-colors"
                                         >
                                             {isMerging ? 'Merging...' : 'Merge into master'}
                                         </button>
                                     )}
+
+                                    {/* Copy Clone URL Button */}
+                                    <button 
+                                        onClick={handleCopyClone}
+                                        title="Copy S3 Clone URL"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-semibold text-sm rounded transition-all shadow-sm"
+                                    >
+                                        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-gray-500" />}
+                                        <span>{copied ? 'Copied URL!' : 'Clone'}</span>
+                                    </button>
+
+                                    {/* Download ZIP Button */}
+                                    <button 
+                                        onClick={handleDownloadZip}
+                                        disabled={isDownloading}
+                                        title="Download repository as ZIP"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#b428b4] to-[#3023ae] hover:opacity-90 text-white font-semibold text-sm rounded transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        <span>{isDownloading ? 'Preparing ZIP...' : 'Download ZIP'}</span>
+                                    </button>
+
                                     <button 
                                         onClick={() => navigate(`/repo/${username}/${repoName}/commits/${selectedBranch}`)}
-                                        className="text-gray-600 hover:text-blue-600 font-semibold text-sm flex items-center gap-1 transition-colors"
+                                        className="text-gray-600 hover:text-blue-600 font-semibold text-sm flex items-center gap-1 transition-colors px-2 py-1.5"
                                     >
                                         🕒 {commits.length} Commits &gt;
                                     </button>
