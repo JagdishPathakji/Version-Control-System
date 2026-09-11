@@ -1,75 +1,74 @@
-import { useState } from "react";
-import { UserPlus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
-    password: "",
     email: "",
+    password: "",
   });
 
   const [toast, setToast] = useState({
     show: false,
     message: "",
-    type: "success", // success | error
+    type: "success",
   });
-
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    const response = await fetch(
-      "https://version-control-system-mebn.onrender.com/signup",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
+    try {
+      const response = await fetch(
+        "https://version-control-system-mebn.onrender.com/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setToast({
+          show: true,
+          message: data.message || "Registration failed",
+          type: "error",
+        });
+        setLoading(false);
+        return;
       }
-    );
 
-    const data = await response.json();
-    console.log(data);
-
-    if (data.status === true) {
       setToast({
         show: true,
-        message: data.message,
+        message: "Registration successful! Redirecting...",
         type: "success",
       });
 
+      localStorage.setItem("email", formData.email);
       setTimeout(() => {
         navigate("/verifyOtp", { replace: true });
-      }, 1500);
-    } else if (data.status === "user") {
+      }, 1200);
+    } catch (err: any) {
       setToast({
         show: true,
-        message: data.message,
+        message: err.message || "Network error occurred",
         type: "error",
       });
-
+    } finally {
+      setLoading(false);
       setTimeout(() => {
-        navigate("/login", { replace: true });
-      }, 1500);
-    } else {
-      setToast({
-        show: true,
-        message: data.message,
-        type: "error",
-      });
-
-      setTimeout(() => {
-        navigate("/register", { replace: true });
-      }, 1500);
+        setToast(prev => ({ ...prev, show: false }));
+      }, 3500);
     }
-
-    setTimeout(() => {
-      setToast(prev => ({ ...prev, show: false }));
-    }, 3000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,126 +78,99 @@ export default function Register() {
     });
   };
 
-  const onSwitchToLogin = () => {
-    navigate("/login");
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full flex flex-col md:flex-row bg-white rounded-lg shadow-2xl overflow-hidden min-h-[550px]">
-        
-        {/* Left Side (Theme) */}
-        <div className="md:w-1/2 bg-gradient-to-br from-[#3023ae] to-[#b428b4] p-10 flex flex-col justify-center relative overflow-hidden text-white hidden md:flex">
-          <div className="absolute top-10 right-10 w-32 h-32 bg-cyan-400 rounded-full mix-blend-screen opacity-50 blur-xl"></div>
-          <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-blue-500 rounded-full mix-blend-screen opacity-30 blur-2xl"></div>
-          <div className="absolute bottom-20 left-10 w-24 h-24 bg-fuchsia-500 rounded-full mix-blend-screen opacity-50 blur-xl"></div>
-          
-          <div className="relative z-10 text-center flex flex-col items-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-md rounded-full shadow-lg mb-6 border border-white/20">
-              <UserPlus className="w-10 h-10 text-white" strokeWidth={2} />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">Join Us</h2>
-            <p className="text-purple-200">Sign up to<br/>create your account</p>
-          </div>
-        </div>
-
-        {/* Right Side (Original Form) */}
-        <div className="md:w-1/2 bg-white p-8 sm:p-12 flex flex-col justify-center">
-          
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#b428b4] to-[#3023ae] bg-clip-text text-transparent mb-2">
-              Join Girgit Hub - Signup
-            </h1>
-            <p className="text-gray-500 text-sm leading-relaxed">
-              Create your account and start collaborating today
-            </p>
-          </div>
-
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="your_username"
-                className="w-full border-b border-gray-300 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#b428b4] transition-colors bg-transparent"
-                required
-              />
-            </div>
-
-            <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="w-full border-b border-gray-300 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#b428b4] transition-colors bg-transparent"
-                required
-              />
-            </div>
-
-            <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full border-b border-gray-300 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#b428b4] transition-colors bg-transparent"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-[#3023ae] to-[#b428b4] text-white font-semibold py-3 flex justify-between px-6 items-center rounded-sm hover:opacity-90 transition-opacity shadow-md mt-4"
-            >
-              <span>Create Account</span>
-              <span>&gt;</span>
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="my-8 flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400">Or continue with email</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-
-          <p className="text-center text-sm text-gray-500">
-            Already have an account?{" "}
-            <button
-              onClick={onSwitchToLogin}
-              className="text-[#b428b4] font-semibold hover:underline"
-            >
-              Log in
-            </button>
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#f6f8fa] text-[#1f2328] font-sans flex flex-col justify-center items-center px-4 py-12">
+      {/* Top GitHub Logo */}
+      <div className="flex flex-col items-center mb-6">
+        <Link to="/" className="w-12 h-12 rounded-full bg-[#010409] text-white flex items-center justify-center shadow-md mb-4 hover:opacity-90 transition-opacity">
+          <BookOpen className="w-6 h-6" />
+        </Link>
+        <h1 className="text-2xl font-light text-[#1f2328] tracking-tight">
+          Sign up for Girgit
+        </h1>
       </div>
 
+      {/* Main Register Card */}
+      <div className="w-full max-w-[340px] sm:max-w-[360px] bg-white border border-[#d0d7de] rounded-md p-5 shadow-sm">
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-xs font-semibold text-[#1f2328] mb-1">
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Choose a username"
+              required
+              className="w-full bg-[#f6f8fa] border border-[#d0d7de] rounded-md px-3 py-1.5 text-xs text-[#1f2328] focus:outline-none focus:border-[#0969da] focus:bg-white shadow-inner transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[#1f2328] mb-1">
+              Email address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              required
+              className="w-full bg-[#f6f8fa] border border-[#d0d7de] rounded-md px-3 py-1.5 text-xs text-[#1f2328] focus:outline-none focus:border-[#0969da] focus:bg-white shadow-inner transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[#1f2328] mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Create a strong password"
+              required
+              className="w-full bg-[#f6f8fa] border border-[#d0d7de] rounded-md px-3 py-1.5 text-xs text-[#1f2328] focus:outline-none focus:border-[#0969da] focus:bg-white shadow-inner transition-colors"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#1f883d] hover:bg-[#1a7f37] text-white font-semibold text-xs py-2 rounded-md shadow-sm transition-colors mt-2 disabled:opacity-50"
+          >
+            {loading ? "Creating account..." : "Create account"}
+          </button>
+        </form>
+      </div>
+
+      {/* Sign In Sub-Card */}
+      <div className="w-full max-w-[340px] sm:max-w-[360px] border border-[#d0d7de] rounded-md p-4 text-center text-xs bg-white mt-4 shadow-sm">
+        Already have an account?{" "}
+        <Link to="/login" className="text-[#0969da] hover:underline font-semibold">
+          Sign in
+        </Link>
+        .
+      </div>
+
+      {/* Toast */}
       {toast.show && (
         <div className="fixed top-6 right-6 z-50 animate-slide-in">
           <div
-            className={`flex items-center gap-3 min-w-[280px] max-w-sm px-5 py-4 shadow-xl border-l-4
-            ${toast.type === "success" ? "bg-white border-green-500 text-green-700" : "bg-white border-red-500 text-red-700"}`}
+            className={`flex items-center gap-3 min-w-[280px] max-w-sm px-4 py-3 shadow-md rounded-md text-xs font-medium border ${
+              toast.type === "success" 
+                ? "bg-[#dafbe1] border-[#4ac26b] text-[#1a7f37]" 
+                : "bg-[#ffebe9] border-[#ff8182] text-[#cf222e]"
+            }`}
           >
-            <p className="text-sm font-medium">{toast.message}</p>
+            <p>{toast.message}</p>
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import {
   User,
@@ -10,10 +10,10 @@ import {
   Lock,
   Globe,
   Pencil,
-  Check,
-  X,
+  BookOpen,
   FileText,
-  Activity
+  Search,
+  Plus
 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -55,11 +55,12 @@ export default function Profile({
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [repos, setRepos] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
-  const [streak, setStreak] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
   const [isEditingReadme, setIsEditingReadme] = useState(false);
   const [editedReadme, setEditedReadme] = useState("");
+  const [activeTab, setActiveTab] = useState<"overview" | "repositories" | "stars">("overview");
+  const [repoSearch, setRepoSearch] = useState("");
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -91,28 +92,7 @@ export default function Profile({
       }
     };
 
-    const fetchStreak = async () => {
-      try {
-        const data = await cachedFetch(`https://version-control-system-mebn.onrender.com/getStreak/${username}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          method: "GET",
-        });
-
-        if (data.status === true) {
-          setStreak(data.dailyCommits);
-        } else {
-          alert(data.message);
-        }
-      } catch (error) {
-        console.log("Error in fetching streak", error);
-      }
-    };
-
     fetchProfileData();
-    fetchStreak();
   }, [username]);
 
   const handleSaveDescription = async () => {
@@ -184,241 +164,397 @@ export default function Profile({
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-gray-600 font-sans">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#3023ae] mb-4"></div>
-        <p>Loading profile...</p>
+      <div className="min-h-screen bg-[#f6f8fa] flex flex-col items-center justify-center text-[#57606a] font-sans">
+        <div className="inline-block w-8 h-8 border-2 border-[#0969da] border-t-transparent rounded-full animate-spin mb-3"></div>
+        <p className="text-xs">Loading profile...</p>
       </div>
     );
 
   if (!profile)
     return (
-      <div className="min-h-screen bg-gray-50 text-gray-600 flex items-center justify-center font-sans">
-        <p>Profile not found</p>
+      <div className="min-h-screen bg-[#f6f8fa] text-[#57606a] flex items-center justify-center font-sans p-4">
+        <div className="bg-white border border-[#d0d7de] p-6 rounded-md shadow-sm max-w-sm text-center">
+          <p className="text-sm">Profile not found</p>
+          <Link to="/dashboard" className="text-xs text-[#0969da] hover:underline mt-2 inline-block">Return to dashboard</Link>
+        </div>
       </div>
     );
 
+  const filteredRepos = repos.filter(r => 
+    r.name.toLowerCase().includes(repoSearch.toLowerCase())
+  );
+  // Pinned repos: top 6 repositories
+  const pinnedRepos = repos.slice(0, 6);
+
   return (
-    <div className="min-h-screen bg-[#f6f8fa] text-gray-800 font-sans flex flex-col">
+    <div className="min-h-screen bg-[#f6f8fa] text-[#1f2328] font-sans flex flex-col">
       <Navbar
         username={username}
         setIsAuthenticated={setIsAuthenticated}
         navigate={navigate}
       />
 
+      {/* GitHub Tabs Header */}
+      <div className="border-b border-[#d0d7de] bg-[#f6f8fa] pt-4 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto -mb-[1px]">
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`flex items-center gap-2 px-4 py-2 border-b-2 text-xs font-semibold transition-colors ${
+              activeTab === "overview"
+                ? "border-[#fd8c73] text-[#1f2328]"
+                : "border-transparent text-[#57606a] hover:text-[#1f2328] hover:border-[#d0d7de]"
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Overview</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("repositories")}
+            className={`flex items-center gap-2 px-4 py-2 border-b-2 text-xs font-semibold transition-colors ${
+              activeTab === "repositories"
+                ? "border-[#fd8c73] text-[#1f2328]"
+                : "border-transparent text-[#57606a] hover:text-[#1f2328] hover:border-[#d0d7de]"
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Repositories</span>
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] bg-[#afb8c1]/20 rounded-full font-normal">
+              {repos.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("stars")}
+            className={`flex items-center gap-2 px-4 py-2 border-b-2 text-xs font-semibold transition-colors ${
+              activeTab === "stars"
+                ? "border-[#fd8c73] text-[#1f2328]"
+                : "border-transparent text-[#57606a] hover:text-[#1f2328] hover:border-[#d0d7de]"
+            }`}
+          >
+            <Star className="w-4 h-4" />
+            <span>Stars</span>
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] bg-[#afb8c1]/20 rounded-full font-normal">
+              0
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Profile Main Body */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           
-          {/* ---- LEFT COLUMN: USER INFO ---- */}
-          <div className="lg:w-1/4 flex flex-col space-y-6 shrink-0">
+          {/* ---- LEFT COLUMN: USER INFO (GitHub Sidebar) ---- */}
+          <div className="lg:w-1/4 flex flex-col space-y-4 shrink-0">
             
-            {/* Avatar & Basic Info */}
-            <div className="flex flex-col">
-              <div className="w-64 h-64 mx-auto lg:mx-0 bg-gradient-to-br from-[#b428b4] to-[#3023ae] rounded-full flex items-center justify-center shadow-lg mb-6 border border-gray-200 overflow-hidden relative group">
-                <User className="w-24 h-24 text-white" />
-              </div>
+            {/* Avatar - GitHub Style */}
+            <div className="w-64 h-64 sm:w-72 sm:h-72 mx-auto lg:mx-0 bg-[#f0f2f5] rounded-full border border-[#d0d7de] flex items-center justify-center overflow-hidden shadow-sm relative group">
+              <span className="text-7xl font-bold text-[#57606a] select-none">
+                {(profile.username || 'U').charAt(0).toUpperCase()}
+              </span>
+            </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight leading-tight">
+            {/* Names & Handle */}
+            <div>
+              <h1 className="text-2xl font-bold text-[#1f2328] leading-tight">
                 {profile.username}
               </h1>
-
-              <div className="flex flex-col gap-2 mt-4">
-                <div className="flex flex-col gap-3">
-                  {isEditing ? (
-                    <div className="space-y-2 mt-2 w-full">
-                      <textarea
-                        value={editedDescription}
-                        onChange={(e) => setEditedDescription(e.target.value)}
-                        className="w-full bg-white border border-gray-300 p-2 rounded-md text-sm text-gray-800 focus:outline-none focus:border-[#3023ae] focus:ring-1 focus:ring-[#3023ae] transition-all shadow-inner"
-                        rows={3}
-                        placeholder="Add a bio"
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleSaveDescription}
-                          className="px-3 py-1 bg-[#2ea043] text-white text-sm font-semibold rounded-md hover:bg-[#2c974b] transition-all flex-1"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={handleCancelEdit}
-                          className="px-3 py-1 bg-gray-100 border border-gray-300 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-200 transition-all flex-1"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="group relative">
-                      <p className="text-gray-700 text-[15px] leading-relaxed">
-                        {profile.description || "No bio provided."}
-                      </p>
-                      <button
-                        onClick={startEditing}
-                        className="w-full mt-3 px-3 py-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-200 transition-all text-center"
-                      >
-                        Edit profile
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 text-gray-600 text-sm mt-3">
-                  <Users className="w-4 h-4 text-gray-400" />
-                  <span className="font-semibold text-gray-900">{profile.followingUser}</span> followers
-                  <span className="text-gray-400">·</span>
-                  <span className="font-semibold text-gray-900">{profile.followedUser}</span> following
-                </div>
-                
-                <div className="flex items-center gap-2 text-gray-600 text-sm mt-1">
-                  <Mail className="w-4 h-4 text-gray-400" />
-                  <a href={`mailto:${profile.email}`} className="hover:text-[#3023ae] hover:underline">{profile.email}</a>
-                </div>
-              </div>
+              <p className="text-sm text-[#57606a]">
+                {profile.username}
+              </p>
             </div>
-          </div>
 
-          {/* ---- RIGHT COLUMN: CONTENT ---- */}
-          <div className="lg:w-3/4 flex flex-col space-y-8 min-w-0">
-            
-            {/* Profile README Section */}
-            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden w-full">
-              <div className="px-5 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <span className="font-mono text-gray-500">{username}</span> / README.md
-                </h2>
-                {!isEditingReadme && (
-                  <button
-                    onClick={startEditingReadme}
-                    className="text-gray-400 hover:text-[#3023ae] transition-colors p-1"
-                    title="Edit README"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              <div className="p-6">
-                {isEditingReadme ? (
-                  <div className="space-y-4">
-                    <textarea
-                      value={editedReadme}
-                      onChange={(e) => setEditedReadme(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-300 p-4 rounded-md text-sm text-gray-800 focus:outline-none focus:border-[#3023ae] focus:ring-1 focus:ring-[#3023ae] transition-all font-mono"
-                      rows={8}
-                      placeholder="Hello world!"
-                    />
-                    <div className="flex gap-2 justify-end">
-                      <button
-                        onClick={() => setIsEditingReadme(false)}
-                        className="px-4 py-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-200 transition-all"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleSaveReadme}
-                        className="px-4 py-1.5 bg-[#2ea043] text-white text-sm font-semibold rounded-md hover:bg-[#2c974b] transition-all"
-                      >
-                        Commit changes
-                      </button>
-                    </div>
+            {/* Bio & Edit Bio */}
+            <div>
+              {isEditing ? (
+                <div className="space-y-2">
+                  <textarea
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    className="w-full bg-white border border-[#d0d7de] p-2 rounded-md text-xs text-[#1f2328] focus:outline-none focus:border-[#0969da] shadow-inner"
+                    rows={3}
+                    placeholder="Add a bio"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveDescription}
+                      className="px-3 py-1 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded-md shadow-sm transition-colors flex-1"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="px-3 py-1 bg-[#f6f8fa] hover:bg-[#eaeef2] border border-[#d0d7de] text-[#24292f] text-xs font-semibold rounded-md transition-colors flex-1"
+                    >
+                      Cancel
+                    </button>
                   </div>
-                ) : (
-                  <div className="prose prose-sm sm:prose-base max-w-none text-gray-800 leading-relaxed overflow-x-auto break-words">
-                    {profile.readme ? (
-                      <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          code({ node, inline, className, children, ...props }: any) {
-                            const match = /language-(\w+)/.exec(className || "");
-                            return !inline && match ? (
-                              <SyntaxHighlighter
-                                style={oneDark}
-                                language={match[1]}
-                                PreTag="div"
-                                {...props}
-                              >
-                                {String(children).replace(/\n$/, "")}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={`${className} bg-gray-100 px-1 py-0.5 rounded text-[#b428b4]`} {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {profile.readme}
-                      </ReactMarkdown>
-                    ) : (
-                      <div className="text-center py-6">
-                        <p className="text-gray-500 text-sm mb-4">You can add a README to your profile.</p>
-                        <button
-                          onClick={startEditingReadme}
-                          className="px-4 py-1.5 border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 text-sm font-semibold rounded-md transition-all shadow-sm"
-                        >
-                          Add README
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Repositories */}
-            <div className="w-full">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-medium text-gray-900 flex items-center gap-2">
-                  Repositories
-                  <span className="bg-gray-200 text-gray-700 text-xs font-semibold py-0.5 px-2 rounded-full">
-                    {repos.length}
-                  </span>
-                </h2>
-                <button
-                  onClick={() => navigate('/repo/new')}
-                  className="px-3 py-1.5 bg-[#2ea043] text-white text-sm font-semibold rounded-md hover:bg-[#2c974b] transition-all shadow-sm flex items-center gap-1"
-                >
-                  <FileText className="w-4 h-4" /> New
-                </button>
-              </div>
-
-              {repos.length === 0 ? (
-                <div className="border border-gray-300 rounded-lg p-12 text-center bg-white w-full">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">You don't have any repositories yet.</h3>
-                  <p className="text-gray-500 mb-6">Create one to get started.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                  {repos.map((repo) => (
-                    <div
-                      key={repo._id}
-                      onClick={() => navigate(`/repo/${username}/${repo.name}`)}
-                      className="bg-white border border-gray-300 rounded-lg p-5 hover:border-gray-400 transition-all cursor-pointer flex flex-col w-full min-w-0"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-[#0969da] text-lg hover:underline truncate pr-4">
-                          {repo.name}
-                        </h3>
-                        <span className="text-xs font-semibold text-gray-500 border border-gray-300 px-2 py-0.5 rounded-full shrink-0">
-                          {repo.isPrivate ? "Private" : "Public"}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-6 line-clamp-2 flex-grow break-words">
-                        {repo.description || "No description."}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mt-auto">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-3 h-3 rounded-full bg-[#f1e05a]"></div>
-                          JavaScript
-                        </div>
-                        <span>Updated on {new Date(repo.updatedAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  ))}
+                <div>
+                  <p className="text-xs text-[#24292f] leading-relaxed">
+                    {profile.description || "No bio provided."}
+                  </p>
+                  <button
+                    onClick={startEditing}
+                    className="w-full mt-3 px-3 py-1.5 bg-[#f6f8fa] hover:bg-[#eaeef2] border border-[#d0d7de] text-[#24292f] text-xs font-semibold rounded-md transition-colors text-center"
+                  >
+                    Edit profile
+                  </button>
                 </div>
               )}
             </div>
 
-            {/* Removed Streak Grid since the component does not exist */}
+            {/* Followers / Following counts */}
+            <div className="flex items-center gap-2 text-xs text-[#57606a] pt-1">
+              <Users className="w-4 h-4 text-[#57606a]" />
+              <button 
+                onClick={() => setActiveTab("overview")}
+                className="hover:text-[#0969da] transition-colors"
+              >
+                <strong className="text-[#1f2328] font-semibold">{profile.followingUser}</strong> followers
+              </button>
+              <span>&middot;</span>
+              <button 
+                onClick={() => setActiveTab("overview")}
+                className="hover:text-[#0969da] transition-colors"
+              >
+                <strong className="text-[#1f2328] font-semibold">{profile.followedUser}</strong> following
+              </button>
+            </div>
+
+            {/* Email */}
+            {profile.email && (
+              <div className="flex items-center gap-2 text-xs text-[#57606a] pt-1">
+                <Mail className="w-3.5 h-3.5 text-[#57606a]" />
+                <span className="truncate">{profile.email}</span>
+              </div>
+            )}
+          </div>
+
+          {/* ---- RIGHT COLUMN: TAB CONTENT ---- */}
+          <div className="lg:w-3/4 flex flex-col space-y-6 min-w-0">
+            
+            {activeTab === "overview" && (
+              <>
+                {/* Profile README Section */}
+                <div className="bg-white border border-[#d0d7de] rounded-md overflow-hidden shadow-sm">
+                  <div className="px-4 py-2.5 border-b border-[#d0d7de] flex justify-between items-center bg-[#f6f8fa]">
+                    <h2 className="text-xs font-semibold text-[#57606a] flex items-center gap-2">
+                      <span className="font-mono text-[#1f2328]">{username}</span> / README.md
+                    </h2>
+                    {!isEditingReadme && (
+                      <button
+                        onClick={startEditingReadme}
+                        className="text-[#57606a] hover:text-[#0969da] p-1 transition-colors"
+                        title="Edit README"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    {isEditingReadme ? (
+                      <div className="space-y-3">
+                        <textarea
+                          value={editedReadme}
+                          onChange={(e) => setEditedReadme(e.target.value)}
+                          className="w-full bg-[#f6f8fa] border border-[#d0d7de] p-3 rounded-md text-xs text-[#1f2328] focus:outline-none focus:border-[#0969da] font-mono shadow-inner"
+                          rows={8}
+                          placeholder="Hello world! Share something about yourself."
+                        />
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => setIsEditingReadme(false)}
+                            className="px-3 py-1 bg-[#f6f8fa] hover:bg-[#eaeef2] border border-[#d0d7de] text-[#24292f] text-xs font-semibold rounded-md"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleSaveReadme}
+                            className="px-3 py-1 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded-md shadow-sm"
+                          >
+                            Commit changes
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="prose prose-sm max-w-none text-[#1f2328]">
+                        {profile.readme ? (
+                          <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code({ node, inline, className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(className || "");
+                                return !inline && match ? (
+                                  <SyntaxHighlighter
+                                    style={oneDark}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    {...props}
+                                  >
+                                    {String(children).replace(/\n$/, "")}
+                                  </SyntaxHighlighter>
+                                ) : (
+                                  <code className="bg-[#afb8c1]/20 px-1 py-0.5 rounded text-xs font-mono text-[#0969da]" {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              },
+                            }}
+                          >
+                            {profile.readme}
+                          </ReactMarkdown>
+                        ) : (
+                          <div className="text-center py-6">
+                            <p className="text-[#57606a] text-xs mb-3">You can add a README to introduce yourself.</p>
+                            <button
+                              onClick={startEditingReadme}
+                              className="px-3 py-1.5 border border-[#d0d7de] bg-[#f6f8fa] text-[#24292f] hover:bg-[#eaeef2] text-xs font-semibold rounded-md shadow-sm"
+                            >
+                              Add README
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pinned Repositories Grid (2x3) */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-[#1f2328]">Pinned</h2>
+                    <button 
+                      onClick={() => setActiveTab("repositories")}
+                      className="text-xs text-[#0969da] hover:underline"
+                    >
+                      View all ({repos.length})
+                    </button>
+                  </div>
+
+                  {pinnedRepos.length === 0 ? (
+                    <div className="border border-[#d0d7de] rounded-md p-8 text-center bg-white">
+                      <p className="text-xs text-[#57606a] mb-3">No repositories created yet.</p>
+                      <button
+                        onClick={() => navigate('/repo/new')}
+                        className="px-3 py-1.5 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded-md shadow-sm"
+                      >
+                        Create repository
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                      {pinnedRepos.map((repo) => (
+                        <div
+                          key={repo._id}
+                          onClick={() => navigate(`/repo/${username}/${repo.name}`)}
+                          className="bg-white border border-[#d0d7de] rounded-md p-4 hover:border-[#8c959f] transition-all cursor-pointer flex flex-col shadow-xs"
+                        >
+                          <div className="flex items-start justify-between mb-1.5">
+                            <h3 className="font-semibold text-[#0969da] text-xs hover:underline truncate pr-2">
+                              {repo.name}
+                            </h3>
+                            <span className="text-[10px] font-medium text-[#57606a] border border-[#d0d7de] px-1.5 py-0.2 rounded-full shrink-0">
+                              {repo.isPrivate ? "Private" : "Public"}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-[#57606a] mb-4 line-clamp-2 flex-grow">
+                            {repo.description || "No description provided."}
+                          </p>
+
+                          <div className="flex items-center gap-4 text-[11px] text-[#57606a] mt-auto">
+                            <div className="flex items-center gap-1">
+                              <div className="w-2.5 h-2.5 rounded-full bg-[#f1e05a]"></div>
+                              <span>JavaScript</span>
+                            </div>
+                            <span>Updated {new Date(repo.updatedAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {activeTab === "repositories" && (
+              <div className="space-y-4">
+                {/* Search & New Bar */}
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#d0d7de]">
+                  <div className="relative flex-1 max-w-md">
+                    <input 
+                      type="text"
+                      value={repoSearch}
+                      onChange={(e) => setRepoSearch(e.target.value)}
+                      placeholder="Find a repository..."
+                      className="w-full bg-white border border-[#d0d7de] rounded-md pl-8 pr-3 py-1.5 text-xs text-[#1f2328] focus:outline-none focus:border-[#0969da]"
+                    />
+                    <Search className="w-3.5 h-3.5 text-[#57606a] absolute left-2.5 top-2.5" />
+                  </div>
+
+                  <button
+                    onClick={() => navigate('/repo/new')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded-md shadow-sm transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>New</span>
+                  </button>
+                </div>
+
+                {/* Repositories List */}
+                <div className="divide-y divide-[#d0d7de]">
+                  {filteredRepos.map((repo) => (
+                    <div key={repo._id} className="py-4 flex items-start justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Link 
+                            to={`/repo/${username}/${repo.name}`}
+                            className="font-semibold text-sm text-[#0969da] hover:underline"
+                          >
+                            {repo.name}
+                          </Link>
+                          <span className="text-[10px] font-medium text-[#57606a] border border-[#d0d7de] px-1.5 py-0.2 rounded-full">
+                            {repo.isPrivate ? "Private" : "Public"}
+                          </span>
+                        </div>
+                        {repo.description && (
+                          <p className="text-xs text-[#57606a] mb-2">{repo.description}</p>
+                        )}
+                        <div className="flex items-center gap-4 text-xs text-[#57606a]">
+                          <div className="flex items-center gap-1">
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#f1e05a]"></div>
+                            <span>JavaScript</span>
+                          </div>
+                          <span>Updated {new Date(repo.updatedAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => navigate(`/repo/${username}/${repo.name}`)}
+                        className="px-2.5 py-1 text-xs font-medium text-[#24292f] bg-[#f6f8fa] hover:bg-[#eaeef2] border border-[#d0d7de] rounded-md shadow-xs"
+                      >
+                        View
+                      </button>
+                    </div>
+                  ))}
+
+                  {filteredRepos.length === 0 && (
+                    <div className="py-12 text-center text-xs text-[#57606a]">
+                      No repositories matched your search.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "stars" && (
+              <div className="border border-[#d0d7de] rounded-md bg-white p-12 text-center text-xs text-[#57606a]">
+                You haven't starred any repositories yet.
+              </div>
+            )}
 
           </div>
         </div>
