@@ -1,5 +1,5 @@
 // handleLogout.ts
-export default async function handleLogout(setIsAuthenticated, navigate) {
+export default async function handleLogout() {
   try {
     const response = await fetch("https://version-control-system-mebn.onrender.com/logout", {
       method: "POST",
@@ -8,7 +8,11 @@ export default async function handleLogout(setIsAuthenticated, navigate) {
     });
 
     const res = await response.json();
-    return res
+    if (res.status) {
+      localStorage.removeItem("username");
+      localStorage.removeItem("email");
+    }
+    return res;
   } catch (error) {
     console.log("Error during logout:", error);
     return { status: false, message: "Error occurred during logout" };

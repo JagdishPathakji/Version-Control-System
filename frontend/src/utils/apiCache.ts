@@ -1,4 +1,4 @@
-﻿const cache = new Map<string, { data: any, time: number }>();
+const cache = new Map<string, { data: any, time: number }>();
 
 const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
@@ -25,7 +25,11 @@ export const cachedFetch = async (url: string, options: any = {}) => {
     return data;
 };
 
-export const clearCache = (matchString: string) => {
+export const clearCache = (matchString?: string) => {
+    if (!matchString) {
+        cache.clear();
+        return;
+    }
     for (const key of cache.keys()) {
         if (key.includes(matchString)) {
             cache.delete(key);

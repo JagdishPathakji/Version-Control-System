@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function Login({ isAuthenticated, setIsAuthenticated }) {
+export default function Login({ isAuthenticated: _isAuthenticated, setIsAuthenticated }: { isAuthenticated?: boolean; setIsAuthenticated: (value: boolean) => void }) {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -42,8 +42,8 @@ export default function Login({ isAuthenticated, setIsAuthenticated }) {
         type: "success",
       });
 
-      localStorage.setItem("email", formData.email);
-      localStorage.setItem("username", formData.username);
+      localStorage.setItem("email", data.email || formData.email.toLowerCase().trim());
+      localStorage.setItem("username", data.username || formData.username.toLowerCase().trim());
 
       setTimeout(() => {
         setIsAuthenticated(true);

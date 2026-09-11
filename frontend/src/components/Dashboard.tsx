@@ -2,44 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { cachedFetch } from "../utils/apiCache";
-import { Bot, User, Users, Globe, Lock } from "lucide-react";
+import { User, Users, Globe, Lock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import getAllProfile from "../functionalities/getAllProfile";
 
-/* Toast */
-function Toast({
-  message,
-  type,
-  onClose,
-}: {
-  message: string;
-  type: "success" | "error" | "info";
-  onClose: () => void;
-}) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  const base =
-    "fixed top-6 right-6 z-50 px-6 py-4 border text-sm font-semibold shadow-xl backdrop-blur-md animate-slide-in";
-  const styles = {
-    success:
-      "bg-gray-100/90 border-[#3023ae]/40 text-[#3023ae] shadow-[0_0_30px_rgba(0,217,255,0.4)]",
-    error:
-      "bg-gray-100/90 border-red-500/40 text-red-400 shadow-[0_0_30px_rgba(239,68,68,0.4)]",
-    info:
-      "bg-gray-100/90 border-[#b428b4]/40 text-[#b428b4] shadow-[0_0_30px_rgba(255,0,110,0.4)]",
-  };
-
-  return (
-    <div className={`${base} ${styles[type]}`}>
-      {message}
-    </div>
-  );
-}
-
-export default function Dashboard({ setIsAuthenticated }) {
+export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?: (val: boolean) => void }) {
   const navigate = useNavigate();
   const username = localStorage.getItem("username") || "Developer";
   const [repos, setRepos] = useState([]);
@@ -143,7 +110,7 @@ export default function Dashboard({ setIsAuthenticated }) {
               </p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {profiles.map((profile, index) => (
+                {profiles.map((profile: any, index: number) => (
                   <div 
                     key={index} 
                     onClick={() => navigate(`/publicProfile/${profile.username}`)}

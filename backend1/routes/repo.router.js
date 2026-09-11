@@ -15,6 +15,5 @@ repoRouter.post("/repo/:username/:repoName/edit", repoController.editFile);
 repoRouter.post("/repo/:username/:repoName/merge", repoController.mergeBranches);
 
 repoRouter.get("/public/repos/:username", repoController.getPublicRepos);
-repoRouter.get("/admin/cleanup", repoController.adminCleanup);
 
 module.exports = repoRouter;

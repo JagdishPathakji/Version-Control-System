@@ -15,19 +15,15 @@ const port = process.env.PORT || 4000
 app.use(cookieparser())
 app.use(express.json())
 
-// Default production origin
-const PROD_ORIGIN1 = "https://version-control-system-frontend.onrender.com";
-const PROD_ORIGIN2 = "https://girgit-space.netlify.app/"
-// When testing locally, set ALLOW_LOCAL=true in your .env to allow localhost origins
-const allowedOrigins = [PROD_ORIGIN1, PROD_ORIGIN2];
-if (process.env.ALLOW_LOCAL === "true") {
-    allowedOrigins.push(
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000"
-    );
-}
+// Allowed origins (without trailing slashes)
+const allowedOrigins = [
+    "https://version-control-system-frontend.onrender.com",
+    "https://girgit-space.netlify.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000"
+];
 
 console.log("CORS allowed origins:", allowedOrigins);
 
@@ -35,10 +31,12 @@ app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (e.g., mobile apps, curl)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        const cleanOrigin = origin.replace(/\/+$/, "");
+        if (allowedOrigins.includes(cleanOrigin)) {
             return callback(null, true);
         } else {
-            return callback(new Error('CORS policy: This origin is not allowed - ' + origin));
+            console.warn("Blocked by CORS:", origin);
+            return callback(null, false);
         }
     },
     credentials: true,            // allow cookies/auth headers

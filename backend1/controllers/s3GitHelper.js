@@ -77,6 +77,7 @@ function parseCommit(content) {
     const lines = text.split('\n');
     let tree = null;
     let parent = null;
+    let parents = [];
     let author = null;
     let message = "";
     
@@ -86,13 +87,16 @@ function parseCommit(content) {
         const [key, ...rest] = lines[i].split(' ');
         const val = rest.join(' ').trim();
         if (key === 'tree') tree = val;
-        else if (key === 'parent') parent = val;
+        else if (key === 'parent') {
+            if (!parent) parent = val;
+            parents.push(val);
+        }
         else if (key === 'author') author = val;
     }
     
     message = lines.slice(i + 1).join('\n').trim();
     
-    return { tree, parent, author, message };
+    return { tree, parent, parents, author, message };
 }
 
 const crypto = require('crypto');

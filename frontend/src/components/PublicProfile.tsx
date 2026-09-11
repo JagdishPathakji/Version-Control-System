@@ -176,9 +176,9 @@ export default function PublicProfile({
 
                 <div className="flex items-center gap-2 text-gray-600 text-sm mt-3">
                   <Users className="w-4 h-4 text-gray-400" />
-                  <span className="font-semibold text-gray-900">{profile.followedUser}</span> followers
+                  <span className="font-semibold text-gray-900">{follower !== null ? follower : profile.followingUser}</span> followers
                   <span className="text-gray-400">·</span>
-                  <span className="font-semibold text-gray-900">{follower}</span> following
+                  <span className="font-semibold text-gray-900">{profile.followedUser}</span> following
                 </div>
               </div>
             </div>

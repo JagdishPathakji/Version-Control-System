@@ -132,20 +132,21 @@ const signup = async (req, res) => {
 
         console.log("Inside signup 7")
 
-        const count = await redisClient.get(`${email}`)
-        if (count == null) {
-            await redisClient.set(`${email}`, 1, { EX: 300 })
-        }
-        else {
-            const ttl = await redisClient.ttl(email); // seconds
-            if (count > 2) {
+        const rawCount = await redisClient.get(`${email}`);
+        const count = rawCount ? parseInt(rawCount, 10) : 0;
+        if (count === 0) {
+            await redisClient.set(`${email}`, 1, { EX: 300 });
+        } else {
+            const ttl = await redisClient.ttl(email);
+            if (count >= 3) {
+                const remainingMinutes = ttl > 0 ? Math.ceil(ttl / 60) : 5;
                 return res.send({
                     status: "redis",
-                    message: `Too many OTP Request from this ${email}. Kindly try after ${ttl / 60} minutes`
-                })
-            }
-            else {
-                await redisClient.set(`${email}`, count + 1, { EX: ttl })
+                    message: `Too many OTP requests from ${email}. Kindly try after ${remainingMinutes} minutes.`
+                });
+            } else {
+                const expireSec = ttl > 0 ? ttl : 300;
+                await redisClient.set(`${email}`, count + 1, { EX: expireSec });
             }
         }
 
@@ -249,31 +250,44 @@ const login = async (req, res) => {
         if (!validator.isEmail(userData.email))
             return res.status(422).send({ message: "Email format is invalid", status: false })
 
-        const databaseResult = await User.findOne({
-            $and: [{ email: userData.email }, { username: userData.username }],
-        });
+        const email = userData.email.toLowerCase().trim();
+        const query = { email };
+        if (userData.username) {
+            query.username = userData.username.toLowerCase().trim();
+        }
+
+        const databaseResult = await User.findOne(query);
         if (!databaseResult)
-            return res.status(404).send({ message: "User not found", status: false })
+            return res.status(404).send({ message: "User not found", status: false });
 
         const isMatch = await bcrypt.compare(userData.password, databaseResult.password);
         if (!isMatch) return res.status(401).send({ message: "Invalid credentials", status: false });
 
-
-        let token
+        let token;
         if (req.body.cli === true) {
-            token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET_KEY)
-            res.status(200).send({ status: true, message: "User Login Successfull", token: token })
-        }
-        else {
-            token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" })
+            token = jwt.sign({ email: databaseResult.email }, process.env.JWT_SECRET_KEY);
+            return res.status(200).send({ 
+                status: true, 
+                message: "User Login Successfull", 
+                token: token,
+                username: databaseResult.username,
+                email: databaseResult.email
+            });
+        } else {
+            token = jwt.sign({ email: databaseResult.email }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 24 * 60 * 60 * 1000, // 1 day
-            })
+                maxAge: 24 * 60 * 60 * 1000,
+            });
 
-            res.status(200).send({ status: true, message: "User Login Successfull" })
+            return res.status(200).send({ 
+                status: true, 
+                message: "User Login Successfull",
+                username: databaseResult.username,
+                email: databaseResult.email
+            });
         }
     }
     catch (error) {

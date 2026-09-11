@@ -15,6 +15,24 @@ const getUser = async (req) => {
     }
 }
 
+// Helper to look up repo and enforce owner-existence and private repo authorization
+const getAuthorizedRepo = async (req, username, repoName) => {
+    const owner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
+    if (!owner) return { error: { status: 404, message: "User not found" } };
+
+    const repo = await Repository.findOne({ name: repoName, owner: owner._id });
+    if (!repo) return { error: { status: 404, message: "Repository not found" } };
+
+    if (repo.isPrivate) {
+        const user = await getUser(req);
+        if (!user || user._id.toString() !== owner._id.toString()) {
+            return { error: { status: 403, message: "Access denied: Private repository" } };
+        }
+    }
+
+    return { owner, repo };
+};
+
 const createRepo = async (req, res) => {
     try {
         const user = await getUser(req);
@@ -61,15 +79,9 @@ const getUserRepos = async (req, res) => {
 const getRepoDetails = async (req, res) => {
     try {
         const { username, repoName } = req.params;
-        
-        // Find owner
-        const owner = await User.findOne({ username });
-        if (!owner) return res.status(404).json({ status: false, message: "User not found" });
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
-        const repo = await Repository.findOne({ name: repoName, owner: owner._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
-
-        // Optionally, check if it has a HEAD ref in S3 to know if it's empty
         const headRef = await s3Git.getHeadRef(repo.s3Prefix);
         const isEmpty = !headRef;
 
@@ -83,9 +95,8 @@ const getRepoDetails = async (req, res) => {
 const getRepoFiles = async (req, res) => {
     try {
         const { username, repoName } = req.params;
-        const owner = await User.findOne({ username });
-        const repo = await Repository.findOne({ name: repoName, owner: owner?._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
         let oid = req.query.oid; // if browsing sub-folder or specific commit
         const branch = req.query.branch;
@@ -122,30 +133,43 @@ const getRepoFiles = async (req, res) => {
 const getRepoCommits = async (req, res) => {
     try {
         const { username, repoName } = req.params;
-        const owner = await User.findOne({ username });
-        const repo = await Repository.findOne({ name: repoName, owner: owner?._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
         const branch = req.query.branch;
         let refPath = branch ? `refs/heads/${branch}` : await s3Git.getHeadRef(repo.s3Prefix);
         if (!refPath) return res.status(200).json({ status: true, commits: [] });
         
         let currentOid = await s3Git.getRefOid(repo.s3Prefix, refPath);
+        const visited = new Set();
+        const queue = currentOid ? [currentOid] : [];
         const commits = [];
 
-        // Traverse history (limit to 50 for performance)
-        for (let i = 0; i < 50; i++) {
-            if (!currentOid) break;
-            const commitObj = await s3Git.getGitObject(repo.s3Prefix, currentOid);
-            if (!commitObj) break;
+        // Traverse history with queue so merge parents aren't lost (limit to 50 for performance)
+        while (queue.length > 0 && commits.length < 50) {
+            const oid = queue.shift();
+            if (!oid || visited.has(oid)) continue;
+            visited.add(oid);
+
+            const commitObj = await s3Git.getGitObject(repo.s3Prefix, oid);
+            if (!commitObj) continue;
 
             const commit = s3Git.parseCommit(commitObj.content);
+            const parentList = (commit.parents && commit.parents.length > 0) 
+                ? commit.parents 
+                : (commit.parent ? [commit.parent] : []);
+
             commits.push({
-                oid: currentOid,
+                oid: oid,
                 message: commit.message,
                 author: commit.author,
+                parent: commit.parent,
+                parents: parentList
             });
-            currentOid = commit.parent;
+
+            for (const p of parentList) {
+                if (!visited.has(p)) queue.push(p);
+            }
         }
 
         return res.status(200).json({ status: true, commits });
@@ -158,9 +182,8 @@ const getRepoCommits = async (req, res) => {
 const getBlobContent = async (req, res) => {
     try {
         const { username, repoName, oid } = req.params;
-        const owner = await User.findOne({ username });
-        const repo = await Repository.findOne({ name: repoName, owner: owner?._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
         const blobObj = await s3Git.getGitObject(repo.s3Prefix, oid);
         if (!blobObj || blobObj.type !== 'blob') {
@@ -178,9 +201,8 @@ const getBlobContent = async (req, res) => {
 const getRepoBranches = async (req, res) => {
     try {
         const { username, repoName } = req.params;
-        const owner = await User.findOne({ username });
-        const repo = await Repository.findOne({ name: repoName, owner: owner?._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
         const branches = await s3Git.getBranches(repo.s3Prefix);
         return res.status(200).json({ status: true, branches });
@@ -270,15 +292,6 @@ const editFile = async (req, res) => {
     }
 }
 
-const adminCleanup = async (req, res) => {
-    try {
-        const result = await Repository.deleteMany({ name: { $ne: "project-test" } });
-        await Repository.updateMany({ name: "project-test" }, { isPrivate: false });
-        return res.status(200).json({ status: true, message: `Deleted ${result.deletedCount} repos. Set project-test to public.` });
-    } catch (error) {
-        return res.status(500).json({ status: false, message: "Error in cleanup" });
-    }
-}
 
 
 const mergeBranches = async (req, res) => {
@@ -339,15 +352,16 @@ const mergeBranches = async (req, res) => {
 const getCommitDiff = async (req, res) => {
     try {
         const { username, repoName, oid } = req.params;
-        const owner = await User.findOne({ username });
-        const repo = await Repository.findOne({ name: repoName, owner: owner?._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
         const commitObj = await s3Git.getGitObject(repo.s3Prefix, oid);
         if (!commitObj) return res.status(404).json({ status: false, message: "Commit not found" });
 
         const commit = s3Git.parseCommit(commitObj.content);
-        const parentOid = commit.parents && commit.parents.length > 0 ? commit.parents[0] : null;
+        const parentOid = (commit.parents && commit.parents.length > 0) 
+            ? commit.parents[0] 
+            : (commit.parent || null);
 
         const currentTreeObj = await s3Git.getGitObject(repo.s3Prefix, commit.tree);
         const currentEntries = currentTreeObj ? s3Git.parseTree(currentTreeObj.content) : [];
@@ -418,7 +432,6 @@ module.exports = {
     getRepoBranches,
     getPublicRepos,
     editFile,
-    adminCleanup,
     mergeBranches,
     getCommitDiff
 };

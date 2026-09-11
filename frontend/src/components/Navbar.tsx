@@ -1,9 +1,11 @@
-import { Code2, LogOut, User, BookOpen } from "lucide-react";
+import { Code2, LogOut, User } from "lucide-react";
 import handleLogout from "../functionalities/handleLogout";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { clearCache } from "../utils/apiCache";
 
 interface NavbarProps {
-  username?: string;
+  username?: string | null;
   setIsAuthenticated?: (value: boolean) => void;
   navigate?: any;
 }
@@ -41,10 +43,14 @@ function Toast({
 }
 
 export default function Navbar({
-  username = "User",
+  username,
   setIsAuthenticated,
-  navigate,
+  navigate: propNavigate,
 }: NavbarProps) {
+  const defaultNavigate = useNavigate();
+  const nav = propNavigate || defaultNavigate;
+  const currentUsername = username || localStorage.getItem("username") || "User";
+
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info";
@@ -55,11 +61,16 @@ export default function Navbar({
 
     if (res.status === true) {
       setToast({ message: res.message, type: "success" });
-      setIsAuthenticated(false);
+      localStorage.removeItem("username");
+      localStorage.removeItem("email");
+      clearCache();
+      if (setIsAuthenticated) {
+        setIsAuthenticated(false);
+      }
 
       setTimeout(() => {
-        navigate("/login", { replace: true });
-      }, 1500);
+        nav("/login", { replace: true });
+      }, 1000);
     } else {
       setToast({ message: `Logout Failed: ${res.message}`, type: "error" });
     }
@@ -84,7 +95,7 @@ export default function Navbar({
                 <Code2
                   className="w-6 h-6 text-white"
                   onClick={() => {
-                    navigate("/dashboard");
+                    nav("/dashboard");
                   }}
                   style={{ cursor: "pointer" }}
                 />
@@ -92,7 +103,7 @@ export default function Navbar({
               <span
                 className="text-xl font-mono font-bold bg-gradient-to-r from-[#b428b4] to-[#3023ae] bg-clip-text text-transparent"
                 onClick={() => {
-                  navigate("/dashboard");
+                  nav("/dashboard");
                 }}
                 style={{ cursor: "pointer" }}
               >
@@ -102,15 +113,13 @@ export default function Navbar({
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
-
-
               <span
                 className="text-sm text-gray-600 hidden sm:block hover:text-[#b428b4] transition-colors cursor-pointer"
                 onClick={() => {
-                  navigate("/profile");
+                  nav("/profile");
                 }}
               >
-                {username}
+                {currentUsername}
               </span>
 
               {/* Square Profile Icon */}
@@ -118,7 +127,7 @@ export default function Navbar({
                 className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#b428b4]/20 to-[#3023ae]/20 rounded-lg border border-[#b428b4]/30 hover:border-[#b428b4]/60 transition-all"
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  navigate("/profile");
+                  nav("/profile");
                 }}
               >
                 <User className="w-5 h-5 text-[#b428b4]" />
