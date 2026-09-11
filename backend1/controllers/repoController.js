@@ -270,9 +270,7 @@ const editFile = async (req, res) => {
     }
 }
 
-const adminCleanup,
-    mergeBranches,
-    getCommitDiff = async (req, res) => {
+const adminCleanup = async (req, res) => {
     try {
         const result = await Repository.deleteMany({ name: { $ne: "project-test" } });
         await Repository.updateMany({ name: "project-test" }, { isPrivate: false });
@@ -283,8 +281,7 @@ const adminCleanup,
 }
 
 
-const mergeBranches,
-    getCommitDiff = async (req, res) => {
+const mergeBranches = async (req, res) => {
     try {
         const user = await getUser(req);
         if (!user) return res.status(401).json({ status: false, message: "Unauthorized" });
