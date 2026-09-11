@@ -91,6 +91,54 @@ const RepositoryView = () => {
         fetchRepoData();
     }, [username, repoName, selectedBranch, targetOid]);
 
+    // Calculate Language Breakdown
+    const getLanguageBreakdown = () => {
+        if (!files || files.length === 0) return null;
+        
+        const langCounts: Record<string, { count: number, color: string }> = {};
+        let totalCodeFiles = 0;
+        
+        files.forEach(f => {
+            if (f.type !== 'blob') return;
+            const parts = f.name.split('.');
+            if (parts.length < 2) return;
+            const ext = parts[parts.length - 1].toLowerCase();
+            
+            let lang = 'Other';
+            let color = 'bg-gray-300';
+            
+            switch (ext) {
+                case 'js': case 'jsx': lang = 'JavaScript'; color = 'bg-yellow-400'; break;
+                case 'ts': case 'tsx': lang = 'TypeScript'; color = 'bg-blue-500'; break;
+                case 'py': lang = 'Python'; color = 'bg-green-500'; break;
+                case 'html': lang = 'HTML'; color = 'bg-orange-500'; break;
+                case 'css': lang = 'CSS'; color = 'bg-purple-500'; break;
+                case 'json': lang = 'JSON'; color = 'bg-gray-500'; break;
+                case 'md': lang = 'Markdown'; color = 'bg-gray-400'; break;
+                case 'java': lang = 'Java'; color = 'bg-red-500'; break;
+                case 'cpp': case 'c': lang = 'C++'; color = 'bg-pink-500'; break;
+            }
+            
+            if (lang !== 'Other' && lang !== 'Markdown' && lang !== 'JSON') {
+                if (!langCounts[lang]) langCounts[lang] = { count: 0, color };
+                langCounts[lang].count++;
+                totalCodeFiles++;
+            }
+        });
+        
+        if (totalCodeFiles === 0) return null;
+        
+        const breakdown = Object.entries(langCounts).map(([lang, data]) => ({
+            lang,
+            color: data.color,
+            percentage: ((data.count / totalCodeFiles) * 100).toFixed(1)
+        })).sort((a, b) => parseFloat(b.percentage) - parseFloat(a.percentage));
+        
+        return breakdown;
+    };
+    
+    const languageBreakdown = getLanguageBreakdown();
+
     if (loading) return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
             <div className="inline-block w-12 h-12 border-4 border-[#b428b4] border-t-transparent rounded-full animate-spin"></div>
@@ -210,6 +258,30 @@ const RepositoryView = () => {
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Language Breakdown Bar */}
+                            {languageBreakdown && (
+                                <div className="mb-4">
+                                    <div className="w-full h-2 rounded-full flex overflow-hidden mb-2">
+                                        {languageBreakdown.map(l => (
+                                            <div 
+                                                key={l.lang} 
+                                                className={`h-full ${l.color}`} 
+                                                style={{ width: `${l.percentage}%` }}
+                                                title={`${l.lang} ${l.percentage}%`}
+                                            ></div>
+                                        ))}
+                                    </div>
+                                    <div className="flex flex-wrap gap-4 text-xs font-semibold text-gray-600">
+                                        {languageBreakdown.map(l => (
+                                            <div key={l.lang} className="flex items-center gap-1">
+                                                <div className={`w-2 h-2 rounded-full ${l.color}`}></div>
+                                                <span>{l.lang} <span className="text-gray-400">{l.percentage}%</span></span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="border border-gray-300 rounded-lg bg-white overflow-hidden shadow-sm">
                             {commits.length > 0 && (
