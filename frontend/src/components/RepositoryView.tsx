@@ -75,12 +75,31 @@ const RepositoryView = () => {
         }
     };
 
-    const handleDownloadZip = (e?: React.MouseEvent) => {
+    const handleDownloadZip = async (e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         setIsDownloading(true);
-        const downloadUrl = `https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/zip?branch=${selectedBranch}${targetOid ? `&oid=${targetOid}` : ''}`;
-        window.location.href = downloadUrl;
-        setTimeout(() => setIsDownloading(false), 2000);
+        try {
+            const downloadUrl = `https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/zip?branch=${selectedBranch}${targetOid ? `&oid=${targetOid}` : ''}`;
+            const res = await fetch(downloadUrl, { credentials: 'include' });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.message || `Download failed (${res.status})`);
+            }
+            const blob = await res.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `${repoName}-${selectedBranch}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (err: any) {
+            console.error('Download ZIP error:', err);
+            alert(err.message || 'Failed to download ZIP archive');
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     const handleMerge = async () => {
@@ -243,8 +262,8 @@ const RepositoryView = () => {
 
     const latestCommit = targetOid ? commits.find(c => c.oid === targetOid) || commits[0] : commits[0];
 
-    const initSnippet = `girgit init\ngirgit add .\ngirgit commit -m "first commit"\ngirgit branch -M main\ngirgit push ${s3Url}`;
-    const pushSnippet = `girgit push ${s3Url}`;
+    const initSnippet = `girgit init\ngirgit commit -m "first commit"\ngirgit remote add origin ${s3Url}\ngirgit push origin master`;
+    const pushSnippet = `girgit remote add origin ${s3Url}\ngirgit push origin master`;
 
     return (
         <div className="min-h-screen bg-[#f6f8fa] text-[#1f2328] font-sans flex flex-col">

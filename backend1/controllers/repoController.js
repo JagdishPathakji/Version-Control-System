@@ -21,7 +21,7 @@ const getAuthorizedRepo = async (req, username, repoName) => {
     const owner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
     if (!owner) return { error: { status: 404, message: "User not found" } };
 
-    const repo = await Repository.findOne({ name: repoName, owner: owner._id });
+    const repo = await Repository.findOne({ name: { $regex: new RegExp(`^${repoName}$`, "i") }, owner: owner._id });
     if (!repo) return { error: { status: 404, message: "Repository not found" } };
 
     if (repo.isPrivate) {
@@ -423,6 +423,20 @@ const getCommitDiff = async (req, res) => {
     }
 };
 
+
+function createZipArchive(options = { zlib: { level: 9 } }) {
+    if (typeof archiver === 'function') {
+        return archiver('zip', options);
+    }
+    if (archiver && archiver.ZipArchive) {
+        return new archiver.ZipArchive(options);
+    }
+    if (archiver && typeof archiver.create === 'function') {
+        return archiver.create('zip', options);
+    }
+    throw new Error('Unsupported archiver package format');
+}
+
 // Recursively traverse git tree objects to collect all files with relative paths
 async function collectTreeFiles(prefix, treeOid, currentPath = "") {
     const treeObj = await s3Git.getGitObject(prefix, treeOid);
@@ -482,7 +496,7 @@ const downloadZip = async (req, res) => {
 
         const files = await collectTreeFiles(repo.s3Prefix, treeOid);
 
-        const archive = archiver('zip', { zlib: { level: 9 } });
+        const archive = createZipArchive({ zlib: { level: 9 } });
         const zipFilename = `${repoName}-${branch}.zip`;
 
         res.setHeader('Content-Type', 'application/zip');
