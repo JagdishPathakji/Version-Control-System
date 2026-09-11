@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
-import { cachedFetch } from '../utils/apiCache';
+import { cachedFetch, clearCache } from '../utils/apiCache';
 
 const RepositoryView = () => {
     const { username, repoName } = useParams();
@@ -21,6 +21,33 @@ const RepositoryView = () => {
     const [selectedBranch, setSelectedBranch] = useState<string>(targetOid ? targetOid.substring(0, 7) : 'master');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isMerging, setIsMerging] = useState(false);
+
+    const handleMerge = async () => {
+        if (!confirm(`Are you sure you want to merge ${selectedBranch} into master?`)) return;
+        setIsMerging(true);
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/merge`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ baseBranch: 'master', compareBranch: selectedBranch }),
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                alert("Successfully merged into master!");
+                clearCache(`/repo/${username}/${repoName}`);
+                navigate(`/repo/${username}/${repoName}`);
+                window.location.reload();
+            } else {
+                alert(data.message || "Failed to merge");
+            }
+        } catch (err: any) {
+            alert(err.message || "Error merging");
+        } finally {
+            setIsMerging(false);
+        }
+    };
 
     useEffect(() => {
         const fetchRepoData = async () => {
@@ -165,12 +192,23 @@ const RepositoryView = () => {
                                         )) : <option value="master">master</option>}
                                     </select>
                                 </div>
-                                <button 
-                                    onClick={() => navigate(`/repo/${username}/${repoName}/commits/${selectedBranch}`)}
-                                    className="text-gray-600 hover:text-blue-600 font-semibold text-sm flex items-center gap-1 transition-colors"
-                                >
-                                    🕒 {commits.length} Commits &gt;
-                                </button>
+                                <div className="flex gap-4">
+                                    {selectedBranch !== 'master' && !targetOid && (
+                                        <button 
+                                            onClick={handleMerge}
+                                            disabled={isMerging}
+                                            className="px-3 py-1 bg-green-50 hover:bg-green-100 border border-green-200 text-green-700 font-semibold text-sm rounded transition-colors"
+                                        >
+                                            {isMerging ? 'Merging...' : 'Merge into master'}
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={() => navigate(`/repo/${username}/${repoName}/commits/${selectedBranch}`)}
+                                        className="text-gray-600 hover:text-blue-600 font-semibold text-sm flex items-center gap-1 transition-colors"
+                                    >
+                                        🕒 {commits.length} Commits &gt;
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="border border-gray-300 rounded-lg bg-white overflow-hidden shadow-sm">
