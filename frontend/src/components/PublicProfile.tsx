@@ -68,33 +68,59 @@ export default function PublicProfile({
         setLoading(true);
         setError(null);
 
-        const data = await cachedFetch("https://version-control-system-mebn.onrender.com/getPublicProfile", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username }),
-          credentials: "include",
-        });
+        // Fetch public profile with username in URL path
+        let data: any = null;
+        try {
+          data = await cachedFetch(
+            `https://version-control-system-mebn.onrender.com/getPublicProfile/${username}`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+        } catch (getErr) {
+          // Fallback to POST with body
+          data = await cachedFetch(
+            `https://version-control-system-mebn.onrender.com/getPublicProfile/${username}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username }),
+              credentials: "include",
+            }
+          );
+        }
 
-        if (data.status) {
+        if (data && data.status && data.profile) {
           setProfile(data.profile);
           setFollower(data.profile.followingUser);
-          setFollowstatus(data.isFollowing);
+          setFollowstatus(Boolean(data.followstatus));
 
           try {
-            const reposData = await cachedFetch(`https://version-control-system-mebn.onrender.com/user/${username}/repos`, {
-              credentials: "include"
-            });
-            if (reposData.status) {
-              setRepos(reposData.repos || []);
+            // Fetch user's public repositories
+            let reposData: any = await cachedFetch(
+              `https://version-control-system-mebn.onrender.com/public/repos/${username}`,
+              { credentials: "include" }
+            );
+
+            if (!reposData || !reposData.status) {
+              reposData = await cachedFetch(
+                `https://version-control-system-mebn.onrender.com/user/${username}/repos`,
+                { credentials: "include" }
+              );
+            }
+
+            if (reposData && reposData.status && Array.isArray(reposData.repos)) {
+              setRepos(reposData.repos);
             }
           } catch (e) {
             console.error("Failed to fetch public repos", e);
           }
         } else {
-          setError(data.message || "Failed to load profile");
+          setError(data?.message || "Requested user profile not found");
         }
-      } catch (err) {
-        setError("Error fetching public profile");
+      } catch (err: any) {
+        setError(err?.message || "Error fetching public profile");
       } finally {
         setLoading(false);
       }
@@ -106,23 +132,27 @@ export default function PublicProfile({
   const addAFollower = async (targetUsername: string) => {
     try {
       const data = await cachedFetch(
-        `https://version-control-system-mebn.onrender.com/addAFollower/${targetUsername}`,
+        `https://version-control-system-mebn.onrender.com/follower/${targetUsername}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
         }
       );
 
-      if (data.status === true) {
-        clearCache("getPublicProfile");
+      if (data && data.status === true) {
+        clearCache(`getPublicProfile/${targetUsername}`);
         setFollowstatus(prev => !prev);
-        setFollower(prev => (followstatus ? (prev || 1) - 1 : (prev || 0) + 1));
+        if (typeof data.count === 'number') {
+          setFollower(data.count);
+        } else {
+          setFollower(prev => (followstatus ? Math.max(0, (prev || 1) - 1) : (prev || 0) + 1));
+        }
       } else {
-        alert(data.message);
+        alert(data?.message || "Failed to update follow status");
       }
-    } catch (error) {
-      console.log("Error in following:", error);
+    } catch (error: any) {
+      alert("Error in following: " + error.message);
     }
   };
 
@@ -138,8 +168,8 @@ export default function PublicProfile({
     return (
       <div className="min-h-screen bg-[#f6f8fa] text-[#57606a] flex items-center justify-center font-sans p-4">
         <div className="bg-white border border-[#d0d7de] p-6 rounded-md shadow-sm max-w-sm text-center">
-          <p className="text-sm">{error || "Profile not found"}</p>
-          <Link to="/dashboard" className="text-xs text-[#0969da] hover:underline mt-2 inline-block">Return to dashboard</Link>
+          <p className="text-sm font-medium text-[#cf222e] mb-2">{error || "Profile not found"}</p>
+          <Link to="/dashboard" className="text-xs text-[#0969da] hover:underline inline-block">&larr; Return to dashboard</Link>
         </div>
       </div>
     );

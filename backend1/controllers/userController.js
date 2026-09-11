@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken")
 const follow = async (req, res) => {
 
     try {
-        const { username } = req.params
+        const username = req.params.username || req.body?.username;
 
         const token = req.cookies.token
         if (!token)
@@ -429,27 +429,33 @@ const getOwnProfile = async (req, res) => {
 }
 
 const getPublicProfile = async (req, res) => {
-
     try {
-        const { username } = req.params;
+        const username = req.params.username || req.body?.username || req.query?.username;
+        if (!username) {
+            return res.status(400).send({ status: false, message: "Username parameter is required" });
+        }
 
-        const token = req.cookies.token
-        if (!token)
-            return res.status(401).send({ status: "login", message: "Unauthorized: Token not found, Please Login again" });
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const email = decoded.email
-
-        const user = await User.findOne({ email })
-        if (!user) return res.status(404).send({ status: "email", message: "User not found" });
+        const token = req.cookies?.token;
+        let currentUser = null;
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+                if (decoded && decoded.email) {
+                    currentUser = await User.findOne({ email: decoded.email });
+                }
+            } catch (err) {
+                // Token invalid or expired - ignore for public profile view
+            }
+        }
 
         const targetUser = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } }); // ignores case
         if (!targetUser)
             return res.status(404).send({ status: "username", message: "Requested user not found" });
 
-        let followstatus = false
-        if (targetUser.followingUser && targetUser.followingUser.map((id) => id.toString()).includes(user._id.toString()))
+        let followstatus = false;
+        if (currentUser && targetUser.followingUser && targetUser.followingUser.map((id) => id.toString()).includes(currentUser._id.toString())) {
             followstatus = true;
+        }
 
         const profile = {
             _id: targetUser._id,
@@ -469,10 +475,9 @@ const getPublicProfile = async (req, res) => {
             repos: [],
             followstatus
         });
-
     }
     catch (error) {
-        res.status(500).send({ status: "login", message: "Internal Server error in getting user profile by email" })
+        res.status(500).send({ status: false, message: "Internal Server error in getting user public profile: " + error.message });
     }
 }
 
