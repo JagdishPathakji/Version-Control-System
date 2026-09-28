@@ -1,6 +1,10 @@
 const express = require("express");
 const repoRouter = express.Router();
 const repoController = require("../controllers/repoController");
+const cliController = require("../controllers/cliController");
+
+repoRouter.post("/cli/push", cliController.pushFromCLI);
+repoRouter.get("/cli/clone", cliController.cloneFromCLI);
 
 repoRouter.post("/repo/create", repoController.createRepo);
 repoRouter.get("/user/repos", repoController.getUserRepos);
