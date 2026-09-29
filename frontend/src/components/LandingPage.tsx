@@ -1,22 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { 
-  ArrowRight, Code, GitBranch, Users, Lock, Zap, Copy, Check,
-  Terminal, History, Search, RefreshCw, Layers, ShieldCheck,
-  ChevronRight, Database, Globe
+  GitBranch, Lock, Zap,
+  History, RefreshCw, Layers,
+  Database, Globe
 } from "lucide-react";
-import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [copied, setCopied] = useState<string | null>(null);
-
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(id);
-    setTimeout(() => setCopied(null), 2000);
-  };
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -24,284 +16,200 @@ export default function LandingPage() {
   };
 
   const girgitCommands = [
-    { cmd: "girgit begin", icon: <ShieldCheck className="w-5 h-5" />, desc: "Secure authentication. Start your developer session.", color: "text-[#3023ae]" },
-    { cmd: "girgit init", icon: <Database className="w-5 h-5" />, desc: "Initialize a fresh Girgit Hub repository in your folder.", color: "text-[#b428b4]" },
-    { cmd: "girgit add", icon: <Layers className="w-5 h-5" />, desc: "Stage your local changes for the next commit.", color: "text-[#ffbe0b]" },
-    { cmd: "girgit commit", icon: <Zap className="w-5 h-5" />, desc: "Capture a snapshot of your staged files permanently.", color: "text-[#3023ae]" },
-    { cmd: "girgit push", icon: <Globe className="w-5 h-5" />, desc: "Synchronize local commits with your remote Space.", color: "text-[#b428b4]" },
-    { cmd: "girgit save-version", icon: <RefreshCw className="w-5 h-5" />, desc: "Streamlined backup: init, add, commit, & push at once.", color: "text-[#ffbe0b]" },
-    { cmd: "girgit diff", icon: <Search className="w-5 h-5" />, desc: "Compare versions with stage-vs-cwd or commit-vs-stage.", color: "text-[#3023ae]" },
-    { cmd: "girgit clone", icon: <RefreshCw className="w-5 h-5" />, desc: "Download any public or private repository from the cloud.", color: "text-[#b428b4]" },
-    { cmd: "girgit status", icon: <Terminal className="w-5 h-5" />, desc: "Real-time overview of modified and tracked files.", color: "text-[#ffbe0b]" },
-    { cmd: "girgit log", icon: <History className="w-5 h-5" />, desc: "Browse through your entire versioning history.", color: "text-[#3023ae]" },
-    { cmd: "girgit unstage", icon: <Layers className="w-5 h-5" />, desc: "Safely remove files from the staging area.", color: "text-[#b428b4]" },
-    { cmd: "girgit revert", icon: <History className="w-5 h-5" />, desc: "Roll back your repository to any specific commit.", color: "text-[#ffbe0b]" }
+    { cmd: "girgit init", icon: <Database className="w-5 h-5" />, desc: "Initialize a fresh Girgit Hub repository in your folder." },
+    { cmd: "girgit add", icon: <Layers className="w-5 h-5" />, desc: "Stage your local changes for the next commit." },
+    { cmd: "girgit commit", icon: <Zap className="w-5 h-5" />, desc: "Capture a snapshot of your staged files permanently." },
+    { cmd: "girgit push", icon: <Globe className="w-5 h-5" />, desc: "Synchronize local commits with your remote repository." },
+    { cmd: "girgit save-version", icon: <RefreshCw className="w-5 h-5" />, desc: "Streamlined backup: init, add, commit, & push at once." },
+    { cmd: "girgit clone", icon: <RefreshCw className="w-5 h-5" />, desc: "Download any public or private repository from the cloud." },
+    { cmd: "girgit log", icon: <History className="w-5 h-5" />, desc: "Browse through your entire versioning history." }
   ];
 
   return (
-    <div className="w-screen min-h-screen bg-gray-100 text-gray-800 overflow-x-hidden selection:bg-[#b428b4]/30 selection:text-[#3023ae]">
-      {/* Dynamic Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-20">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#b428b4] blur-[150px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#3023ae] blur-[150px] rounded-full"></div>
-      </div>
-
+    <div className="w-screen min-h-screen bg-[#f6f8fa] text-[#1f2328] font-sans overflow-x-hidden">
+      
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 backdrop-blur-2xl border-b border-[#b428b4]/20 bg-gray-100/80">
+      <nav className="bg-white border-b border-[#d0d7de] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate("/")}>
-            <div className="p-1.5 bg-gradient-to-br from-[#b428b4] to-[#3023ae] rounded-lg">
-              <GitBranch className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-black bg-gradient-to-r from-[#b428b4] to-[#3023ae] bg-clip-text text-transparent tracking-tighter">
-              GIRGIT HUB
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+            <GitBranch className="w-7 h-7 text-[#1f2328]" />
+            <span className="text-xl font-bold text-[#1f2328] tracking-tight">
+              Girgit Hub
             </span>
           </div>
           <div className="flex gap-4 items-center">
             <button
               onClick={() => navigate("/login")}
-              className="px-5 py-2 text-sm font-bold text-[#3023ae] hover:text-[#b428b4] transition-all"
+              className="text-[#1f2328] text-sm font-semibold hover:text-[#0969da] transition-colors"
             >
-              SIGN IN
+              Sign in
             </button>
             <button
               onClick={() => navigate("/register")}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#b428b4] to-[#3023ae] text-white text-sm font-black rounded-full hover:shadow-[0_0_20px_rgba(255,0,110,0.5)] transition-all"
+              className="px-4 py-2 border border-[#d0d7de] bg-white text-[#1f2328] text-sm font-semibold rounded-md hover:bg-[#f3f4f6] transition-colors shadow-sm"
             >
-              JOIN NOW
+              Sign up
             </button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 pt-24 pb-32 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#b428b4]/10 border border-[#b428b4]/30 mb-8 animate-bounce-slow">
-            <span className="w-2 h-2 rounded-full bg-[#b428b4]"></span>
-            <span className="text-xs font-bold text-[#b428b4] tracking-widest uppercase">The Future of Local Versioning</span>
-        </div>
-        
-        <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[1]">
-          <span className="text-gray-900">CONTROL YOUR</span>
-          <br />
-          <span className="bg-gradient-to-r from-[#b428b4] via-[#ffbe0b] to-[#3023ae] bg-clip-text text-transparent">
-            CODE UNIVERSE.
-          </span>
+      <section className="max-w-7xl mx-auto px-6 pt-24 pb-20 text-center flex flex-col items-center">
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight max-w-4xl">
+          Let's build from here
         </h1>
         
-        <p className="text-xl text-gray-500 max-w-3xl mx-auto mb-12 font-medium leading-relaxed">
-          Girgit Hub is a high-performance, decentralized version control system designed for developers who demand speed, style, and absolute control over their local history.
+        <p className="text-xl text-[#57606a] max-w-3xl mx-auto mb-10 leading-relaxed">
+          The complete developer platform to build, scale, and deliver secure software. Complete with decentralized version control, ultra-fast syncing, and deep history tracing.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md mx-auto mb-20">
           <button
             onClick={() => navigate("/register")}
-            className="group px-10 py-5 bg-gradient-to-r from-[#b428b4] to-[#3023ae] text-white font-black rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,0,110,0.3)]"
+            className="w-full sm:w-auto px-8 py-3.5 bg-[#1f883d] text-white text-lg font-semibold rounded-md hover:bg-[#1a7f37] transition-colors shadow-sm"
           >
-            START DEPLOYING <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            Sign up for Girgit
           </button>
           <button
-            onClick={() => scrollToSection("commands")}
-            className="px-10 py-5 border-2 border-[#3023ae]/30 text-[#3023ae] font-black rounded-2xl hover:bg-[#3023ae]/5 hover:border-[#3023ae] transition-all"
+            onClick={() => scrollToSection("how-it-works")}
+            className="w-full sm:w-auto px-8 py-3.5 bg-white border border-[#d0d7de] text-[#1f2328] text-lg font-semibold rounded-md hover:bg-[#f3f4f6] transition-colors shadow-sm"
           >
-            VIEW COMMANDS
+            Explore features
           </button>
+        </div>
+
+        {/* Terminal / Code Preview */}
+        <div className="w-full max-w-4xl mx-auto text-left shadow-2xl rounded-xl overflow-hidden border border-[#d0d7de] bg-[#0d1117]">
+            <div className="flex bg-[#161b22] px-4 py-3 items-center gap-2 border-b border-[#30363d]">
+                <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                <span className="text-xs text-[#8b949e] font-mono ml-4">bash</span>
+            </div>
+            <div className="p-6 font-mono text-sm overflow-x-auto">
+                <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0", margin: "0" }}>
+{`$ girgit init my-project
+Initialized empty Girgit repository in my-project/
+
+$ girgit status
+Untracked files:
+  (use "girgit add <file>..." to include in what will be committed)
+    index.ts
+    package.json
+
+$ girgit save-version
+[+] Staging 2 files...
+[+] Creating commit: Initial project setup
+[+] Pushing to remote...
+Done! Remote updated successfully.`}
+                </SyntaxHighlighter>
+            </div>
         </div>
       </section>
 
-      {/* Command Reference Section */}
-      <section id="commands" className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
-            COMMAND <span className="text-[#3023ae]">REFERENCE</span>
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto uppercase tracking-[0.2em] font-bold text-sm">
-            Master the 12 core operations of Girgit Hub
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {girgitCommands.map((command, idx) => (
-            <div 
-              key={idx} 
-              className="group bg-white/[0.03] backdrop-blur-md border border-white/10 p-6 rounded-3xl hover:bg-white/[0.08] hover:border-[#3023ae]/50 transition-all duration-300"
-            >
-              <div className={`mb-4 transition-transform group-hover:scale-110 ${command.color}`}>
-                {command.icon}
+      {/* Features Section */}
+      <section id="how-it-works" className="bg-white border-y border-[#d0d7de] py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight">The toolchain for modern development</h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-[#f6f8fa] border border-[#d0d7de] p-8 rounded-xl hover:border-[#0969da] transition-colors duration-300 shadow-sm">
+              <div className="w-12 h-12 bg-white border border-[#d0d7de] rounded-lg flex items-center justify-center mb-6 shadow-sm">
+                <Zap className="w-6 h-6 text-[#1f883d]" />
               </div>
-              <h3 className="text-lg font-black text-gray-900 mb-2 group-hover:text-[#3023ae] transition-colors">
-                {command.cmd}
-              </h3>
-              <p className="text-sm text-gray-500 leading-relaxed font-medium">
-                {command.desc}
-              </p>
+              <h3 className="text-xl font-bold mb-3">Lightning Fast</h3>
+              <p className="text-[#57606a] leading-relaxed">Highly optimized cryptographic hashing algorithms ensure your codebase is processed and synchronized in milliseconds.</p>
+            </div>
+
+            <div className="bg-[#f6f8fa] border border-[#d0d7de] p-8 rounded-xl hover:border-[#0969da] transition-colors duration-300 shadow-sm">
+              <div className="w-12 h-12 bg-white border border-[#d0d7de] rounded-lg flex items-center justify-center mb-6 shadow-sm">
+                <Lock className="w-6 h-6 text-[#1f2328]" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Secure Storage</h3>
+              <p className="text-[#57606a] leading-relaxed">Backed by AWS S3 with strict Content-Addressable Storage mechanisms, ensuring immutable history and Zero-Trust remote access.</p>
+            </div>
+
+            <div className="bg-[#f6f8fa] border border-[#d0d7de] p-8 rounded-xl hover:border-[#0969da] transition-colors duration-300 shadow-sm">
+              <div className="w-12 h-12 bg-white border border-[#d0d7de] rounded-lg flex items-center justify-center mb-6 shadow-sm">
+                <History className="w-6 h-6 text-[#0969da]" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Immutable History</h3>
+              <p className="text-[#57606a] leading-relaxed">Traverse your repository's entire timeline with rich logs, atomic commits, and full code-reversion capabilities.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CLI Reference Section */}
+      <section id="commands" className="max-w-7xl mx-auto px-6 py-24">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 tracking-tight">Powerful CLI Interface</h2>
+        <p className="text-[#57606a] text-center max-w-2xl mx-auto mb-16 text-lg">Everything you need to manage your version control right from your terminal.</p>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {girgitCommands.map((item, idx) => (
+            <div key={idx} className="bg-white border border-[#d0d7de] p-5 rounded-lg flex items-start gap-4 hover:shadow-md transition-shadow">
+              <div className="mt-1 text-[#57606a]">{item.icon}</div>
+              <div>
+                <h4 className="font-mono text-sm font-semibold text-[#0969da] mb-1">{item.cmd}</h4>
+                <p className="text-sm text-[#57606a] leading-relaxed">{item.desc}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* How It Works (Visual Flow) */}
-      <section id="how-it-works" className="max-w-7xl mx-auto px-6 py-32 rounded-[4rem] bg-white/[0.02] border border-white/5 shadow-inner">
-        <h2 className="text-4xl font-black text-center mb-20 text-gray-900">
-          THE <span className="text-[#b428b4]">WORKFLOW</span>
-        </h2>
-
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
-                <div className="flex gap-8 group">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#b428b4] to-[#b428b4]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(255,0,110,0.3)]">01</div>
-                    <div>
-                        <h4 className="text-2xl font-black text-gray-900 mb-3">Initialize & Track</h4>
-                        <p className="text-gray-500 font-medium italic">"girgit init && girgit begin"</p>
-                        <p className="text-gray-500 mt-2">Initialize your Space and link it to your developer profile in seconds.</p>
-                    </div>
-                </div>
-
-                <div className="flex gap-8 group">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#3023ae] to-[#3023ae]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(0,217,255,0.3)]">02</div>
-                    <div>
-                        <h4 className="text-2xl font-black text-gray-900 mb-3">Stage & Snapshot</h4>
-                        <p className="text-gray-500 font-medium italic">"girgit add . && girgit commit \"message\""</p>
-                        <p className="text-gray-500 mt-2">Capture changes with atomic precision. Track everything from lines to binary assets.</p>
-                    </div>
-                </div>
-
-                <div className="flex gap-8 group">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-[#ffbe0b] to-[#ffbe0b]/40 flex items-center justify-center font-black text-2xl text-white shadow-[0_0_20px_rgba(255,190,11,0.3)]">03</div>
-                    <div>
-                        <h4 className="text-2xl font-black text-gray-900 mb-3">Synchronize</h4>
-                        <p className="text-gray-500 font-medium italic">"girgit push"</p>
-                        <p className="text-gray-500 mt-2">Instantly sync your local history to Girgit Hub for cloud-based accessibility.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-[#0a0b0f] border border-[#b428b4]/30 rounded-[3rem] p-4 shadow-[0_0_60px_rgba(255,0,110,0.1)] overflow-hidden">
-                <div className="flex bg-white/5 p-4 items-center gap-2 rounded-t-[2rem]">
-                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                    <span className="text-[10px] text-gray-500 font-black ml-4">TERMINAL v2.0</span>
-                </div>
-                <div className="p-8 font-mono text-sm overflow-x-auto min-h-[400px]">
-                    <SyntaxHighlighter language="bash" style={tomorrow} customStyle={{ background: "transparent", padding: "0" }}>
-{`$ girgit begin
- Authenticating user... Success!
- Welcome back, Developer.
-
-$ girgit init web-app
- New repository created: web-app
-
-$ girgit status
- M index.tsx (Modified)
- A components/Card.tsx (Added)
-
-$ girgit save-version
- Running auto-pipeline...
- [+] Staging 2 files
- [+] Creating commit: Auto-Save
- [+] Pushing to cloud
- Done! Space updated.`}
-                    </SyntaxHighlighter>
-                </div>
-            </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-32">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#b428b4]/40 transition-all shadow-2xl">
-            <div className="bg-[#b428b4]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#b428b4] transition-all">
-              <Zap className="w-8 h-8 text-[#b428b4] group-hover:text-white" />
-            </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-4">Warp-Speed Push</h3>
-            <p className="text-gray-500 font-medium leading-relaxed">Compressed binary transfers ensure your code reaches the space station in milliseconds.</p>
-          </div>
-
-          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#3023ae]/40 transition-all shadow-2xl">
-            <div className="bg-[#3023ae]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#3023ae] transition-all">
-              <Lock className="w-8 h-8 text-[#3023ae] group-hover:text-white" />
-            </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-4">Zero-Trust Security</h3>
-            <p className="text-gray-500 font-medium leading-relaxed">End-to-end encrypted repositories ensure your intellectual property stays yours.</p>
-          </div>
-
-          <div className="group bg-gradient-to-br from-white/[0.05] to-transparent p-10 rounded-[3rem] border border-white/10 hover:border-[#ffbe0b]/40 transition-all shadow-2xl">
-            <div className="bg-[#ffbe0b]/20 p-5 rounded-3xl w-fit mb-8 group-hover:bg-[#ffbe0b] transition-all">
-              <History className="w-8 h-8 text-[#ffbe0b] group-hover:text-white" />
-            </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-4">Deep History Log</h3>
-            <p className="text-gray-500 font-medium leading-relaxed">Traverse through time with complete lineage tracking and atomic diffing visualizations.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20 pb-40">
-        <div className="relative group bg-gradient-to-r from-[#b428b4]/10 to-[#3023ae]/10 border border-white/10 rounded-[4rem] p-20 text-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#b428b4]/5 to-[#3023ae]/5 group-hover:scale-110 transition-transform duration-700"></div>
-          <h2 className="text-5xl font-black text-gray-900 mb-8 relative z-10">THE SPACE IS WAITING.</h2>
-          <p className="text-gray-500 max-w-xl mx-auto mb-12 text-lg relative z-10 font-medium italic">"Join 5,000+ developers tracking their progress with Girgit Hub."</p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-            <button
-              onClick={() => navigate("/register")}
-              className="px-12 py-5 bg-white text-[#0d0221] font-black rounded-2xl hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)]"
-            >
-              CREATE FREE ACCOUNT
-            </button>
-            <button
-              onClick={() => navigate("/login")}
-              className="px-12 py-5 border border-white/20 text-gray-900 font-black rounded-2xl hover:bg-white/10 transition-all"
-            >
-              LOGIN TO SPACE
-            </button>
-          </div>
+      {/* Bottom CTA */}
+      <section className="bg-white border-t border-[#d0d7de] py-24 text-center">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-4xl font-extrabold mb-6 tracking-tight">Ready to collaborate?</h2>
+          <p className="text-xl text-[#57606a] mb-10">Join the platform where developers build the future.</p>
+          <button
+            onClick={() => navigate("/register")}
+            className="px-10 py-4 bg-[#1f883d] text-white text-lg font-semibold rounded-md hover:bg-[#1a7f37] transition-colors shadow-sm"
+          >
+            Create your account
+          </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 bg-[#0a0b0f]/80 backdrop-blur-2xl py-20">
+      <footer className="bg-[#f6f8fa] border-t border-[#d0d7de] pt-16 pb-12">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-16">
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-1 px-3 bg-gradient-to-br from-[#b428b4] to-[#3023ae] rounded-lg text-white font-black text-xl italic">J</div>
-                <span className="text-2xl font-black text-gray-900">GIRGIT HUB</span>
+              <div className="flex items-center gap-2 mb-4">
+                <GitBranch className="w-6 h-6 text-[#57606a]" />
+                <span className="font-bold text-[#1f2328]">Girgit Hub</span>
               </div>
-              <p className="text-gray-500 max-w-sm mb-8 leading-relaxed font-medium">
-                The ultimate version control orbit for modern software architects. Fast, safe, and visually elite.
+              <p className="text-[#57606a] text-sm max-w-xs">
+                The version control system designed for speed, security, and developer productivity.
               </p>
-              <div className="flex gap-4">
-                  {/* Social placeholders could go here */}
-              </div>
             </div>
-
+            
             <div>
-              <h4 className="text-gray-900 font-black text-lg mb-8 uppercase tracking-widest">Orbit</h4>
-              <ul className="space-y-4 text-gray-500 font-bold">
-                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-white transition-colors">WORKFLOW</button></li>
-                <li><button onClick={() => scrollToSection("features")} className="hover:text-white transition-colors">SECURITY</button></li>
-                <li><button onClick={() => scrollToSection("commands")} className="hover:text-white transition-colors">COMMANDS</button></li>
+              <h4 className="font-semibold text-[#1f2328] mb-4 text-sm">Product</h4>
+              <ul className="space-y-3 text-sm text-[#57606a]">
+                <li><button onClick={() => scrollToSection("how-it-works")} className="hover:text-[#0969da]">Features</button></li>
+                <li><button onClick={() => scrollToSection("commands")} className="hover:text-[#0969da]">CLI Reference</button></li>
+                <li><button onClick={() => navigate("/login")} className="hover:text-[#0969da]">Sign in</button></li>
               </ul>
             </div>
-
+            
             <div>
-              <h4 className="text-gray-900 font-black text-lg mb-8 uppercase tracking-widest">Resources</h4>
-              <ul className="space-y-4 text-gray-500 font-bold">
-                <li><a href="https://github.com/JagdishPathakji" target="_blank" className="hover:text-[#b428b4] transition-colors">GITHUB</a></li>
-                <li><a href="#" className="hover:text-[#ffbe0b] transition-colors">SUPPORT</a></li>
+              <h4 className="font-semibold text-[#1f2328] mb-4 text-sm">Legal & Connect</h4>
+              <ul className="space-y-3 text-sm text-[#57606a]">
+                <li><a href="https://github.com/JagdishPathakji" target="_blank" rel="noreferrer" className="hover:text-[#0969da]">GitHub</a></li>
+                <li><a href="#" className="hover:text-[#0969da]">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-[#0969da]">Terms of Service</a></li>
               </ul>
             </div>
           </div>
-
-          <div className="border-t border-white/5 mt-20 pt-10 text-center flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="text-gray-600 font-black text-sm tracking-widest">© 2026 GIRGIT HUB. ENGINEERED BY JAGDISH PATHAKJI.</p>
-            <div className="flex gap-8 text-xs font-black text-gray-700 tracking-[0.3em]">
-                <a href="#">PRIVACY</a>
-                <a href="#">TERMS</a>
-                <a href="#">COOKIES</a>
+          
+          <div className="pt-8 border-t border-[#d0d7de] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#57606a]">
+            <p>&copy; {new Date().getFullYear()} Girgit Hub. Engineered by Jagdish Pathakji.</p>
+            <div className="flex gap-4">
+              <GitBranch className="w-4 h-4" />
             </div>
           </div>
         </div>
