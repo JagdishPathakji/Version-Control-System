@@ -30,4 +30,6 @@ repoRouter.delete("/repo/:username/:repoName/contributors/:contributorUsername",
 repoRouter.get("/public/repos/:username", repoController.getPublicRepos);
 repoRouter.get("/user/:username/repos", repoController.getPublicRepos);
 
+repoRouter.get("/repo/:username/:repoName/security/scan", repoController.scanRepoSecrets);
+
 module.exports = repoRouter;

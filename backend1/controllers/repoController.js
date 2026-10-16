@@ -3,6 +3,7 @@ const Repository = require("../database/models/repoModel");
 const jwt = require("jsonwebtoken");
 const s3Git = require("./s3GitHelper");
 const archiver = require("archiver");
+const { scanFilesForSecrets } = require("../externals/secretScanner");
 
 // Helper to authenticate user from cookie
 const getUser = async (req) => {
@@ -833,6 +834,64 @@ const getUserInvitations = async (req, res) => {
     }
 };
 
+// Scan repository files for exposed secrets and credentials
+const scanRepoSecrets = async (req, res) => {
+    try {
+        const { username, repoName } = req.params;
+        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
+
+        const branch = req.query.branch || "master";
+        let refPath = `refs/heads/${branch}`;
+        let oid = await s3Git.getRefOid(repo.s3Prefix, refPath);
+
+        if (!oid) {
+            const headRef = await s3Git.getHeadRef(repo.s3Prefix);
+            if (headRef) {
+                oid = await s3Git.getRefOid(repo.s3Prefix, headRef);
+            }
+        }
+
+        if (!oid) {
+            return res.status(200).json({
+                status: true,
+                isEmpty: true,
+                branch,
+                report: {
+                    healthStatus: "CLEAN",
+                    totalFilesScanned: 0,
+                    totalFindings: 0,
+                    criticalCount: 0,
+                    highCount: 0,
+                    mediumCount: 0,
+                    durationMs: 0,
+                    rulesCount: 10,
+                    findings: []
+                }
+            });
+        }
+
+        let commitObj = await s3Git.getGitObject(repo.s3Prefix, oid);
+        let treeOid = oid;
+        if (commitObj && commitObj.type === "commit") {
+            const commit = s3Git.parseCommit(commitObj.content);
+            treeOid = commit.tree;
+        }
+
+        const files = await collectTreeFiles(repo.s3Prefix, treeOid);
+        const report = scanFilesForSecrets(files);
+
+        return res.status(200).json({
+            status: true,
+            branch,
+            report
+        });
+    } catch (error) {
+        console.error("Error running security scan:", error);
+        return res.status(500).json({ status: false, message: "Internal server error during security scan" });
+    }
+};
+
 module.exports = {
     createRepo,
     getUserRepos,
@@ -851,6 +910,8 @@ module.exports = {
     acceptInvitation,
     declineInvitation,
     removeContributor,
-    getUserInvitations
+    getUserInvitations,
+    scanRepoSecrets
 };
+
 

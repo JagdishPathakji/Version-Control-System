@@ -27,7 +27,13 @@ import {
     UserPlus,
     Trash2,
     Crown,
-    Clock
+    Clock,
+    ShieldAlert,
+    ShieldCheck,
+    AlertTriangle,
+    RefreshCw,
+    KeyRound,
+    FileCode
 } from 'lucide-react';
 
 const RepositoryView = () => {
@@ -71,6 +77,12 @@ const RepositoryView = () => {
     const [inviteMsg, setInviteMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [acceptLoading, setAcceptLoading] = useState(false);
     const [declineLoading, setDeclineLoading] = useState(false);
+
+    // Security scanner states
+    const [securityReport, setSecurityReport] = useState<any>(null);
+    const [securityLoading, setSecurityLoading] = useState(false);
+    const [securitySeverityFilter, setSecuritySeverityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL');
+    const [hasScannedSecurity, setHasScannedSecurity] = useState(false);
 
     const s3Url = `s3://girgit-project/${username}/${repoName}`;
 
@@ -261,6 +273,35 @@ const RepositoryView = () => {
             }
         } catch (err: any) {
             alert(err.message || 'Error removing contributor');
+        }
+    };
+
+    const runSecurityScan = async (targetBranch?: string) => {
+        setSecurityLoading(true);
+        try {
+            const b = targetBranch || selectedBranch || 'master';
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/security/scan?branch=${b}`, {
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                setSecurityReport(data.report);
+                setHasScannedSecurity(true);
+            } else {
+                alert(data.message || 'Failed to complete security scan');
+            }
+        } catch (err: any) {
+            console.error('Security scan error:', err);
+            alert(err.message || 'Error running security scan');
+        } finally {
+            setSecurityLoading(false);
+        }
+    };
+
+    const handleSwitchToSecurity = () => {
+        setActiveTab('security');
+        if (!hasScannedSecurity) {
+            runSecurityScan();
         }
     };
 
@@ -503,7 +544,7 @@ const RepositoryView = () => {
                             <span>Actions</span>
                         </button>
                         <button 
-                            onClick={() => setActiveTab('security')}
+                            onClick={handleSwitchToSecurity}
                             className={`flex items-center gap-2 px-3 py-2 border-b-2 font-medium text-sm transition-colors ${
                                 activeTab === 'security' 
                                     ? 'border-[#fd8c73] text-[#1f2328] font-semibold' 
@@ -512,6 +553,11 @@ const RepositoryView = () => {
                         >
                             <Shield className="w-4 h-4" />
                             <span>Security</span>
+                            {securityReport && securityReport.totalFindings > 0 && (
+                                <span className="ml-0.5 px-1.5 py-0.2 text-[10px] bg-[#cf222e] text-white rounded-full font-bold">
+                                    {securityReport.totalFindings}
+                                </span>
+                            )}
                         </button>
                         <button 
                             onClick={() => setActiveTab('collaborators')}
@@ -727,6 +773,186 @@ const RepositoryView = () => {
                                 ))}
                             </ul>
                         </div>
+                    </div>
+                ) : activeTab === 'security' ? (
+                    <div className="max-w-4xl mx-auto space-y-6">
+                        {/* Section Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#d0d7de] gap-3">
+                            <div>
+                                <h2 className="text-xl font-semibold text-[#1f2328] flex items-center gap-2">
+                                    <ShieldCheck className="w-5 h-5 text-[#1a7f37]" />
+                                    Secret & Credential Leak Scanner
+                                </h2>
+                                <p className="text-xs text-[#57606a] mt-1">
+                                    Automated static security analysis inspecting all files and blob objects in branch <span className="font-mono font-semibold text-[#1f2328] bg-[#eaeef2] px-1.5 py-0.5 rounded">refs/heads/{selectedBranch}</span> for leaked secrets.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => runSecurityScan()}
+                                disabled={securityLoading}
+                                className="px-3.5 py-1.5 bg-[#0969da] hover:bg-[#085ac1] text-white text-xs font-semibold rounded-md shadow-sm transition-colors flex items-center gap-1.5 shrink-0 disabled:opacity-50"
+                            >
+                                <RefreshCw className={`w-3.5 h-3.5 ${securityLoading ? 'animate-spin' : ''}`} />
+                                <span>{securityLoading ? 'Scanning Tree...' : 'Run Security Scan'}</span>
+                            </button>
+                        </div>
+
+                        {/* Loading State */}
+                        {securityLoading && (
+                            <div className="border border-[#d0d7de] rounded-md bg-white p-12 text-center text-[#57606a] shadow-sm">
+                                <div className="inline-block w-8 h-8 border-2 border-[#0969da] border-t-transparent rounded-full animate-spin"></div>
+                                <h4 className="text-sm font-semibold text-[#1f2328] mt-3">Analyzing repository commit tree...</h4>
+                                <p className="text-xs text-[#57606a] mt-1">Evaluating 10 secret patterns against all file blobs.</p>
+                            </div>
+                        )}
+
+                        {/* Result View */}
+                        {!securityLoading && securityReport && (
+                            <>
+                                {/* Health Status Overview Banner */}
+                                {securityReport.healthStatus === 'CLEAN' ? (
+                                    <div className="border border-[#4ac26b]/50 bg-[#dafbe1]/40 rounded-md p-5 flex items-start gap-4 shadow-sm">
+                                        <div className="w-10 h-10 rounded-full bg-[#1f883d] text-white flex items-center justify-center shrink-0 shadow-sm">
+                                            <ShieldCheck className="w-6 h-6" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-base font-semibold text-[#1a7f37]">
+                                                Clean Repository — No Exposed Credentials Found
+                                            </h3>
+                                            <p className="text-xs text-[#1f2328] mt-1 leading-relaxed">
+                                                Girgit scanned <strong>{securityReport.totalFilesScanned} file{securityReport.totalFilesScanned === 1 ? '' : 's'}</strong> in <strong>{securityReport.durationMs}ms</strong> across {securityReport.rulesCount} security detection rules. No AWS keys, private certificates, database URIs, or API tokens were found.
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="border border-[#ff8182]/60 bg-[#ffebe9] rounded-md p-5 flex items-start gap-4 shadow-sm">
+                                        <div className="w-10 h-10 rounded-full bg-[#cf222e] text-white flex items-center justify-center shrink-0 shadow-sm">
+                                            <ShieldAlert className="w-6 h-6" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-base font-semibold text-[#cf222e]">
+                                                Security Alert: {securityReport.totalFindings} Leaked Credential{securityReport.totalFindings === 1 ? '' : 's'} Detected!
+                                            </h3>
+                                            <p className="text-xs text-[#1f2328] mt-1 leading-relaxed">
+                                                Exposed credentials were discovered in your committed files. We recommend immediately revoking and rotating these credentials to prevent unauthorized access to your cloud infrastructure.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Metrics Grid (4 Cards) */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <div className="border border-[#d0d7de] rounded-md bg-white p-3.5 shadow-sm">
+                                        <span className="text-[11px] font-medium text-[#57606a]">Files Analyzed</span>
+                                        <div className="text-xl font-bold text-[#1f2328] mt-1">{securityReport.totalFilesScanned}</div>
+                                    </div>
+                                    <div className="border border-[#d0d7de] rounded-md bg-white p-3.5 shadow-sm">
+                                        <span className="text-[11px] font-medium text-[#cf222e]">Critical Severity</span>
+                                        <div className="text-xl font-bold text-[#cf222e] mt-1">{securityReport.criticalCount}</div>
+                                    </div>
+                                    <div className="border border-[#d0d7de] rounded-md bg-white p-3.5 shadow-sm">
+                                        <span className="text-[11px] font-medium text-[#9a6700]">High / Medium</span>
+                                        <div className="text-xl font-bold text-[#9a6700] mt-1">{securityReport.highCount + securityReport.mediumCount}</div>
+                                    </div>
+                                    <div className="border border-[#d0d7de] rounded-md bg-white p-3.5 shadow-sm">
+                                        <span className="text-[11px] font-medium text-[#57606a]">Scan Latency</span>
+                                        <div className="text-xl font-bold text-[#1f2328] mt-1">{securityReport.durationMs} ms</div>
+                                    </div>
+                                </div>
+
+                                {/* Findings List Section */}
+                                <div className="border border-[#d0d7de] rounded-md bg-white overflow-hidden shadow-sm">
+                                    <div className="bg-[#f6f8fa] border-b border-[#d0d7de] px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                        <h3 className="text-xs font-semibold text-[#1f2328] flex items-center gap-2">
+                                            <KeyRound className="w-4 h-4 text-[#57606a]" />
+                                            Secret Scan Findings ({
+                                                (securityReport.findings || []).filter((f: any) => securitySeverityFilter === 'ALL' || f.severity === securitySeverityFilter).length
+                                            })
+                                        </h3>
+                                        {/* Severity Filter Tabs */}
+                                        <div className="flex items-center gap-1 text-[11px]">
+                                            {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM'] as const).map(sev => (
+                                                <button
+                                                    key={sev}
+                                                    onClick={() => setSecuritySeverityFilter(sev)}
+                                                    className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                                                        securitySeverityFilter === sev 
+                                                            ? 'bg-[#eaeef2] text-[#1f2328] font-bold' 
+                                                            : 'text-[#57606a] hover:text-[#1f2328]'
+                                                    }`}
+                                                >
+                                                    {sev}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {(securityReport.findings || []).filter((f: any) => securitySeverityFilter === 'ALL' || f.severity === securitySeverityFilter).length === 0 ? (
+                                        <div className="p-8 text-center text-xs text-[#57606a]">
+                                            <ShieldCheck className="w-8 h-8 text-[#1a7f37] mx-auto mb-2" />
+                                            No findings match the selected filter.
+                                        </div>
+                                    ) : (
+                                        <ul className="divide-y divide-[#d0d7de]">
+                                            {(securityReport.findings || [])
+                                                .filter((f: any) => securitySeverityFilter === 'ALL' || f.severity === securitySeverityFilter)
+                                                .map((finding: any) => (
+                                                    <li key={finding.id} className="p-4 space-y-2 hover:bg-[#f6f8fa] transition-colors">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full text-white ${
+                                                                    finding.severity === 'CRITICAL' ? 'bg-[#cf222e]' :
+                                                                    finding.severity === 'HIGH' ? 'bg-[#d4a72c]' : 'bg-[#0969da]'
+                                                                }`}>
+                                                                    {finding.severity}
+                                                                </span>
+                                                                <span className="text-xs font-semibold text-[#1f2328]">{finding.ruleName}</span>
+                                                            </div>
+                                                            <Link 
+                                                                to={`/repo/${username}/${repoName}/blob/${selectedBranch}/${finding.filePath}`}
+                                                                className="text-xs font-mono text-[#0969da] hover:underline flex items-center gap-1"
+                                                            >
+                                                                <FileCode className="w-3.5 h-3.5" />
+                                                                <span>{finding.filePath}:{finding.lineNumber}</span>
+                                                            </Link>
+                                                        </div>
+
+                                                        {/* Masked Secret Preview */}
+                                                        <div className="flex items-center justify-between bg-[#24292f] text-white px-3 py-1.5 rounded font-mono text-xs overflow-x-auto">
+                                                            <code>{finding.maskedSnippet}</code>
+                                                            <span className="text-[10px] text-[#8c959f] ml-2 shrink-0">Redacted for security</span>
+                                                        </div>
+
+                                                        <p className="text-xs text-[#57606a] leading-relaxed">
+                                                            {finding.description}
+                                                        </p>
+
+                                                        {/* Remediation Box */}
+                                                        <div className="text-xs bg-[#f6f8fa] border border-[#d0d7de] rounded p-2 text-[#24292f] flex items-start gap-2">
+                                                            <AlertTriangle className="w-4 h-4 text-[#9a6700] shrink-0 mt-0.5" />
+                                                            <div>
+                                                                <span className="font-semibold text-[#1f2328]">Remediation: </span>
+                                                                <span className="text-[#57606a]">{finding.remediation}</span>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                {/* Security Rules Engine Overview */}
+                                <div className="border border-[#d0d7de] rounded-md bg-white p-4 shadow-sm text-xs text-[#57606a] space-y-2">
+                                    <h4 className="font-semibold text-[#1f2328] flex items-center gap-1.5">
+                                        <Shield className="w-4 h-4 text-[#0969da]" />
+                                        Active Secret Detection Signatures ({securityReport.rulesCount}/{securityReport.rulesCount} Enabled)
+                                    </h4>
+                                    <p className="text-[11px] leading-relaxed">
+                                        Girgit scans for AWS IAM Access & Secret Keys, Private RSA/SSH Keys, MongoDB Atlas & Generic Database URIs, GitHub Tokens, Stripe API Secret Keys, Slack Bot Tokens & Webhooks, Google Cloud Keys, and Hardcoded JWT Session Secrets.
+                                    </p>
+                                </div>
+                            </>
+                        )}
                     </div>
                 ) : activeTab !== 'code' ? (
                     <div className="border border-[#d0d7de] rounded-md bg-white p-12 text-center text-[#57606a]">
