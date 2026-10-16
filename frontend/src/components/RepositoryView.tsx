@@ -948,7 +948,7 @@ const RepositoryView = () => {
                                         Active Secret Detection Signatures ({securityReport.rulesCount}/{securityReport.rulesCount} Enabled)
                                     </h4>
                                     <p className="text-[11px] leading-relaxed">
-                                        Girgit scans for AWS IAM Access & Secret Keys, Private RSA/SSH Keys, MongoDB Atlas & Generic Database URIs, GitHub Tokens, Stripe API Secret Keys, Slack Bot Tokens & Webhooks, Google Cloud Keys, and Hardcoded JWT Session Secrets.
+                                        Girgit scans for Committed Environment Files (.env, credentials), Database Connection Strings (ADO.NET/ODBC/MySQL/Postgres/Mongo), Plaintext Passwords, AWS IAM Keys, Private RSA/SSH Keys, GitHub Tokens, Stripe Keys, Slack Webhooks, Google Cloud Keys, and JWT/Application Secrets.
                                     </p>
                                 </div>
                             </>
