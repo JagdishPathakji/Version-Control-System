@@ -46,22 +46,36 @@ const pushFromCLI = async (req, res) => {
 
         const [ownerUsername, repoName] = repo.split('/');
         
-        // Authorization check: User must own the repo (future: check contributors)
-        if (user.username !== ownerUsername) {
-            // Check if repo exists and if user is a contributor
-            const repository = await Repository.findOne({ name: repoName }).populate('owner');
-            if (!repository || repository.owner.username !== ownerUsername) {
-                return res.status(403).send({ status: false, message: "Forbidden: You do not have permission to push to this repository." });
-            }
+        // Find repository owner
+        const owner = await User.findOne({ username: { $regex: new RegExp(`^${ownerUsername}$`, "i") } });
+        if (!owner) {
+            return res.status(404).send({ status: false, message: `Repository owner '${ownerUsername}' not found.` });
         }
 
         // Ensure repo exists in DB
-        const repository = await Repository.findOne({ name: repoName }).populate('owner');
-        if (!repository || repository.owner.username !== ownerUsername) {
-            return res.status(404).send({ status: false, message: `Repository ${repo} not found.` });
+        const repository = await Repository.findOne({ 
+            name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+            owner: owner._id 
+        }).populate('owner').populate('contributors.user');
+
+        if (!repository) {
+            return res.status(404).send({ status: false, message: `Repository '${repo}' not found.` });
         }
 
-        const prefix = `${ownerUsername}/${repoName}`;
+        // Authorization check: User must be the owner OR an accepted contributor
+        const isOwner = user._id.toString() === repository.owner._id.toString();
+        const isContributor = repository.contributors && repository.contributors.some(
+            c => c.user && (c.user._id ? c.user._id.toString() : c.user.toString()) === user._id.toString() && c.status === 'accepted'
+        );
+
+        if (!isOwner && !isContributor) {
+            return res.status(403).send({ 
+                status: false, 
+                message: `Forbidden: You do not have write access to ${repo}. Only the repository owner and accepted contributors can push.` 
+            });
+        }
+
+        const prefix = repository.s3Prefix || `${owner.username}/${repository.name}`;
 
         // Upload objects
         const objKeys = Object.keys(objects || {});
@@ -97,13 +111,22 @@ const cloneFromCLI = async (req, res) => {
 
         const [ownerUsername, repoName] = repo.split('/');
         
-        // Check permissions (Public or Authenticated Private)
-        const repository = await Repository.findOne({ name: repoName }).populate('owner');
-        if (!repository || repository.owner.username !== ownerUsername) {
-            return res.status(404).send({ status: false, message: `Repository ${repo} not found.` });
+        // Find owner and repository
+        const owner = await User.findOne({ username: { $regex: new RegExp(`^${ownerUsername}$`, "i") } });
+        if (!owner) {
+            return res.status(404).send({ status: false, message: `Repository owner '${ownerUsername}' not found.` });
         }
 
-        if (repository.visibility === "private") {
+        const repository = await Repository.findOne({ 
+            name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+            owner: owner._id 
+        }).populate('owner').populate('contributors.user');
+
+        if (!repository) {
+            return res.status(404).send({ status: false, message: `Repository '${repo}' not found.` });
+        }
+
+        if (repository.isPrivate) {
             const authHeader = req.headers.authorization;
             if (!authHeader || !authHeader.startsWith("Bearer ")) {
                 return res.status(401).send({ status: false, message: "Unauthorized: Private repository requires login. Please run 'girgit login'." });
@@ -112,7 +135,16 @@ const cloneFromCLI = async (req, res) => {
             try {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
                 const user = await User.findOne({ email: decoded.email });
-                if (!user || user.username !== ownerUsername) {
+                if (!user) {
+                    return res.status(401).send({ status: false, message: "User not found." });
+                }
+
+                const isOwner = user._id.toString() === repository.owner._id.toString();
+                const isContributor = repository.contributors && repository.contributors.some(
+                    c => c.user && (c.user._id ? c.user._id.toString() : c.user.toString()) === user._id.toString() && c.status === 'accepted'
+                );
+
+                if (!isOwner && !isContributor) {
                     return res.status(403).send({ status: false, message: "Forbidden: You do not have permission to clone this private repository." });
                 }
             } catch (err) {
@@ -120,7 +152,7 @@ const cloneFromCLI = async (req, res) => {
             }
         }
 
-        const prefix = `${ownerUsername}/${repoName}`;
+        const prefix = repository.s3Prefix || `${owner.username}/${repository.name}`;
         
         // Fetch all objects and refs from S3 for this prefix
         let isTruncated = true;

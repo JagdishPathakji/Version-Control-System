@@ -19,6 +19,14 @@ repoRouter.get("/repo/:username/:repoName/zip", repoController.downloadZip);
 repoRouter.post("/repo/:username/:repoName/edit", repoController.editFile);
 repoRouter.post("/repo/:username/:repoName/merge", repoController.mergeBranches);
 
+repoRouter.get("/user/invitations", repoController.getUserInvitations);
+
+repoRouter.get("/repo/:username/:repoName/contributors", repoController.getRepoContributors);
+repoRouter.post("/repo/:username/:repoName/contributors/invite", repoController.inviteContributor);
+repoRouter.post("/repo/:username/:repoName/contributors/accept", repoController.acceptInvitation);
+repoRouter.post("/repo/:username/:repoName/contributors/decline", repoController.declineInvitation);
+repoRouter.delete("/repo/:username/:repoName/contributors/:contributorUsername", repoController.removeContributor);
+
 repoRouter.get("/public/repos/:username", repoController.getPublicRepos);
 repoRouter.get("/user/:username/repos", repoController.getPublicRepos);
 

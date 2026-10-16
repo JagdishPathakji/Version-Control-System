@@ -22,7 +22,12 @@ import {
     Tag, 
     ChevronDown,
     GitMerge,
-    Terminal
+    Terminal,
+    Users,
+    UserPlus,
+    Trash2,
+    Crown,
+    Clock
 } from 'lucide-react';
 
 const RepositoryView = () => {
@@ -54,6 +59,18 @@ const RepositoryView = () => {
     const [isStarred, setIsStarred] = useState(false);
     const [starCount, setStarCount] = useState(0);
     const [activeTab, setActiveTab] = useState('code');
+
+    // Contributor management states
+    const [contributorsList, setContributorsList] = useState<any[]>([]);
+    const [pendingContributors, setPendingContributors] = useState<any[]>([]);
+    const [isOwner, setIsOwner] = useState(false);
+    const [isContributor, setIsContributor] = useState(false);
+    const [hasPendingInvite, setHasPendingInvite] = useState(false);
+    const [inviteUsername, setInviteUsername] = useState('');
+    const [inviteLoading, setInviteLoading] = useState(false);
+    const [inviteMsg, setInviteMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [acceptLoading, setAcceptLoading] = useState(false);
+    const [declineLoading, setDeclineLoading] = useState(false);
 
     const s3Url = `s3://girgit-project/${username}/${repoName}`;
 
@@ -133,7 +150,122 @@ const RepositoryView = () => {
         setStarCount(prev => isStarred ? Math.max(0, prev - 1) : prev + 1);
     };
 
+    const fetchContributors = async () => {
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/contributors`, { credentials: 'include' });
+            const data = await res.json();
+            if (data.status) {
+                setContributorsList(data.contributors || []);
+                setPendingContributors(data.pendingContributors || []);
+                setIsOwner(Boolean(data.isOwner));
+                setIsContributor(Boolean(data.isContributor));
+                setHasPendingInvite(Boolean(data.hasPendingInvite));
+            }
+        } catch (err) {
+            console.error("Error loading contributors:", err);
+        }
+    };
+
+    const handleInviteContributor = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inviteUsername.trim()) return;
+        setInviteLoading(true);
+        setInviteMsg(null);
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/contributors/invite`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: inviteUsername.trim() }),
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                setInviteMsg({ type: 'success', text: data.message });
+                setInviteUsername('');
+                fetchContributors();
+            } else {
+                setInviteMsg({ type: 'error', text: data.message || 'Failed to send invitation' });
+            }
+        } catch (err: any) {
+            setInviteMsg({ type: 'error', text: err.message || 'Error sending invitation' });
+        } finally {
+            setInviteLoading(false);
+        }
+    };
+
+    const handleAcceptInvite = async () => {
+        setAcceptLoading(true);
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/contributors/accept`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                setHasPendingInvite(false);
+                setIsContributor(true);
+                alert(data.message);
+                fetchContributors();
+                clearCache(`/repo/${username}/${repoName}`);
+            } else {
+                alert(data.message || 'Failed to accept invitation');
+            }
+        } catch (err: any) {
+            alert(err.message || 'Error accepting invitation');
+        } finally {
+            setAcceptLoading(false);
+        }
+    };
+
+    const handleDeclineInvite = async () => {
+        if (!confirm('Are you sure you want to decline this invitation?')) return;
+        setDeclineLoading(true);
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/contributors/decline`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                setHasPendingInvite(false);
+                fetchContributors();
+            } else {
+                alert(data.message || 'Failed to decline invitation');
+            }
+        } catch (err: any) {
+            alert(err.message || 'Error declining invitation');
+        } finally {
+            setDeclineLoading(false);
+        }
+    };
+
+    const handleRemoveContributor = async (targetUsername: string) => {
+        const isSelf = targetUsername.toLowerCase() === localStorage.getItem("username")?.toLowerCase();
+        if (!confirm(isSelf ? `Are you sure you want to leave this repository?` : `Remove @${targetUsername} as contributor?`)) return;
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/contributors/${targetUsername}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                fetchContributors();
+                clearCache(`/repo/${username}/${repoName}`);
+                if (isSelf) {
+                    setIsContributor(false);
+                }
+            } else {
+                alert(data.message || 'Failed to remove contributor');
+            }
+        } catch (err: any) {
+            alert(err.message || 'Error removing contributor');
+        }
+    };
+
     useEffect(() => {
+        fetchContributors();
         const fetchRepoData = async () => {
             try {
                 const data = await cachedFetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}`, { credentials: 'include' });
@@ -381,13 +513,222 @@ const RepositoryView = () => {
                             <Shield className="w-4 h-4" />
                             <span>Security</span>
                         </button>
+                        <button 
+                            onClick={() => setActiveTab('collaborators')}
+                            className={`flex items-center gap-2 px-3 py-2 border-b-2 font-medium text-sm transition-colors ${
+                                activeTab === 'collaborators' 
+                                    ? 'border-[#fd8c73] text-[#1f2328] font-semibold' 
+                                    : 'border-transparent text-[#57606a] hover:text-[#1f2328] hover:border-[#d0d7de]'
+                            }`}
+                        >
+                            <Users className="w-4 h-4" />
+                            <span>Collaborators</span>
+                            <span className="ml-0.5 px-1.5 py-0.2 text-xs bg-[#afb8c1]/20 rounded-full font-normal">
+                                {contributorsList.length + 1}
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Main Page Area */}
             <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-                {activeTab !== 'code' ? (
+                {/* Pending Invitation Banner for the Current User */}
+                {hasPendingInvite && (
+                    <div className="mb-6 bg-[#dafbe1] border border-[#4ac26b]/50 rounded-md p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-[#1f883d] text-white flex items-center justify-center font-bold shrink-0 shadow-sm">
+                                <UserPlus className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-semibold text-[#1a7f37]">Collaboration Invitation Received</h4>
+                                <p className="text-xs text-[#1f2328] mt-0.5">
+                                    <strong>@{username}</strong> has invited you to be a contributor to <strong>{username}/{repoName}</strong>. As an accepted contributor, you can push code and branches directly to this repository!
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <button
+                                onClick={handleAcceptInvite}
+                                disabled={acceptLoading}
+                                className="px-3.5 py-1.5 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded-md shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                                <Check className="w-3.5 h-3.5" />
+                                <span>{acceptLoading ? 'Accepting...' : 'Accept Invitation'}</span>
+                            </button>
+                            <button
+                                onClick={handleDeclineInvite}
+                                disabled={declineLoading}
+                                className="px-3.5 py-1.5 bg-white border border-[#d0d7de] hover:bg-[#f6f8fa] text-[#cf222e] text-xs font-semibold rounded-md shadow-sm transition-colors disabled:opacity-50"
+                            >
+                                {declineLoading ? 'Declining...' : 'Decline'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'collaborators' ? (
+                    <div className="max-w-4xl mx-auto space-y-6">
+                        {/* Section Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#d0d7de] gap-2">
+                            <div>
+                                <h2 className="text-xl font-semibold text-[#1f2328] flex items-center gap-2">
+                                    <Users className="w-5 h-5 text-[#0969da]" />
+                                    Repository Collaborators
+                                </h2>
+                                <p className="text-xs text-[#57606a] mt-1">
+                                    Manage people with push access to this repository. Owners and contributors can push code, create branches, and merge.
+                                </p>
+                            </div>
+                            <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#ddf4ff] text-[#0969da] border border-[#54aeff]/40 w-fit">
+                                {contributorsList.length + 1} Active Member{contributorsList.length + 1 > 1 ? 's' : ''}
+                            </span>
+                        </div>
+
+                        {/* Owner Add Contributor Form */}
+                        {isOwner && (
+                            <div className="border border-[#d0d7de] rounded-md bg-white overflow-hidden shadow-sm">
+                                <div className="bg-[#f6f8fa] border-b border-[#d0d7de] px-4 py-3">
+                                    <h3 className="text-sm font-semibold text-[#1f2328] flex items-center gap-2">
+                                        <UserPlus className="w-4 h-4 text-[#1a7f37]" />
+                                        Add a Contributor
+                                    </h3>
+                                </div>
+                                <div className="p-4 space-y-3">
+                                    <p className="text-xs text-[#57606a]">
+                                        Invite developers by their username. Once they accept the invitation received on their dashboard, they will have write access to push commits and branches.
+                                    </p>
+                                    <form onSubmit={handleInviteContributor} className="flex flex-col sm:flex-row gap-2 max-w-lg">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter collaborator username (e.g. alice)"
+                                            value={inviteUsername}
+                                            onChange={(e) => setInviteUsername(e.target.value)}
+                                            className="flex-1 bg-[#f6f8fa] border border-[#d0d7de] rounded-md px-3 py-1.5 text-xs text-[#1f2328] placeholder-[#57606a] focus:outline-none focus:border-[#0969da] focus:bg-white transition-colors"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={inviteLoading || !inviteUsername.trim()}
+                                            className="px-4 py-1.5 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded-md shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                                        >
+                                            {inviteLoading ? <span className="inline-block w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span> : <UserPlus className="w-3.5 h-3.5" />}
+                                            <span>Invite Contributor</span>
+                                        </button>
+                                    </form>
+                                    {inviteMsg && (
+                                        <div className={`text-xs px-3 py-2 rounded-md ${inviteMsg.type === 'success' ? 'bg-[#dafbe1] text-[#1a7f37] border border-[#4ac26b]/30' : 'bg-[#ffebe9] text-[#cf222e] border border-[#ff8182]/30'}`}>
+                                            {inviteMsg.text}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pending Invitations Box (Owner Only) */}
+                        {isOwner && pendingContributors.length > 0 && (
+                            <div className="border border-[#d0d7de] rounded-md bg-white overflow-hidden shadow-sm">
+                                <div className="bg-[#fff8c5]/40 border-b border-[#d0d7de] px-4 py-2.5 flex items-center justify-between">
+                                    <h3 className="text-xs font-semibold text-[#9a6700] flex items-center gap-2">
+                                        <Clock className="w-3.5 h-3.5" />
+                                        Pending Invitations ({pendingContributors.length})
+                                    </h3>
+                                </div>
+                                <ul className="divide-y divide-[#d0d7de]">
+                                    {pendingContributors.map((p, idx) => (
+                                        <li key={idx} className="p-3.5 flex items-center justify-between hover:bg-[#f6f8fa] transition-colors">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-[#eaeef2] text-[#57606a] flex items-center justify-center font-bold text-xs border border-[#d0d7de]">
+                                                    {p.username.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs font-semibold text-[#1f2328]">@{p.username}</span>
+                                                    <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-[#fff8c5] text-[#9a6700] border border-[#d4a72c]/40 rounded-full font-medium">
+                                                        Invitation Pending
+                                                    </span>
+                                                    <p className="text-[11px] text-[#57606a] mt-0.5">
+                                                        Invited {formatTimeAgo(p.invitedAt)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleRemoveContributor(p.username)}
+                                                className="text-xs text-[#cf222e] hover:underline font-medium px-2 py-1"
+                                            >
+                                                Cancel Invitation
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {/* Active Members List */}
+                        <div className="border border-[#d0d7de] rounded-md bg-white overflow-hidden shadow-sm">
+                            <div className="bg-[#f6f8fa] border-b border-[#d0d7de] px-4 py-2.5 flex items-center justify-between">
+                                <h3 className="text-xs font-semibold text-[#1f2328]">
+                                    People with push access ({contributorsList.length + 1})
+                                </h3>
+                            </div>
+                            <ul className="divide-y divide-[#d0d7de]">
+                                {/* Repository Owner Entry */}
+                                <li className="p-3.5 flex items-center justify-between hover:bg-[#f6f8fa] transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-full bg-[#1f883d] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                                            {username.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <Link to={`/publicProfile/${username}`} className="text-xs font-semibold text-[#0969da] hover:underline">
+                                                    @{username}
+                                                </Link>
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-[#ddf4ff] text-[#0969da] border border-[#54aeff]/40 rounded-full">
+                                                    <Crown className="w-3 h-3 text-[#0969da]" />
+                                                    Owner
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-[#57606a] mt-0.5">Has administrative and full write privileges</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs text-[#57606a] font-medium">Repository Owner</span>
+                                </li>
+
+                                {/* Contributors Entries */}
+                                {contributorsList.map((c, idx) => (
+                                    <li key={idx} className="p-3.5 flex items-center justify-between hover:bg-[#f6f8fa] transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-full bg-[#0969da] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                                                {c.username.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <Link to={`/publicProfile/${c.username}`} className="text-xs font-semibold text-[#0969da] hover:underline">
+                                                        @{c.username}
+                                                    </Link>
+                                                    <span className="px-2 py-0.5 text-[10px] font-semibold bg-[#dafbe1] text-[#1a7f37] border border-[#4ac26b]/40 rounded-full">
+                                                        Contributor
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-[#57606a] mt-0.5">
+                                                    Can push commits and create branches &bull; Joined {formatTimeAgo(c.acceptedAt || c.invitedAt)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {(isOwner || c.username.toLowerCase() === localStorage.getItem("username")?.toLowerCase()) && (
+                                            <button
+                                                onClick={() => handleRemoveContributor(c.username)}
+                                                className="flex items-center gap-1 text-xs text-[#cf222e] hover:bg-[#ffebe9] px-2.5 py-1 rounded border border-transparent hover:border-[#ff8182]/40 transition-colors font-medium"
+                                                title={c.username.toLowerCase() === localStorage.getItem("username")?.toLowerCase() ? "Leave repository" : "Remove contributor"}
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                                <span>{c.username.toLowerCase() === localStorage.getItem("username")?.toLowerCase() ? "Leave" : "Remove"}</span>
+                                            </button>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : activeTab !== 'code' ? (
                     <div className="border border-[#d0d7de] rounded-md bg-white p-12 text-center text-[#57606a]">
                         <div className="max-w-md mx-auto">
                             <h3 className="text-lg font-semibold text-[#1f2328] mb-2 capitalize">{activeTab}</h3>
@@ -730,18 +1071,40 @@ const RepositoryView = () => {
 
                             {/* Contributors */}
                             <div className="space-y-3 pb-5 border-b border-[#d0d7de]">
-                                <h3 className="text-sm font-semibold text-[#1f2328]">
-                                    Contributors <span className="ml-1 text-xs font-normal text-[#57606a]">{contributors.length}</span>
-                                </h3>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {contributors.map((c, i) => (
-                                        <div 
-                                            key={i} 
-                                            title={c}
-                                            className="w-7 h-7 rounded-full bg-[#d0d7de] text-[#24292f] border border-white flex items-center justify-center font-semibold text-xs shadow-sm"
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-semibold text-[#1f2328] flex items-center gap-1">
+                                        Contributors <span className="ml-1 text-xs font-normal text-[#57606a]">{contributorsList.length + 1}</span>
+                                    </h3>
+                                    {isOwner && (
+                                        <button
+                                            onClick={() => setActiveTab('collaborators')}
+                                            className="text-xs text-[#0969da] hover:underline font-medium"
                                         >
-                                            {c.charAt(0).toUpperCase()}
+                                            + Add
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {/* Owner Avatar */}
+                                    <Link 
+                                        to={`/publicProfile/${username}`}
+                                        title={`@${username} (Owner)`}
+                                    >
+                                        <div className="w-7 h-7 rounded-full bg-[#1f883d] text-white border border-white flex items-center justify-center font-semibold text-xs shadow-sm hover:ring-2 hover:ring-[#0969da] transition-all">
+                                            {username?.charAt(0).toUpperCase()}
                                         </div>
+                                    </Link>
+                                    {/* Contributor Avatars */}
+                                    {contributorsList.map((c, i) => (
+                                        <Link 
+                                            key={i} 
+                                            to={`/publicProfile/${c.username}`}
+                                            title={`@${c.username} (Contributor)`}
+                                        >
+                                            <div className="w-7 h-7 rounded-full bg-[#0969da] text-white border border-white flex items-center justify-center font-semibold text-xs shadow-sm hover:ring-2 hover:ring-[#0969da] transition-all">
+                                                {c.username?.charAt(0).toUpperCase()}
+                                            </div>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>

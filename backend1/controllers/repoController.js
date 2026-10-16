@@ -21,17 +21,32 @@ const getAuthorizedRepo = async (req, username, repoName) => {
     const owner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
     if (!owner) return { error: { status: 404, message: "User not found" } };
 
-    const repo = await Repository.findOne({ name: { $regex: new RegExp(`^${repoName}$`, "i") }, owner: owner._id });
+    const repo = await Repository.findOne({ 
+        name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+        owner: owner._id 
+    })
+    .populate('owner')
+    .populate('contributors.user')
+    .populate('contributors.invitedBy');
+    
     if (!repo) return { error: { status: 404, message: "Repository not found" } };
 
+    const user = await getUser(req);
+    const isOwner = user && user._id.toString() === owner._id.toString();
+    const isContributor = user && repo.contributors && repo.contributors.some(
+        c => c.user && (c.user._id ? c.user._id.toString() : c.user.toString()) === user._id.toString() && c.status === 'accepted'
+    );
+    const hasPendingInvite = user && repo.contributors && repo.contributors.some(
+        c => c.user && (c.user._id ? c.user._id.toString() : c.user.toString()) === user._id.toString() && c.status === 'pending'
+    );
+
     if (repo.isPrivate) {
-        const user = await getUser(req);
-        if (!user || user._id.toString() !== owner._id.toString()) {
+        if (!user || (!isOwner && !isContributor)) {
             return { error: { status: 403, message: "Access denied: Private repository" } };
         }
     }
 
-    return { owner, repo };
+    return { owner, repo, user, isOwner: !!isOwner, isContributor: !!isContributor, hasPendingInvite: !!hasPendingInvite };
 };
 
 const createRepo = async (req, res) => {
@@ -53,7 +68,8 @@ const createRepo = async (req, res) => {
             description,
             isPrivate: !!isPrivate,
             owner: user._id,
-            s3Prefix
+            s3Prefix,
+            contributors: []
         });
 
         await repo.save();
@@ -71,7 +87,12 @@ const getUserRepos = async (req, res) => {
         if (!user) return res.status(401).json({ status: false, message: "Unauthorized" });
 
         const repos = await Repository.find({ owner: user._id }).sort({ createdAt: -1 });
-        return res.status(200).json({ status: true, repos });
+        const contributedRepos = await Repository.find({
+            "contributors.user": user._id,
+            "contributors.status": "accepted"
+        }).populate("owner", "username email").sort({ updatedAt: -1 });
+
+        return res.status(200).json({ status: true, repos, contributedRepos });
     } catch (error) {
         return res.status(500).json({ status: false, message: "Internal server error" });
     }
@@ -80,13 +101,22 @@ const getUserRepos = async (req, res) => {
 const getRepoDetails = async (req, res) => {
     try {
         const { username, repoName } = req.params;
-        const { repo, error } = await getAuthorizedRepo(req, username, repoName);
+        const { repo, owner, user, isOwner, isContributor, hasPendingInvite, error } = await getAuthorizedRepo(req, username, repoName);
         if (error) return res.status(error.status).json({ status: false, message: error.message });
 
         const headRef = await s3Git.getHeadRef(repo.s3Prefix);
         const isEmpty = !headRef;
 
-        return res.status(200).json({ status: true, repo, isEmpty, s3Prefix: repo.s3Prefix });
+        return res.status(200).json({ 
+            status: true, 
+            repo, 
+            isEmpty, 
+            s3Prefix: repo.s3Prefix,
+            isOwner,
+            isContributor,
+            hasPendingInvite,
+            currentUser: user ? { username: user.username, email: user.email } : null
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ status: false, message: "Internal server error" });
@@ -231,10 +261,12 @@ const editFile = async (req, res) => {
         if (!user) return res.status(401).json({ status: false, message: "Unauthorized" });
 
         const { username, repoName } = req.params;
-        if (user.username !== username) return res.status(403).json({ status: false, message: "Forbidden" });
-        
-        const repo = await Repository.findOne({ name: repoName, owner: user._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        const { repo, isOwner, isContributor, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
+
+        if (!isOwner && !isContributor) {
+            return res.status(403).json({ status: false, message: "Forbidden: Only the repository owner or accepted contributors can edit files." });
+        }
 
         const { filename, content, commitMessage, branch = "master" } = req.body;
 
@@ -301,10 +333,12 @@ const mergeBranches = async (req, res) => {
         if (!user) return res.status(401).json({ status: false, message: "Unauthorized" });
 
         const { username, repoName } = req.params;
-        if (user.username !== username) return res.status(403).json({ status: false, message: "Forbidden" });
+        const { repo, isOwner, isContributor, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
 
-        const repo = await Repository.findOne({ name: repoName, owner: user._id });
-        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+        if (!isOwner && !isContributor) {
+            return res.status(403).json({ status: false, message: "Forbidden: Only the repository owner or accepted contributors can merge branches." });
+        }
 
         const { baseBranch, compareBranch } = req.body;
         if (!baseBranch || !compareBranch) return res.status(400).json({ status: false, message: "Branches required" });
@@ -517,6 +551,288 @@ const downloadZip = async (req, res) => {
     }
 };
 
+// ==========================================
+// CONTRIBUTOR CONTROLLERS
+// ==========================================
+
+// Invite a user to become a contributor
+const inviteContributor = async (req, res) => {
+    try {
+        const user = await getUser(req);
+        if (!user) return res.status(401).json({ status: false, message: "Unauthorized: Please log in." });
+
+        const { username, repoName } = req.params;
+        const { repo, owner, isOwner, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
+
+        if (!isOwner) {
+            return res.status(403).json({ status: false, message: "Forbidden: Only the repository owner can invite contributors." });
+        }
+
+        const targetUsername = req.body.username?.trim();
+        if (!targetUsername) {
+            return res.status(400).json({ status: false, message: "Username to invite is required." });
+        }
+
+        const targetUser = await User.findOne({ username: { $regex: new RegExp(`^${targetUsername}$`, "i") } });
+        if (!targetUser) {
+            return res.status(404).json({ status: false, message: `User '@${targetUsername}' does not exist.` });
+        }
+
+        if (targetUser._id.toString() === owner._id.toString()) {
+            return res.status(400).json({ status: false, message: "User is already the owner of this repository." });
+        }
+
+        if (!repo.contributors) repo.contributors = [];
+
+        const existingContributor = repo.contributors.find(
+            c => c.user && (c.user._id ? c.user._id.toString() : c.user.toString()) === targetUser._id.toString()
+        );
+
+        if (existingContributor) {
+            if (existingContributor.status === "accepted") {
+                return res.status(400).json({ status: false, message: `@${targetUser.username} is already an active contributor.` });
+            }
+            if (existingContributor.status === "pending") {
+                return res.status(400).json({ status: false, message: `An invitation is already pending for @${targetUser.username}.` });
+            }
+            // If previously rejected, allow re-inviting
+            existingContributor.status = "pending";
+            existingContributor.invitedBy = user._id;
+            existingContributor.invitedAt = new Date();
+        } else {
+            repo.contributors.push({
+                user: targetUser._id,
+                role: "contributor",
+                status: "pending",
+                invitedBy: user._id,
+                invitedAt: new Date()
+            });
+        }
+
+        await repo.save();
+
+        return res.status(200).json({
+            status: true,
+            message: `Invitation successfully sent to @${targetUser.username}`,
+            contributor: {
+                username: targetUser.username,
+                email: targetUser.email,
+                role: "contributor",
+                status: "pending",
+                invitedAt: new Date()
+            }
+        });
+    } catch (error) {
+        console.error("Error inviting contributor:", error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
+// Get contributors of a repository
+const getRepoContributors = async (req, res) => {
+    try {
+        const { username, repoName } = req.params;
+        const { repo, owner, user, isOwner, isContributor, hasPendingInvite, error } = await getAuthorizedRepo(req, username, repoName);
+        if (error) return res.status(error.status).json({ status: false, message: error.message });
+
+        const activeContributors = [];
+        const pendingContributors = [];
+
+        (repo.contributors || []).forEach(c => {
+            if (!c.user) return;
+            const item = {
+                id: c.user._id,
+                username: c.user.username,
+                email: c.user.email,
+                description: c.user.description || "",
+                role: c.role || "contributor",
+                status: c.status,
+                invitedAt: c.invitedAt,
+                acceptedAt: c.acceptedAt,
+                invitedBy: c.invitedBy ? c.invitedBy.username : null
+            };
+            if (c.status === "accepted") {
+                activeContributors.push(item);
+            } else if (c.status === "pending") {
+                pendingContributors.push(item);
+            }
+        });
+
+        return res.status(200).json({
+            status: true,
+            owner: {
+                id: owner._id,
+                username: owner.username,
+                email: owner.email,
+                description: owner.description || ""
+            },
+            contributors: activeContributors,
+            pendingContributors: isOwner ? pendingContributors : [],
+            isOwner,
+            isContributor,
+            hasPendingInvite
+        });
+    } catch (error) {
+        console.error("Error fetching contributors:", error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
+// Accept an invitation to contribute
+const acceptInvitation = async (req, res) => {
+    try {
+        const user = await getUser(req);
+        if (!user) return res.status(401).json({ status: false, message: "Unauthorized: Please log in." });
+
+        const { username, repoName } = req.params;
+        const owner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
+        if (!owner) return res.status(404).json({ status: false, message: "Owner not found" });
+
+        const repo = await Repository.findOne({ 
+            name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+            owner: owner._id 
+        });
+        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+
+        const contributorEntry = (repo.contributors || []).find(
+            c => c.user && c.user.toString() === user._id.toString() && c.status === "pending"
+        );
+
+        if (!contributorEntry) {
+            return res.status(400).json({ status: false, message: "No pending invitation found for this repository." });
+        }
+
+        contributorEntry.status = "accepted";
+        contributorEntry.acceptedAt = new Date();
+
+        await repo.save();
+
+        return res.status(200).json({
+            status: true,
+            message: `Congratulations! You are now an active contributor to ${owner.username}/${repo.name}.`
+        });
+    } catch (error) {
+        console.error("Error accepting invitation:", error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
+// Decline an invitation to contribute
+const declineInvitation = async (req, res) => {
+    try {
+        const user = await getUser(req);
+        if (!user) return res.status(401).json({ status: false, message: "Unauthorized: Please log in." });
+
+        const { username, repoName } = req.params;
+        const owner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
+        if (!owner) return res.status(404).json({ status: false, message: "Owner not found" });
+
+        const repo = await Repository.findOne({ 
+            name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+            owner: owner._id 
+        });
+        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+
+        repo.contributors = (repo.contributors || []).filter(
+            c => !(c.user && c.user.toString() === user._id.toString() && c.status === "pending")
+        );
+
+        await repo.save();
+
+        return res.status(200).json({
+            status: true,
+            message: `Invitation to contribute to ${owner.username}/${repo.name} was declined.`
+        });
+    } catch (error) {
+        console.error("Error declining invitation:", error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
+// Remove a contributor or cancel an invitation
+const removeContributor = async (req, res) => {
+    try {
+        const user = await getUser(req);
+        if (!user) return res.status(401).json({ status: false, message: "Unauthorized: Please log in." });
+
+        const { username, repoName, contributorUsername } = req.params;
+        const owner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
+        if (!owner) return res.status(404).json({ status: false, message: "Owner not found" });
+
+        const repo = await Repository.findOne({ 
+            name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+            owner: owner._id 
+        }).populate("contributors.user");
+        if (!repo) return res.status(404).json({ status: false, message: "Repository not found" });
+
+        const isOwner = user._id.toString() === owner._id.toString();
+        const isSelf = user.username.toLowerCase() === contributorUsername.toLowerCase();
+
+        if (!isOwner && !isSelf) {
+            return res.status(403).json({ status: false, message: "Forbidden: You do not have permission to remove this contributor." });
+        }
+
+        const prevCount = (repo.contributors || []).length;
+        repo.contributors = repo.contributors.filter(c => {
+            const cUsername = c.user?.username || "";
+            return cUsername.toLowerCase() !== contributorUsername.toLowerCase();
+        });
+
+        if (repo.contributors.length === prevCount) {
+            return res.status(404).json({ status: false, message: `Contributor '@${contributorUsername}' not found.` });
+        }
+
+        await repo.save();
+
+        return res.status(200).json({
+            status: true,
+            message: isSelf ? "You have left the repository." : `Contributor @${contributorUsername} was removed successfully.`
+        });
+    } catch (error) {
+        console.error("Error removing contributor:", error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
+// Get all pending invitations for the logged-in user
+const getUserInvitations = async (req, res) => {
+    try {
+        const user = await getUser(req);
+        if (!user) return res.status(401).json({ status: false, message: "Unauthorized: Please log in." });
+
+        const repos = await Repository.find({
+            "contributors.user": user._id,
+            "contributors.status": "pending"
+        })
+        .populate("owner", "username email")
+        .populate("contributors.invitedBy", "username");
+
+        const invitations = [];
+        for (const repo of repos) {
+            const entry = repo.contributors.find(
+                c => c.user && c.user.toString() === user._id.toString() && c.status === "pending"
+            );
+            if (entry) {
+                invitations.push({
+                    repoId: repo._id,
+                    repoName: repo.name,
+                    owner: repo.owner?.username || "unknown",
+                    description: repo.description,
+                    isPrivate: repo.isPrivate,
+                    invitedBy: entry.invitedBy?.username || repo.owner?.username || "Owner",
+                    invitedAt: entry.invitedAt || repo.updatedAt
+                });
+            }
+        }
+
+        return res.status(200).json({ status: true, invitations });
+    } catch (error) {
+        console.error("Error fetching user invitations:", error);
+        return res.status(500).json({ status: false, message: "Internal server error" });
+    }
+};
+
 module.exports = {
     createRepo,
     getUserRepos,
@@ -529,5 +845,12 @@ module.exports = {
     editFile,
     mergeBranches,
     getCommitDiff,
-    downloadZip
+    downloadZip,
+    inviteContributor,
+    getRepoContributors,
+    acceptInvitation,
+    declineInvitation,
+    removeContributor,
+    getUserInvitations
 };
+

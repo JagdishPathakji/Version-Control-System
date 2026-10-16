@@ -26,7 +26,10 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
   const navigate = useNavigate();
   const username = localStorage.getItem("username") || "Developer";
   const [repos, setRepos] = useState<any[]>([]);
+  const [contributedRepos, setContributedRepos] = useState<any[]>([]);
+  const [invitations, setInvitations] = useState<any[]>([]);
   const [repoFilter, setRepoFilter] = useState("");
+  const [repoTab, setRepoTab] = useState<"all" | "owned" | "contributed">("all");
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [activeDocTab, setActiveDocTab] = useState<"cli" | "s3" | "workflow">("cli");
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
@@ -35,13 +38,73 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
   const [followLoading, setFollowLoading] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
+  const fetchInvitations = async () => {
+    try {
+      const res = await fetch('https://version-control-system-mebn.onrender.com/user/invitations', { credentials: 'include' });
+      const data = await res.json();
+      if (data.status) {
+        setInvitations(data.invitations || []);
+      }
+    } catch (err) {
+      console.error("Error fetching invitations:", err);
+    }
+  };
+
+  const loadRepos = () => {
     cachedFetch('https://version-control-system-mebn.onrender.com/user/repos', { credentials: 'include' })
       .then(data => {
-        if (data.status) setRepos(data.repos || []);
+        if (data.status) {
+          setRepos(data.repos || []);
+          setContributedRepos(data.contributedRepos || []);
+        }
       })
       .catch(console.error);
+  };
+
+  useEffect(() => {
+    loadRepos();
+    fetchInvitations();
   }, []);
+
+  const handleAcceptDashboardInvite = async (inv: any) => {
+    try {
+      const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${inv.owner}/${inv.repoName}/contributors/accept`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (data.status) {
+        alert(data.message);
+        clearCache('user/repos');
+        fetchInvitations();
+        loadRepos();
+      } else {
+        alert(data.message || 'Failed to accept invitation');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error accepting invitation');
+    }
+  };
+
+  const handleDeclineDashboardInvite = async (inv: any) => {
+    if (!confirm(`Decline invitation to collaborate on ${inv.owner}/${inv.repoName}?`)) return;
+    try {
+      const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${inv.owner}/${inv.repoName}/contributors/decline`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (data.status) {
+        fetchInvitations();
+      } else {
+        alert(data.message || 'Failed to decline invitation');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error declining invitation');
+    }
+  };
 
   const { data: profilesRes, isLoading } = useQuery({
     queryKey: ["publicProfiles"],
@@ -103,9 +166,21 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
     setTimeout(() => setCopiedCmd(null), 2000);
   };
 
-  const filteredRepos = repos.filter(r => 
-    r.name.toLowerCase().includes(repoFilter.toLowerCase())
-  );
+  const allRepos = [
+    ...repos.map(r => ({ ...r, isContributed: false, repoOwner: username })),
+    ...contributedRepos.map(r => ({ ...r, isContributed: true, repoOwner: r.owner?.username || "unknown" }))
+  ];
+
+  const filteredRepos = allRepos
+    .filter(r => {
+      if (repoTab === "owned") return !r.isContributed;
+      if (repoTab === "contributed") return r.isContributed;
+      return true;
+    })
+    .filter(r => 
+      r.name.toLowerCase().includes(repoFilter.toLowerCase()) || 
+      (r.repoOwner && r.repoOwner.toLowerCase().includes(repoFilter.toLowerCase()))
+    );
 
   return (
     <div className="min-h-screen bg-[#f6f8fa] text-[#1f2328] font-sans flex flex-col">
@@ -132,7 +207,7 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
             </div>
 
             {/* Quick Filter Input */}
-            <div className="relative mb-3">
+            <div className="relative mb-2.5">
               <input 
                 type="text"
                 value={repoFilter}
@@ -143,26 +218,53 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
               <Search className="w-3.5 h-3.5 text-[#57606a] absolute left-2.5 top-1.5" />
             </div>
 
+            {/* Repository Scope Tabs */}
+            <div className="flex items-center gap-1 border-b border-[#d0d7de] pb-2 mb-2 text-[11px] font-medium text-[#57606a]">
+              <button
+                onClick={() => setRepoTab("all")}
+                className={`px-2 py-0.5 rounded transition-colors ${repoTab === "all" ? "bg-[#eaeef2] text-[#1f2328] font-semibold" : "hover:text-[#1f2328]"}`}
+              >
+                All ({allRepos.length})
+              </button>
+              <button
+                onClick={() => setRepoTab("owned")}
+                className={`px-2 py-0.5 rounded transition-colors ${repoTab === "owned" ? "bg-[#eaeef2] text-[#1f2328] font-semibold" : "hover:text-[#1f2328]"}`}
+              >
+                Mine ({repos.length})
+              </button>
+              <button
+                onClick={() => setRepoTab("contributed")}
+                className={`px-2 py-0.5 rounded transition-colors ${repoTab === "contributed" ? "bg-[#eaeef2] text-[#1f2328] font-semibold" : "hover:text-[#1f2328]"}`}
+              >
+                Collabs ({contributedRepos.length})
+              </button>
+            </div>
+
             {/* Repositories List */}
             {filteredRepos.length === 0 ? (
               <div className="text-center py-6 text-xs text-[#57606a]">
-                {repos.length === 0 ? "You don't have any repositories yet." : "No repositories match your filter."}
+                {allRepos.length === 0 ? "You don't have any repositories yet." : "No repositories match your filter."}
               </div>
             ) : (
               <ul className="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
                 {filteredRepos.map((repo: any) => (
                   <li key={repo._id}>
                     <div 
-                      onClick={() => navigate(`/repo/${username}/${repo.name}`)}
+                      onClick={() => navigate(`/repo/${repo.repoOwner}/${repo.name}`)}
                       className="group flex items-center justify-between p-1.5 rounded hover:bg-[#f6f8fa] cursor-pointer transition-colors"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-4 h-4 rounded-full bg-[#d0d7de] text-[#24292f] flex items-center justify-center font-semibold text-[9px] shrink-0">
-                          {username.charAt(0).toUpperCase()}
+                        <div className={`w-4 h-4 rounded-full ${repo.isContributed ? 'bg-[#0969da] text-white' : 'bg-[#d0d7de] text-[#24292f]'} flex items-center justify-center font-semibold text-[9px] shrink-0`}>
+                          {repo.repoOwner.charAt(0).toUpperCase()}
                         </div>
                         <span className="text-xs font-semibold text-[#1f2328] group-hover:text-[#0969da] group-hover:underline truncate">
-                          {username}/{repo.name}
+                          {repo.repoOwner}/{repo.name}
                         </span>
+                        {repo.isContributed && (
+                          <span className="text-[9px] px-1.5 py-0.2 bg-[#dafbe1] text-[#1a7f37] border border-[#4ac26b]/40 rounded font-medium shrink-0">
+                            Collab
+                          </span>
+                        )}
                       </div>
                       {repo.isPrivate ? (
                         <Lock className="w-3 h-3 text-[#57606a] shrink-0" />
@@ -201,6 +303,53 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
             <h1 className="text-base font-semibold text-[#1f2328]">Home</h1>
             <span className="text-xs text-[#57606a]">Community Activity</span>
           </div>
+
+          {/* Collaboration Invitations Alert Card */}
+          {invitations.length > 0 && (
+            <div className="border border-[#4ac26b]/50 bg-[#dafbe1]/40 rounded-md p-4 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-[#4ac26b]/30 pb-2">
+                <h2 className="text-sm font-semibold text-[#1a7f37] flex items-center gap-2">
+                  <Users className="w-4 h-4 text-[#1a7f37]" />
+                  Pending Collaboration Invitations ({invitations.length})
+                </h2>
+                <span className="text-[11px] text-[#1a7f37] font-medium">Action Required</span>
+              </div>
+              <div className="space-y-2">
+                {invitations.map((inv) => (
+                  <div key={inv.repoId} className="bg-white border border-[#d0d7de] rounded p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Link to={`/repo/${inv.owner}/${inv.repoName}`} className="text-xs font-semibold text-[#0969da] hover:underline">
+                          {inv.owner}/{inv.repoName}
+                        </Link>
+                        <span className="px-1.5 py-0.2 text-[10px] bg-[#dafbe1] text-[#1a7f37] border border-[#4ac26b]/40 rounded-full font-medium">
+                          Invited as Contributor
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#57606a] mt-0.5">
+                        Invited by <strong>@{inv.invitedBy}</strong> &bull; {inv.description || "No description provided"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => handleAcceptDashboardInvite(inv)}
+                        className="px-3 py-1 bg-[#1f883d] hover:bg-[#1a7f37] text-white text-xs font-semibold rounded shadow-xs transition-colors flex items-center gap-1"
+                      >
+                        <Check className="w-3 h-3" />
+                        <span>Accept</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeclineDashboardInvite(inv)}
+                        className="px-3 py-1 bg-white hover:bg-[#ffebe9] border border-[#d0d7de] hover:border-[#ff8182]/40 text-[#cf222e] text-xs font-semibold rounded shadow-xs transition-colors"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* User's recent repository activity notice */}
           {repos.length > 0 && (
