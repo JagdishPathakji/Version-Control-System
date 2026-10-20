@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIRGIT - Distributed Version Control System &amp; Cloud Repository Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            overflow: hidden !important; /* STRICTLY NON-SCROLLABLE */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #519ca2; /* Exact teal cyan from sample poster */
+            color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Header matching Image 1 exactly */
+        header {
+            background-color: #b9c6c7; /* Exact soft silver-teal header background */
+            padding: clamp(3px, 0.45vh, 6px) clamp(12px, 1.2vw, 24px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #3b798a;
+            flex-shrink: 0;
+            height: clamp(80px, 14vh, 102px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .header-logo {
+            height: clamp(52px, 10.5vh, 78px);
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .header-center {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .college-title {
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: #0f172a;
+            font-size: clamp(12px, 1.35vw, 20px);
+            line-height: 1.15;
+        }
+
+        .college-sub {
+            font-family: 'Times New Roman', serif;
+            font-size: clamp(8.5px, 0.85vw, 13px);
+            color: #1e293b;
+            font-weight: 600;
+            line-height: 1.15;
+        }
+
+        .dept-title {
+            font-family: 'Times New Roman', serif;
+            font-size: clamp(9.5px, 0.95vw, 14.5px);
+            color: #0e6575;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1.15;
+            margin-top: 1px;
+        }
+
+        .main-project-banner {
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 1.2px;
+            font-weight: 900;
+            font-size: clamp(13px, 1.6vw, 24px);
+            color: #ffffff;
+            background: linear-gradient(180deg, #184e68 0%, #0e3b50 100%);
+            padding: clamp(2px, 0.35vh, 4px) clamp(16px, 2vw, 36px);
+            border-radius: 9999px;
+            margin-top: 2px;
+            line-height: 1.1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.4);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* 4-Column Grid */
+        .poster-body {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 24.5% 25% 25% 25.5%;
+            gap: clamp(5px, 0.55vw, 9px);
+            padding: clamp(4px, 0.5vh, 8px) clamp(8px, 0.8vw, 14px) clamp(6px, 0.8vh, 10px) clamp(8px, 0.8vw, 14px);
+            height: calc(100vh - clamp(80px, 14vh, 102px));
+            overflow: hidden;
+        }
+
+        .poster-col {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(4px, 0.5vh, 7px);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Pill Header - Exact Match to Teal Sample (#187e93) */
+        .pill-header {
+            background-color: #187e93;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: clamp(9px, 0.82vw, 12.5px);
+            text-align: center;
+            padding: clamp(2px, 0.3vh, 4px) 8px;
+            border-radius: 9999px;
+            margin-bottom: clamp(2px, 0.25vh, 3.5px);
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .sub-header-italic {
+            font-style: italic;
+            text-decoration: underline;
+            font-weight: 700;
+            font-size: clamp(7.5px, 0.68vw, 10.5px);
+            color: #0e6575;
+            margin-bottom: 2px;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        /* Clean White Cards */
+        .poster-card {
+            background: #ffffff;
+            border-radius: 5px;
+            padding: clamp(4px, 0.5vh, 6px) clamp(5px, 0.5vw, 8px);
+            box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.08);
+            border: 1px solid #c2dbe0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Bullet points */
+        ul.dense-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.dense-bullets li {
+            position: relative;
+            padding-left: clamp(8px, 0.75vw, 11px);
+            margin-bottom: clamp(1.5px, 0.22vh, 3.5px);
+            font-size: clamp(7px, 0.62vw, 9.5px);
+            line-height: 1.25;
+            color: #1e293b;
+        }
+
+        ul.dense-bullets li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: -1px;
+            color: #0e6575;
+            font-weight: 900;
+            font-size: clamp(9px, 0.8vw, 12px);
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Images inside cards */
+        .fit-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+        }
+
+        /* Command pill grid */
+        .cmd-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.5px;
+            margin: 2px 0;
+        }
+
+        .cmd-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+            padding: 1.5px 2px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(6px, 0.52vw, 8px);
+            font-weight: 700;
+            color: #0f172a;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .cmd-pill span {
+            color: #0e6575;
+        }
+
+        /* Columnar Architecture Swimlanes */
+        .arch-columns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3.5px;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .arch-col-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 3px 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .arch-col-title {
+            font-size: clamp(6.5px, 0.55vw, 8.5px);
+            font-weight: 800;
+            color: #ffffff;
+            background: #0e6575;
+            text-align: center;
+            padding: 1.5px 2px;
+            border-radius: 2px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .arch-col-item {
+            font-size: clamp(6px, 0.5vw, 7.5px);
+            color: #1e293b;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 2px;
+            padding: 1.5px 2px;
+            margin-bottom: 2px;
+            line-height: 1.15;
+            font-weight: 600;
+        }
+
+        /* HTML/CSS Mockups */
+        .ui-mock-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: clamp(6px, 0.5vw, 7.5px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .mock-navbar {
+            background: #0d1117;
+            color: white;
+            padding: 2.5px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: clamp(6.5px, 0.55vw, 8px);
+        }
+
+        .mock-pill {
+            background: #238636;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: clamp(5.5px, 0.48vw, 7px);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Exact Header Matching Image 1 -->
+    <header>
+        <img src="bvm_naac_logo.png" alt="BVM & NAAC Logo" class="header-logo">
+        
+        <div class="header-center">
+            <div class="college-title">BIRLA VISHWAKARMA MAHAVIDYALAYA ENGINEERING COLLEGE</div>
+            <div class="college-sub">(An Autonomous Institution)</div>
+            <div class="college-sub" style="font-size: clamp(8px, 0.78vw, 11.5px);">Managed by Charutar Vidya Mandal</div>
+            <div class="dept-title">INFORMATION TECHNOLOGY DEPARTMENT</div>
+            <div class="main-project-banner">GIRGIT — DISTRIBUTED VERSION CONTROL SYSTEM &amp; CLOUD REPOSITORY PLATFORM</div>
+        </div>
+
+        <img src="cvm_logo.png" alt="CVM Trust Logo" class="header-logo">
+    </header>
+
+    <!-- 4-Column Poster Grid -->
+    <div class="poster-body">
+
+        <!-- ========================================== -->
+        <!-- COLUMN 1: Sections 1, 2, 3                 -->
+        <!-- ========================================== -->
+        <div class="poster-col">
+
+            <!-- 1. Abstract -->
+            <div class="poster-card" style="flex: 0 0 auto;">
+                <div class="pill-header">Abstract</div>
+                <ul class="dense-bullets">
+                    <li><strong>Girgit</strong> is a distributed version control system (DVCS) and cloud repository hosting platform engineered from scratch without invoking the standard <code class="mono">git</code> binary.</li>
+                    <li>Incorporates a <strong>Content-Addressable Storage (CAS)</strong> engine utilizing SHA-1 hashing, cryptographic Merkle tree hierarchies, Eugene Myers' $O(ND)$ difference algorithm, and 3-way Lowest Common Ancestor (LCA) merge reconciliation.</li>
+                    <li>Features an integrated 14-rule static secret/credential leak scanner preventing sensitive key exposure, coupled with serverless AWS S3 cloud remote synchronization.</li>
+                </ul>
+            </div>
+
+            <!-- 2. Introduction -->
+            <div class="poster-card" style="flex: 0 0 auto;">
+                <div class="pill-header">Introduction</div>
+                <ul class="dense-bullets">
+                    <li>Modern distributed software engineering requires decentralized version tracking, tamper-evident cryptographic verification, and collaborative cloud hosting.</li>
+                    <li>Traditional setups depend on monolithic Git servers, external daemon protocols (SSH/Git daemon), and lack real-time secret detection during commit evaluation.</li>
+                    <li>Girgit resolves these challenges by combining an autonomous Python DVCS engine with a full-stack React 18 & Express 5 cloud platform backed directly by AWS S3 object storage.</li>
+                </ul>
+            </div>
+
+            <!-- 3. Command Line Interface -->
+            <div class="poster-card" style="flex: 1 1 0; min-height: 0;">
+                <div class="pill-header">Command Line Interface</div>
+                <span class="sub-header-italic">Independent Python DVCS Engine &amp; Command Suite</span>
+                <ul class="dense-bullets" style="margin-bottom: 2px;">
+                    <li>Engineered in pure Python 3.10+ implementing an independent CAS database under <code class="mono">.girgit/objects/</code>.</li>
+                    <li>Provides automated staging, cryptographic commit hashing, and Graphviz DAG graph visualization (<code class="mono">girgit k</code>).</li>
+                    <li>Synchronizes differential object payloads and branch references directly to cloud remote endpoints.</li>
+                </ul>
+
+                <!-- 16 Commands Grid -->
+                <div class="cmd-grid">
+                    <div class="cmd-pill">girgit <span>begin</span></div>
+                    <div class="cmd-pill">girgit <span>init</span></div>
+                    <div class="cmd-pill">girgit <span>add</span></div>
+                    <div class="cmd-pill">girgit <span>commit</span></div>
+                    <div class="cmd-pill">girgit <span>status</span></div>
+                    <div class="cmd-pill">girgit <span>diff</span></div>
+                    <div class="cmd-pill">girgit <span>log</span></div>
+                    <div class="cmd-pill">girgit <span>branch</span></div>
+                    <div class="cmd-pill">girgit <span>checkout</span></div>
+                    <div class="cmd-pill">girgit <span>merge</span></div>
+                    <div class="cmd-pill">girgit <span>reset</span></div>
+                    <div class="cmd-pill">girgit <span>tag</span></div>
+                    <div class="cmd-pill">girgit <span>k</span></div>
+                    <div class="cmd-pill">girgit <span>push</span></div>
+                    <div class="cmd-pill">girgit <span>fetch</span></div>
+                    <div class="cmd-pill">girgit <span>clone</span></div>
+                </div>
+
+                <!-- CLI Terminal Screenshot (Image 5) -->
+                <div style="flex: 1; min-height: 0; margin-top: 2px; overflow: hidden; border-radius: 4px; border: 1px solid #1e293b;">
+                    <img src="cli_terminal.png" alt="Girgit CLI Terminal" class="fit-img" style="background: #000000; object-position: top center;">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- COLUMN 2: Sections 4, 5                    -->
+        <!-- ========================================== -->
+        <div class="poster-col">
+
+            <!-- 4. User Interface (2 lines + 2 self-made HTML/CSS mockups) -->
+            <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
+                <div class="pill-header">User Interface</div>
+                <ul class="dense-bullets" style="margin-bottom: 3px;">
+                    <li>Girgit Hub delivers a responsive single-page repository platform engineered with React 18, TypeScript, and Tailwind CSS.</li>
+                    <li>Supports real-time repository file exploration, in-browser code editing, branch management, visual diffs, and developer collaboration.</li>
+                </ul>
+
+                <!-- 2 Self-Made HTML/CSS UI Screenshots / Mockups -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; min-height: 0;">
+                    
+                    <!-- Self-Made Mockup 1: Dashboard UI -->
+                    <div class="ui-mock-card" style="flex: 1;">
+                        <div class="mock-navbar">
+                            <span>🦎 Girgit Hub</span>
+                            <div style="display: flex; gap: 4px;">
+                                <span style="color: #94a3b8;">Dashboard</span>
+                                <span style="color: #94a3b8;">New Repo</span>
+                                <span class="mock-pill">+ New</span>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 35% 65%; gap: 3px; padding: 3px; background: #f8fafc; flex: 1;">
+                            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px;">
+                                <strong style="color: #0f172a; font-size: 6.5px;">Top Repositories</strong>
+                                <div style="font-size: 5.5px; color: #0284c7; margin-top: 1px;">📁 jagdish/Girgit-Master-Test</div>
+                                <div style="font-size: 5.5px; color: #0284c7;">📁 jagdish/part-2-demo</div>
+                                <div style="font-size: 5.5px; color: #0284c7;">📁 jagdish/basic-test</div>
+                            </div>
+                            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <strong style="color: #0f172a; font-size: 6.5px;">Latest Active Repo</strong>
+                                    <span style="font-size: 5px; background: #e0f2fe; color: #0284c7; padding: 1px 3px; border-radius: 2px;">View</span>
+                                </div>
+                                <div style="font-size: 6px; font-weight: bold; color: #0369a1; margin: 1px 0;">jagdish / Girgit-Test-Master-Present</div>
+                                <div style="font-size: 5.5px; color: #64748b;">Community Activity • 15 Active Developers</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Self-Made Mockup 2: Repository Code Explorer -->
+                    <div class="ui-mock-card" style="flex: 1;">
+                        <div style="background: #f1f5f9; padding: 2px 4px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: bold; color: #0f172a;">jagdish / <span style="color: #0284c7;">Girgit-Master-Test</span> <span style="font-size: 5px; border: 1px solid #cbd5e1; border-radius: 2px; padding: 0 2px;">Public</span></span>
+                            <div style="display: flex; gap: 2px; font-size: 5.5px;">
+                                <span style="background: white; border: 1px solid #cbd5e1; padding: 1px 3px; border-radius: 2px;">⭐ Star 0</span>
+                                <span style="background: white; border: 1px solid #cbd5e1; padding: 1px 3px; border-radius: 2px;">🍴 Fork 0</span>
+                            </div>
+                        </div>
+                        <div style="padding: 2px 4px; background: white; flex: 1;">
+                            <div style="display: flex; justify-content: space-between; font-size: 6px; margin-bottom: 2px; align-items: center;">
+                                <span style="background: #e2e8f0; padding: 1px 3px; border-radius: 2px; font-weight: bold;">🌱 branch: master</span>
+                                <span style="color: #64748b;">4 commits • commit: <code class="mono">8ae02c5</code></span>
+                                <span style="background: #238636; color: white; padding: 1px 4px; border-radius: 2px; font-weight: bold;">&lt;&gt; Code</span>
+                            </div>
+                            <div style="border: 1px solid #e2e8f0; border-radius: 2px; font-size: 5.5px;">
+                                <div style="padding: 1.5px 3px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: #334155;">jagdish added api key 2</div>
+                                <div style="padding: 1.5px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;"><span>📄 .env</span><span style="color: #94a3b8;">recently</span></div>
+                                <div style="padding: 1.5px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;"><span>📄 app.js</span><span style="color: #94a3b8;">recently</span></div>
+                                <div style="padding: 1.5px 3px; display: flex; justify-content: space-between;"><span>📄 app.jspp</span><span style="color: #94a3b8;">recently</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 5. DAG Commit Topology -->
+            <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
+                <div class="pill-header">DAG Commit Topology</div>
+                <span class="sub-header-italic">Cryptographic Parent Chaining &amp; Merkle Linkages (girgit k)</span>
+
+                <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; overflow: hidden; min-height: 0;">
+                    <svg viewBox="0 0 380 250" style="width: 100%; height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 10px;">
+                        <defs>
+                            <marker id="dag-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e6575" />
+                            </marker>
+                        </defs>
+
+                        <!-- HEAD & Branch Master Pointer -->
+                        <rect x="235" y="8" width="135" height="28" rx="4" fill="#0284c7" stroke="#0369a1" stroke-width="1.5"/>
+                        <text x="302" y="22" fill="#ffffff" font-weight="bold" font-size="9" text-anchor="middle">HEAD -&gt; refs/heads/master</text>
+                        <text x="302" y="32" fill="#e0f2fe" font-size="7" text-anchor="middle">Active Working Pointer</text>
+
+                        <!-- Line from HEAD to latest commit -->
+                        <line x1="302" y1="36" x2="302" y2="58" stroke="#0284c7" stroke-width="2" marker-end="url(#dag-arrow)" />
+
+                        <!-- Commit 4 (Latest) -->
+                        <rect x="230" y="60" width="144" height="38" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+                        <text x="302" y="74" fill="#0369a1" font-weight="bold" font-size="9" text-anchor="middle">8ae02c568fb3...</text>
+                        <text x="302" y="85" fill="#334155" font-size="7.5" text-anchor="middle">&quot;added api key 2&quot;</text>
+                        <text x="302" y="94" fill="#64748b" font-size="6.5" text-anchor="middle">Tree: 7d1a4 • Author: jagdish</text>
+
+                        <!-- Line 4 to 3 -->
+                        <line x1="302" y1="98" x2="302" y2="118" stroke="#0e6575" stroke-width="1.8" marker-end="url(#dag-arrow)" />
+
+                        <!-- Commit 3 -->
+                        <rect x="230" y="120" width="144" height="38" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.2"/>
+                        <text x="302" y="134" fill="#1e293b" font-weight="bold" font-size="9" text-anchor="middle">1cda7a3a9ece...</text>
+                        <text x="302" y="145" fill="#334155" font-size="7.5" text-anchor="middle">&quot;added api key&quot;</text>
+                        <text x="302" y="154" fill="#64748b" font-size="6.5" text-anchor="middle">Tree: 9b2e1 • Author: jagdish</text>
+
+                        <!-- Feature Branch Node -->
+                        <rect x="15" y="120" width="140" height="38" rx="4" fill="#faf5ff" stroke="#9333ea" stroke-width="1.2"/>
+                        <text x="85" y="134" fill="#6b21a8" font-weight="bold" font-size="8.5" text-anchor="middle">c83a1d9b04e...</text>
+                        <text x="85" y="145" fill="#4b5563" font-size="7.5" text-anchor="middle">&quot;feature-auth setup&quot;</text>
+                        <text x="85" y="154" fill="#9333ea" font-size="6.5" text-anchor="middle">branch: feature-auth</text>
+
+                        <!-- Line 3 to 2 -->
+                        <line x1="302" y1="158" x2="250" y2="178" stroke="#0e6575" stroke-width="1.8" marker-end="url(#dag-arrow)" />
+                        <!-- Line Feature to 2 -->
+                        <line x1="85" y1="158" x2="160" y2="178" stroke="#9333ea" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#dag-arrow)" />
+
+                        <!-- Commit 2 (Tagged v1.0) -->
+                        <rect x="135" y="180" width="145" height="38" rx="4" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
+                        <text x="207" y="194" fill="#854d0e" font-weight="bold" font-size="9" text-anchor="middle">f511f7c4446e...</text>
+                        <text x="207" y="205" fill="#334155" font-size="7.5" text-anchor="middle">&quot;Experimental commit&quot;</text>
+                        <text x="207" y="214" fill="#a16207" font-weight="bold" font-size="7" text-anchor="middle">🏷️ Tag: refs/tags/v1.0</text>
+
+                        <!-- Line 2 to 1 -->
+                        <line x1="207" y1="218" x2="207" y2="228" stroke="#0e6575" stroke-width="1.8" marker-end="url(#dag-arrow)" />
+
+                        <!-- Commit 1 (Root Commit) -->
+                        <rect x="145" y="230" width="125" height="18" rx="3" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
+                        <text x="207" y="242" fill="#0f172a" font-weight="bold" font-size="7.5" text-anchor="middle">655fe1ca... (Root Initial)</text>
+                    </svg>
+                </div>
+
+                <div style="font-size: clamp(6.5px, 0.55vw, 8px); color: #334155; line-height: 1.15; margin-top: 2px;">
+                    &bull; Topological traversal guarantees immutable commit ancestry &bull; Non-destructive pointer updates.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- COLUMN 3: Sections 6, 7 (Part 1)           -->
+        <!-- ========================================== -->
+        <div class="poster-col">
+
+            <!-- 6. Complete Architecture in Columnar Format -->
+            <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
+                <div class="pill-header">Complete Architecture</div>
+                <span class="sub-header-italic">End-to-End System Layers (Columnar Format)</span>
+
+                <div class="arch-columns">
+                    <!-- Column A: Client -->
+                    <div class="arch-col-box">
+                        <div class="arch-col-title">Client Layer</div>
+                        <div class="arch-col-item"><strong>Girgit CLI</strong><br>Python 3.10+<br>CAS Driver</div>
+                        <div class="arch-col-item"><strong>Girgit Hub</strong><br>React 18 / TS<br>Tailwind CSS</div>
+                        <div class="arch-col-item"><strong>Diff View</strong><br>Split &amp; Unified<br>Myers SES</div>
+                    </div>
+
+                    <!-- Column B: API & Engine -->
+                    <div class="arch-col-box">
+                        <div class="arch-col-title">API &amp; Engine</div>
+                        <div class="arch-col-item"><strong>Express 5</strong><br>REST Router<br>HTTP-only JWT</div>
+                        <div class="arch-col-item"><strong>S3 Git Helper</strong><br>Merkle Trees<br>Blob Serializer</div>
+                        <div class="arch-col-item"><strong>Secret Scan</strong><br>14 Active Rules<br>Auto-Redact</div>
+                    </div>
+
+                    <!-- Column C: Cache & Auth -->
+                    <div class="arch-col-box">
+                        <div class="arch-col-title">Cache &amp; Auth</div>
+                        <div class="arch-col-item"><strong>Redis Cloud</strong><br>OTP Caching<br>Rate Limiter</div>
+                        <div class="arch-col-item"><strong>Brevo API</strong><br>Transactional<br>6-Digit OTP</div>
+                        <div class="arch-col-item"><strong>Auth Core</strong><br>Bcrypt Hashing<br>RBAC Guard</div>
+                    </div>
+
+                    <!-- Column D: Persistence -->
+                    <div class="arch-col-box">
+                        <div class="arch-col-title">Persistence</div>
+                        <div class="arch-col-item"><strong>AWS S3</strong><br>Objects &amp; Refs<br>Cloud Remote</div>
+                        <div class="arch-col-item"><strong>MongoDB</strong><br>User Profiles<br>Repo Metadata</div>
+                        <div class="arch-col-item"><strong>Archiver</strong><br>Live Streaming<br>ZIP Bundling</div>
+                    </div>
+                </div>
+
+                <div style="font-size: clamp(6.5px, 0.55vw, 8px); color: #334155; line-height: 1.15; margin-top: 2px;">
+                    &bull; Decoupled serverless remote sync &bull; 85.5% storage deduplication via CAS hash reuse.
+                </div>
+            </div>
+
+            <!-- 7. User Interface Showcase (Part 1: Dashboard) -->
+            <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
+                <div class="pill-header">User Interface Showcase</div>
+                <span class="sub-header-italic">Web Platform — User Dashboard &amp; Activity Feed</span>
+
+                <!-- Image 4: Dashboard Screenshot -->
+                <div style="flex: 1; min-height: 0; overflow: hidden; border-radius: 4px; border: 1px solid #cbd5e1;">
+                    <img src="ui_dashboard.png" alt="Girgit Dashboard Showcase" class="fit-img">
+                </div>
+                <div style="font-size: clamp(6px, 0.52vw, 7.5px); color: #64748b; margin-top: 2px; text-align: center;">
+                    <strong>Dashboard:</strong> Real-time repository directory, latest repo activity card, developer network, and CLI reference.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- COLUMN 4: Sections 7 (Remaining), 8, 9, 10 -->
+        <!-- ========================================== -->
+        <div class="poster-col">
+
+            <!-- 7. UI Showcase (Remaining: Repo View & Profile) -->
+            <div class="poster-card" style="flex: 1 1 45%; min-height: 0;">
+                <div class="pill-header">UI Showcase (Cont.)</div>
+                <span class="sub-header-italic">Repository Code Explorer &amp; Developer Profile</span>
+
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; min-height: 0;">
+                    <!-- Image 3: Repo View -->
+                    <div style="flex: 1; min-height: 0; overflow: hidden; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <img src="ui_repo_view.png" alt="Girgit Repository View" class="fit-img">
+                    </div>
+                    <!-- Image 2: Profile -->
+                    <div style="flex: 1; min-height: 0; overflow: hidden; border-radius: 4px; border: 1px solid #cbd5e1;">
+                        <img src="ui_profile.png" alt="Girgit Developer Profile" class="fit-img">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Conclusion & 9. Future Work -->
+            <div class="poster-card" style="flex: 0 0 auto;">
+                <div class="pill-header">Conclusion &amp; Future Work</div>
+                <ul class="dense-bullets">
+                    <li><strong>Conclusion:</strong> Successfully built an independent, fully functional DVCS and cloud platform from the ground up without third-party Git binaries. Features 85.5% storage deduplication, $O(ND)$ Myers diffing, and automated 14-rule commit secret scanning.</li>
+                    <li><strong>Future Work:</strong> Integration of packfile delta compression (<code class="mono">.pack</code>/<code class="mono">.idx</code>) for cloud network optimization, Git Large File Storage (LFS) support, and automated CI/CD webhook pipelines.</li>
+                </ul>
+            </div>
+
+            <!-- 10. Team -->
+            <div class="poster-card" style="flex: 0 0 auto;">
+                <div class="pill-header">Project Team</div>
+                
+                <div style="display: grid; grid-template-columns: 35% 65%; gap: 6px; font-size: clamp(7.5px, 0.65vw, 9.5px); align-items: start;">
+                    <div>
+                        <span class="sub-header-italic" style="margin-bottom: 2px;">Project Guide:</span>
+                        <div style="font-weight: 800; color: #0f172a; line-height: 1.2;">Prof. Disha Panchal</div>
+                        <div style="font-size: clamp(6.5px, 0.52vw, 8px); color: #475569;">Assistant Professor, IT Dept.</div>
+                    </div>
+                    <div>
+                        <span class="sub-header-italic" style="margin-bottom: 2px;">Team Members:</span>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px 4px; font-weight: 700; color: #0f172a; line-height: 1.2;">
+                            <div>1. Jagdish Pathakji</div>
+                            <div>2. Rudra Gohil</div>
+                            <div>3. Yug Dholakiya</div>
+                            <div>4. Harsh Tandel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
