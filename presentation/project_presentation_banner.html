@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIRGIT - Distributed Version Control System &amp; Cloud Repository Platform</title>
+    <title>Girgit: Version Control System</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
 
@@ -312,7 +312,7 @@
             <div class="college-sub">(An Autonomous Institution)</div>
             <div class="college-sub" style="font-size: clamp(8px, 0.78vw, 11.5px);">Managed by Charutar Vidya Mandal</div>
             <div class="dept-title">INFORMATION TECHNOLOGY DEPARTMENT</div>
-            <div class="main-project-banner">GIRGIT — DISTRIBUTED VERSION CONTROL SYSTEM &amp; CLOUD REPOSITORY PLATFORM</div>
+            <div class="main-project-banner">Girgit: Version Control System</div>
         </div>
 
         <img src="cvm_logo.png" alt="CVM Trust Logo" class="header-logo">
@@ -529,43 +529,108 @@
         <!-- ========================================== -->
         <div class="poster-col">
 
-            <!-- 6. Complete Architecture in Columnar Format -->
+            <!-- 6. Complete Architecture with Flow Diagram -->
             <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
                 <div class="pill-header">Complete Architecture</div>
-                <span class="sub-header-italic">End-to-End System Layers (Columnar Format)</span>
+                <span class="sub-header-italic">End-to-End System Architecture Flow Diagram</span>
 
-                <div class="arch-columns">
-                    <!-- Column A: Client -->
-                    <div class="arch-col-box">
-                        <div class="arch-col-title">Client Layer</div>
-                        <div class="arch-col-item"><strong>Girgit CLI</strong><br>Python 3.10+<br>CAS Driver</div>
-                        <div class="arch-col-item"><strong>Girgit Hub</strong><br>React 18 / TS<br>Tailwind CSS</div>
-                        <div class="arch-col-item"><strong>Diff View</strong><br>Split &amp; Unified<br>Myers SES</div>
-                    </div>
+                <!-- Architecture Flow Diagram (Vector SVG) -->
+                <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; overflow: hidden; min-height: 0;">
+                    <svg viewBox="0 0 440 216" style="width: 100%; height: 100%; font-family: 'Inter', sans-serif;">
+                        <defs>
+                            <marker id="flow-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e6575" />
+                            </marker>
+                            <marker id="flow-arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" fill="#b45309" />
+                            </marker>
+                            <marker id="flow-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" fill="#15803d" />
+                            </marker>
+                        </defs>
 
-                    <!-- Column B: API & Engine -->
-                    <div class="arch-col-box">
-                        <div class="arch-col-title">API &amp; Engine</div>
-                        <div class="arch-col-item"><strong>Express 5</strong><br>REST Router<br>HTTP-only JWT</div>
-                        <div class="arch-col-item"><strong>S3 Git Helper</strong><br>Merkle Trees<br>Blob Serializer</div>
-                        <div class="arch-col-item"><strong>Secret Scan</strong><br>14 Active Rules<br>Auto-Redact</div>
-                    </div>
+                        <!-- 1. Client Layer -->
+                        <rect x="5" y="3" width="430" height="40" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+                        <text x="12" y="13" font-size="7" font-weight="800" fill="#475569" letter-spacing="0.5">CLIENT &amp; WORKSPACE LAYER</text>
 
-                    <!-- Column C: Cache & Auth -->
-                    <div class="arch-col-box">
-                        <div class="arch-col-title">Cache &amp; Auth</div>
-                        <div class="arch-col-item"><strong>Redis Cloud</strong><br>OTP Caching<br>Rate Limiter</div>
-                        <div class="arch-col-item"><strong>Brevo API</strong><br>Transactional<br>6-Digit OTP</div>
-                        <div class="arch-col-item"><strong>Auth Core</strong><br>Bcrypt Hashing<br>RBAC Guard</div>
-                    </div>
+                        <!-- Box 1A: CLI -->
+                        <rect x="15" y="16" width="195" height="23" rx="3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+                        <text x="22" y="27" font-size="7.5" font-weight="bold" fill="#0369a1">Girgit CLI (Python 3.10+)</text>
+                        <text x="22" y="35" font-size="6" fill="#0c4a6e">Local CAS Store (.girgit/objects) • Staging • Myers Diff</text>
 
-                    <!-- Column D: Persistence -->
-                    <div class="arch-col-box">
-                        <div class="arch-col-title">Persistence</div>
-                        <div class="arch-col-item"><strong>AWS S3</strong><br>Objects &amp; Refs<br>Cloud Remote</div>
-                        <div class="arch-col-item"><strong>MongoDB</strong><br>User Profiles<br>Repo Metadata</div>
-                        <div class="arch-col-item"><strong>Archiver</strong><br>Live Streaming<br>ZIP Bundling</div>
-                    </div>
+                        <!-- Box 1B: Web -->
+                        <rect x="230" y="16" width="195" height="23" rx="3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+                        <text x="237" y="27" font-size="7.5" font-weight="bold" fill="#0369a1">Girgit Hub Web (React 18 / TS)</text>
+                        <text x="237" y="35" font-size="6" fill="#0c4a6e">Repository Explorer • In-Browser Editor • Diff Viewer</text>
+
+                        <!-- Downward Connectors -->
+                        <line x1="112" y1="39" x2="112" y2="52" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+                        <line x1="327" y1="39" x2="327" y2="52" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+                        <!-- 2. Secure Transport Pill -->
+                        <rect x="65" y="53" width="310" height="15" rx="7.5" fill="#f1f5f9" stroke="#64748b" stroke-width="1"/>
+                        <text x="220" y="63" font-size="6.5" font-weight="bold" fill="#334155" text-anchor="middle">RESTful HTTP Transport (JWT Bearer Token / HTTP-Only Cookie)</text>
+                        <line x1="220" y1="68" x2="220" y2="78" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+                        <!-- 3. API Gateway & Engine Layer -->
+                        <rect x="5" y="79" width="430" height="67" rx="4" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
+                        <text x="12" y="90" font-size="7" font-weight="800" fill="#0f766e" letter-spacing="0.5">EXPRESS 5 API GATEWAY &amp; ENGINE LAYER</text>
+
+                        <!-- Engine Box 1: S3 Git Helper -->
+                        <rect x="15" y="94" width="130" height="46" rx="3" fill="#ffffff" stroke="#14b8a6" stroke-width="1"/>
+                        <text x="20" y="105" font-size="7" font-weight="bold" fill="#0f766e">S3 Git Plumbing</text>
+                        <text x="20" y="114" font-size="5.8" fill="#334155">• Merkle Tree Serializer</text>
+                        <text x="20" y="123" font-size="5.8" fill="#334155">• Commit Ancestry (DAG)</text>
+                        <text x="20" y="132" font-size="5.8" fill="#334155">• 3-Way LCA Merge Engine</text>
+
+                        <!-- Engine Box 2: Secret Scanner -->
+                        <rect x="155" y="94" width="130" height="46" rx="3" fill="#ffffff" stroke="#ef4444" stroke-width="1"/>
+                        <text x="160" y="105" font-size="7" font-weight="bold" fill="#b91c1c">14-Rule Secret Scan</text>
+                        <text x="160" y="114" font-size="5.8" fill="#334155">• AWS / Stripe / DB URIs</text>
+                        <text x="160" y="123" font-size="5.8" fill="#334155">• Private Keys &amp; .env Leaks</text>
+                        <text x="160" y="132" font-size="5.8" fill="#334155">• Automated Redaction</text>
+
+                        <!-- Engine Box 3: Auth & Access -->
+                        <rect x="295" y="94" width="130" height="46" rx="3" fill="#ffffff" stroke="#6366f1" stroke-width="1"/>
+                        <text x="300" y="105" font-size="7" font-weight="bold" fill="#4338ca">Auth &amp; Collaborator</text>
+                        <text x="300" y="114" font-size="5.8" fill="#334155">• Bcrypt 10 Salt Rounds</text>
+                        <text x="300" y="123" font-size="5.8" fill="#334155">• Push Permission Guard</text>
+                        <text x="300" y="132" font-size="5.8" fill="#334155">• Streaming ZIP Archiver</text>
+
+                        <!-- Downward Arrows to Storage Layer -->
+                        <line x1="80" y1="140" x2="60" y2="157" stroke="#b45309" stroke-width="1.5" marker-end="url(#flow-arrow-orange)"/>
+                        <line x1="220" y1="140" x2="165" y2="157" stroke="#15803d" stroke-width="1.5" marker-end="url(#flow-arrow-green)"/>
+                        <line x1="340" y1="140" x2="275" y2="157" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+                        <line x1="380" y1="140" x2="380" y2="157" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+                        <!-- 4. Persistence & Cloud Services Layer -->
+                        <rect x="5" y="158" width="430" height="53" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+                        <text x="12" y="168" font-size="7" font-weight="800" fill="#475569" letter-spacing="0.5">CLOUD PERSISTENCE &amp; SERVICE PROVIDERS</text>
+
+                        <!-- Persistent Target 1: AWS S3 -->
+                        <rect x="15" y="171" width="95" height="35" rx="3" fill="#fffbeb" stroke="#f59e0b" stroke-width="1"/>
+                        <text x="20" y="181" font-size="6.8" font-weight="bold" fill="#b45309">AWS S3 Remote</text>
+                        <text x="20" y="190" font-size="5.5" fill="#78350f">• objects/xx/yyyy...</text>
+                        <text x="20" y="198" font-size="5.5" fill="#78350f">• refs/heads/&lt;branch&gt;</text>
+
+                        <!-- Persistent Target 2: MongoDB -->
+                        <rect x="120" y="171" width="95" height="35" rx="3" fill="#f0fdf4" stroke="#16a34a" stroke-width="1"/>
+                        <text x="125" y="181" font-size="6.8" font-weight="bold" fill="#15803d">MongoDB Atlas</text>
+                        <text x="125" y="190" font-size="5.5" fill="#166534">• User Profiles &amp; Auth</text>
+                        <text x="125" y="198" font-size="5.5" fill="#166534">• Repository Metadata</text>
+
+                        <!-- Persistent Target 3: Redis Cloud -->
+                        <rect x="225" y="171" width="95" height="35" rx="3" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
+                        <text x="230" y="181" font-size="6.8" font-weight="bold" fill="#b91c1c">Redis Cloud</text>
+                        <text x="230" y="190" font-size="5.5" fill="#991b1b">• OTP Secret Cache</text>
+                        <text x="230" y="198" font-size="5.5" fill="#991b1b">• Push Rate Limiting</text>
+
+                        <!-- Persistent Target 4: Brevo Email API -->
+                        <rect x="330" y="171" width="95" height="35" rx="3" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
+                        <text x="335" y="181" font-size="6.8" font-weight="bold" fill="#7e22ce">Brevo Email API</text>
+                        <text x="335" y="190" font-size="5.5" fill="#581c87">• Transactional OTP</text>
+                        <text x="335" y="198" font-size="5.5" fill="#581c87">• Account Verification</text>
+                    </svg>
                 </div>
 
                 <div style="font-size: clamp(6.5px, 0.55vw, 8px); color: #334155; line-height: 1.15; margin-top: 2px;">
