@@ -3,7 +3,7 @@ const zlib = require('zlib');
 
 // The SDK automatically picks up ~/.aws/credentials
 const s3Client = new S3Client({ region: process.env.AWS_REGION || "ap-south-1" });
-const BUCKET_NAME = "girgit-project"; 
+const BUCKET_NAME = process.env.S3_BUCKET_NAME || process.env.S3_BUCKET || "girgit-project"; 
 
 async function getS3Object(key) {
     try {

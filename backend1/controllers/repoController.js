@@ -953,10 +953,26 @@ const forkRepo = async (req, res) => {
             forkCount: 0
         });
 
-        await forkedRepo.save();
+        try {
+            await forkedRepo.save();
+        } catch (saveErr) {
+            if (saveErr.code === 11000 && saveErr.message && saveErr.message.includes("name_1")) {
+                console.log("Detected legacy name_1 unique index collision. Dropping index and retrying save...");
+                try {
+                    await Repository.collection.dropIndex("name_1");
+                    await forkedRepo.save();
+                } catch (retryErr) {
+                    throw retryErr;
+                }
+            } else {
+                throw saveErr;
+            }
+        }
 
-        sourceRepo.forkCount = (sourceRepo.forkCount || 0) + 1;
-        await sourceRepo.save();
+        await Repository.updateOne({ _id: sourceRepo._id }, { $inc: { forkCount: 1 } });
+
+
+
 
         return res.status(201).json({
             status: true,
@@ -965,7 +981,7 @@ const forkRepo = async (req, res) => {
         });
     } catch (error) {
         console.error("Error forking repository:", error);
-        return res.status(500).json({ status: false, message: "Internal server error while forking repository" });
+        return res.status(500).json({ status: false, message: error.message || "Internal server error while forking repository" });
     }
 };
 
