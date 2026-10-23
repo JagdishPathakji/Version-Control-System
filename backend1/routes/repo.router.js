@@ -18,6 +18,7 @@ repoRouter.get("/repo/:username/:repoName/blob/:oid", repoController.getBlobCont
 repoRouter.get("/repo/:username/:repoName/zip", repoController.downloadZip);
 repoRouter.post("/repo/:username/:repoName/edit", repoController.editFile);
 repoRouter.post("/repo/:username/:repoName/merge", repoController.mergeBranches);
+repoRouter.post("/repo/:username/:repoName/fork", repoController.forkRepo);
 
 repoRouter.get("/user/invitations", repoController.getUserInvitations);
 

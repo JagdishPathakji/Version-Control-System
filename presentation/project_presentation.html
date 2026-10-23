@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Girgit : Version Control System - Final Presentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #0e7490;
+            --primary-dark: #083344;
+            --primary-light: #e0f2fe;
+            --accent: #0284c7;
+            --accent-green: #15803d;
+            --accent-amber: #b45309;
+            --accent-purple: #7e22ce;
+            --bg-dark: #0b1320;
+            --slide-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            user-select: none;
+        }
+
+        /* Presentation Wrapper */
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+        }
+
+        /* 16:9 Aspect Ratio Slide Deck */
+        .slide-deck {
+            width: 100%;
+            max-width: 1360px;
+            height: 94vh;
+            max-height: 765px;
+            background: var(--slide-bg);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Slide Top Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 50;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0284c7, #0e7490, #14b8a6);
+            width: 9%;
+            transition: width 0.3s ease;
+        }
+
+        /* Dedicated Slides Viewport (Prevents any overlap with navigation) */
+        .slides-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            min-height: 0;
+            width: 100%;
+        }
+
+        /* Individual Slide */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 22px 34px;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Slide Header */
+        .slide-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .slide-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slide-badge {
+            background: #0e7490;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            letter-spacing: 0.5px;
+        }
+
+        .slide-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .slide-subtitle {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .slide-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: #0e7490;
+            background: #e0f2fe;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #bae6fd;
+        }
+
+        /* Module Slide Grid Layout */
+        .module-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .module-full-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Module Sections: Description & Core Points */
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 22px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #0e7490;
+            background: #e0f2fe;
+            padding: 4px 10px;
+            border-radius: 6px;
+            width: fit-content;
+        }
+
+        .card-description-text {
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .core-points-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .core-points-list li {
+            position: relative;
+            padding-left: 24px;
+            font-size: 13.5px;
+            line-height: 1.5;
+            color: #1e293b;
+        }
+
+        .core-points-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 1px;
+            width: 17px;
+            height: 17px;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .core-points-list li strong {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        /* Visual Box / Screenshot Embed */
+        .visual-preview-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .visual-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+            display: block;
+        }
+
+        .visual-caption {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 6px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Slide 1: Premium Executive Title Slide */
+        .title-slide {
+            padding: clamp(20px, 3vh, 32px) clamp(24px, 4vw, 48px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: 
+                radial-gradient(circle at 50% 15%, rgba(2, 132, 199, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 85% 85%, rgba(14, 116, 144, 0.06) 0%, transparent 50%),
+                linear-gradient(135deg, #f8fafc 0%, #f1f5f9 45%, #e2e8f0 100%);
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .title-slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(14, 116, 144, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .college-header-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            border-bottom: 2px solid rgba(203, 213, 225, 0.8);
+            position: relative;
+            z-index: 2;
+            gap: 16px;
+        }
+
+        .bvm-logo-img {
+            height: clamp(58px, 8.5vh, 76px);
+            width: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 3px 6px rgba(11, 23, 40, 0.12));
+        }
+
+        .college-info {
+            text-align: center;
+            flex: 1;
+            padding: 0 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .college-title-text {
+            font-family: 'Times New Roman', serif;
+            font-size: clamp(16px, 1.65vw, 22px);
+            font-weight: 900;
+            color: #082f49;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            line-height: 1.25;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .college-sub-text {
+            font-family: 'Times New Roman', serif;
+            font-size: clamp(10.5px, 0.95vw, 12.5px);
+            color: #334155;
+            font-weight: 600;
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+
+        .dept-title-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(90deg, #0284c7, #0e7490);
+            color: #ffffff;
+            padding: 3px 14px;
+            border-radius: 9999px;
+            font-size: clamp(10px, 0.9vw, 12px);
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);
+        }
+
+        /* Centerpiece Hero Container */
+        .main-hero-block {
+            margin: auto 0;
+            padding: clamp(22px, 3.5vh, 38px) clamp(24px, 3.5vw, 48px);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 16px;
+            box-shadow: 
+                0 10px 25px -5px rgba(15, 23, 42, 0.06),
+                0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-project-title {
+            font-size: clamp(38px, 4.8vw, 60px);
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hero-title-brand {
+            background: linear-gradient(135deg, #0284c7 0%, #0e7490 50%, #0f766e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 950;
+            letter-spacing: -1px;
+        }
+
+        .hero-title-sep {
+            color: #0284c7;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .hero-title-rest {
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        /* Meta Cards: Guide and Team Members */
+        .meta-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .meta-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 14px 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meta-card.guide-card {
+            border-top: 4px solid #0284c7;
+        }
+
+        .meta-card.team-card {
+            border-top: 4px solid #0e7490;
+        }
+
+        .meta-card-label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #0e7490;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .guide-name-val {
+            font-size: clamp(17px, 1.4vw, 20px);
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.25;
+        }
+
+        .guide-role-sub {
+            font-size: 12.5px;
+            color: #475569;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .guide-dept-sub {
+            font-size: 11.5px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+
+        .team-members-chips {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 14px;
+            margin-top: 2px;
+        }
+
+        .team-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: clamp(12.5px, 1.05vw, 14px);
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .team-chip-num {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 10px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Slide 2: Abstract Layout & Full-Height Balance */
+        .abstract-layout-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+            justify-content: space-between;
+        }
+
+        .abstract-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .abstract-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            border-top: 4px solid #0e7490;
+        }
+
+        .abstract-card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .abstract-card-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #334155;
+        }
+
+        .abstract-bottom-banner {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .abstract-stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .abstract-stat-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        .abstract-stat-num {
+            font-size: clamp(15px, 1.35vw, 19px);
+            font-weight: 900;
+            color: #0284c7;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .abstract-stat-label {
+            font-size: 11px;
+            color: #475569;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .abstract-summary-strip {
+            font-size: 12px;
+            color: #1e293b;
+            line-height: 1.45;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 7px 14px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Slide 9: Architecture Matrix Layout */
+        .architecture-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .matrix-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .matrix-tier-header {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .matrix-tag {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .matrix-bullets {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #334155;
+        }
+
+        .matrix-bullets li {
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .matrix-bullets li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: #0e7490;
+            font-weight: bold;
+        }
+
+        .matrix-summary-strip {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: #334155;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .matrix-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .matrix-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        /* Terminal Mockup on Slide */
+        .terminal-box {
+            background: #090d16;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .term-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .term-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .term-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .term-dot.red { background: #ef4444; }
+        .term-dot.yellow { background: #f59e0b; }
+        .term-dot.green { background: #10b981; }
+
+        .term-cmd { color: #38bdf8; font-weight: 700; }
+        .term-success { color: #4ade80; font-weight: 700; }
+        .term-hash { color: #facc15; }
+        .term-prompt { color: #94a3b8; }
+
+        /* Slide 11: Thank You Slide */
+        .thank-you-slide {
+            padding: clamp(24px, 4vh, 40px) clamp(24px, 4vw, 48px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #082f49 0%, #0c4a6e 50%, #075985 100%);
+            color: #ffffff;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .thank-you-title {
+            font-size: clamp(36px, 4.2vw, 50px);
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .thank-you-sub {
+            font-size: clamp(14px, 1.15vw, 16px);
+            color: #bae6fd;
+            font-weight: 500;
+            margin-bottom: 22px;
+            max-width: 660px;
+            line-height: 1.55;
+        }
+
+        .thank-you-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+            max-width: 760px;
+        }
+
+        .ty-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: left;
+        }
+
+        .ty-card-label {
+            font-size: 11.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #7dd3fc;
+            margin-bottom: 5px;
+        }
+
+        .ty-card-val {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .ty-card-sub {
+            font-size: 12.5px;
+            color: #e0f2fe;
+            margin-top: 3px;
+        }
+
+        .thank-you-badge {
+            margin-top: 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #bae6fd;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 18px;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Navigation Bar - Made Invisible as requested */
+        .nav-controls {
+            display: none !important;
+        }
+
+        /* Print formatting */
+        @media print {
+            body, html {
+                overflow: visible !important;
+                height: auto !important;
+                background: white !important;
+            }
+            .presentation-container {
+                padding: 0 !important;
+                height: auto !important;
+            }
+            .slide-deck {
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .slides-viewport {
+                overflow: visible !important;
+                height: auto !important;
+            }
+            .slide {
+                position: relative !important;
+                display: flex !important;
+                opacity: 1 !important;
+                transform: none !important;
+                page-break-after: always;
+                height: 100vh !important;
+                border-bottom: 2px solid #ccc;
+            }
+            .nav-controls, .progress-bar-container {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <div class="slide-deck" id="slideDeck">
+
+            <!-- Top Slide Progress Bar -->
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+
+            <!-- Slides Viewport Container (Docked Slide Deck Architecture) -->
+            <div class="slides-viewport">
+
+                <!-- ==================================================== -->
+                <!-- SLIDE 1: TITLE PAGE                                  -->
+                <!-- ==================================================== -->
+                <div class="slide title-slide active" data-slide="1">
+                    <!-- College Header -->
+                    <div class="college-header-block">
+                        <img src="../../../../.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792753416662_50c98c15.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792753416662_50c98c15.png';" alt="BVM Engineering College Logo" class="bvm-logo-img">
+                        <div class="college-info">
+                            <div class="college-title-text">Birla Vishwakarma Mahavidyalaya</div>
+                            <div class="college-sub-text">(Engineering College &bull; An Autonomous Institution &bull; Managed by CVM)</div>
+                            <span class="dept-title-badge">Department of Information Technology</span>
+                        </div>
+                        <img src="cvm_logo.png" onerror="this.onerror=null; this.src='../../../../.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792753416662_50c98c15.png';" alt="CVM Trust Logo" class="bvm-logo-img">
+                    </div>
+
+                    <!-- Main Project Title (Strictly Title Only) -->
+                    <div class="main-hero-block">
+                        <h1 class="hero-project-title">
+                            <span class="hero-title-brand">Girgit</span>
+                            <span class="hero-title-sep">:</span>
+                            <span class="hero-title-rest">Version Control System</span>
+                        </h1>
+                    </div>
+
+                    <!-- Meta Details: Guide and Team Members -->
+                    <div class="meta-details-grid">
+                        <!-- Project Guide -->
+                        <div class="meta-card guide-card">
+                            <div>
+                                <div class="meta-card-label">Project Guide</div>
+                                <div class="guide-name-val">Prof. Disha Panchal</div>
+                                <div class="guide-role-sub">Assistant Professor</div>
+                                <div class="guide-dept-sub">Department of Information Technology</div>
+                            </div>
+                            <div style="margin-top: 10px; font-size: 11px; color: #0284c7; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Birla Vishwakarma Mahavidyalaya
+                            </div>
+                        </div>
+
+                        <!-- Project Team Members -->
+                        <div class="meta-card team-card">
+                            <div>
+                                <div class="meta-card-label">Project Developers</div>
+                                <div class="team-members-chips">
+                                    <div class="team-chip"><span class="team-chip-num">1</span> Jagdish Pathakji</div>
+                                    <div class="team-chip"><span class="team-chip-num">2</span> Rudra Gohil</div>
+                                    <div class="team-chip"><span class="team-chip-num">3</span> Yug Dholakiya</div>
+                                    <div class="team-chip"><span class="team-chip-num">4</span> Harsh Tandel</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px; font-size: 11px; color: #0e7490; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                B.Tech Information Technology &bull; Final Year
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 2: ABSTRACT                                    -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="2">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Abstract</h2>
+                    </div>
+                    <span class="slide-tag">What is Girgit &amp; What It Does</span>
+                </div>
+
+                <div class="abstract-layout-wrapper">
+                    <!-- Top 3 Core Pillar Cards -->
+                    <div class="abstract-cards-grid">
+                        <div class="abstract-card">
+                            <div class="abstract-card-title">
+                                What is Girgit?
+                            </div>
+                            <p class="abstract-card-text">
+                                <strong>Girgit</strong> is a complete, self-built Version Control System (VCS) and cloud repository hosting platform designed to track and synchronize code changes without invoking Git or any external versioning binaries.
+                            </p>
+                            <ul class="core-points-list" style="margin-top: 4px;">
+                                <li><strong>Independent Engine:</strong> Engineered in Python 3.10+ with custom commit chaining.</li>
+                                <li><strong>Dual Interface:</strong> Unified terminal CLI tool and full-featured React 18 web hub.</li>
+                            </ul>
+                        </div>
+
+                        <div class="abstract-card" style="border-top-color: #0284c7;">
+                            <div class="abstract-card-title">
+                                What Does It Do?
+                            </div>
+                            <p class="abstract-card-text">
+                                Provides direct snapshotting, line-by-line file comparisons, automatic 3-way merges, and seamless cloud repository synchronization.
+                            </p>
+                            <ul class="core-points-list" style="margin-top: 4px;">
+                                <li><strong>Direct Commits:</strong> Saves point-in-time snapshots without cumbersome staging steps.</li>
+                                <li><strong>Smart Merging:</strong> Line-by-line diffing and conflict-free automated branch reconciliation.</li>
+                                <li><strong>Cloud Syncing:</strong> Remote repository push, pull, fetch, and clone capabilities.</li>
+                            </ul>
+                        </div>
+
+                        <div class="abstract-card" style="border-top-color: #10b981;">
+                            <div class="abstract-card-title">
+                                Key Innovations
+                            </div>
+                            <p class="abstract-card-text">
+                                Combines core versioning algorithms with automated pre-commit secret detection and massive cloud storage optimization.
+                            </p>
+                            <ul class="core-points-list" style="margin-top: 4px;">
+                                <li><strong>Secret Detection:</strong> 14 pre-commit rules prevent API key and credential leaks.</li>
+                                <li><strong>85.5% Deduplication:</strong> Unique file content hashing avoids duplicate cloud storage.</li>
+                                <li><strong>Web Collaboration:</strong> In-browser code editing, visual diffs, and developer profiles.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Highlights Panel (Fills empty bottom space) -->
+                    <div class="abstract-bottom-banner">
+                        <div class="abstract-stats-row">
+                            <div class="abstract-stat-box">
+                                <div class="abstract-stat-num" style="color: #0e7490;">100% Git-Free</div>
+                                <div class="abstract-stat-label">Independent Architecture</div>
+                            </div>
+                            <div class="abstract-stat-box">
+                                <div class="abstract-stat-num" style="color: #0284c7;">16 CLI Commands</div>
+                                <div class="abstract-stat-label">Full Terminal VCS Suite</div>
+                            </div>
+                            <div class="abstract-stat-box">
+                                <div class="abstract-stat-num" style="color: #10b981;">85.5% Savings</div>
+                                <div class="abstract-stat-label">AWS Storage Deduplication</div>
+                            </div>
+                            <div class="abstract-stat-box">
+                                <div class="abstract-stat-num" style="color: #7e22ce;">14 Rule Engine</div>
+                                <div class="abstract-stat-label">Active Pre-Push Leak Guard</div>
+                            </div>
+                        </div>
+
+                        <div class="abstract-summary-strip">
+                            <strong>Project Scope:</strong> Girgit delivers an end-to-end version control lifecycle—uniting local developer terminal productivity with resilient AWS cloud persistence, automated security screening, and collaborative web tooling.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 3: CLI ENGINE                                 -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="3">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Command Line Interface (CLI Engine)</h2>
+                    </div>
+                    <span class="slide-tag">Python 3.10+ &bull; Local VCS Suite</span>
+                </div>
+
+                <div class="module-layout">
+                    <!-- Left: Description and Core Points -->
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="module-card">
+                            <div class="card-header-pill">Description</div>
+                            <p class="card-description-text">
+                                The <strong>Girgit CLI</strong> is a standalone command-line application written in Python 3.10+. It gives developers a fast, intuitive terminal workflow to initialize repositories, record commits directly from modified files, inspect revision logs, create branches, and synchronize changes with the cloud platform.
+                            </p>
+                        </div>
+
+                        <div class="module-card" style="flex: 1;">
+                            <div class="card-header-pill">Core Points</div>
+                            <ul class="core-points-list">
+                                <li><strong>User Authentication:</strong> Commands like <code style="color: #0284c7;">girgit login</code> securely authenticate developers with the cloud backend using their credentials.</li>
+                                <li><strong>Direct Commit Pipeline:</strong> Takes instant snapshots of files directly via <code style="color: #0284c7;">girgit commit</code>, eliminating the friction of staging steps.</li>
+                                <li><strong>Branching &amp; History:</strong> Seamlessly switch between feature tracks using <code style="color: #0284c7;">girgit branch</code> and <code style="color: #0284c7;">girgit checkout</code>, while viewing past revisions via <code style="color: #0284c7;">girgit log</code>.</li>
+                                <li><strong>Cloud Syncing:</strong> Synchronize work with team repositories using <code style="color: #0284c7;">girgit push</code>, <code style="color: #0284c7;">girgit fetch</code>, <code style="color: #0284c7;">girgit pull</code>, and <code style="color: #0284c7;">girgit clone</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Right: Terminal Mockup -->
+                    <div class="terminal-box">
+                        <div class="term-header">
+                            <div class="term-dots">
+                                <span class="term-dot red"></span>
+                                <span class="term-dot yellow"></span>
+                                <span class="term-dot green"></span>
+                            </div>
+                            <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">cmd.exe - Administrator: girgit CLI</span>
+                            <span style="font-size: 10px; color: #64748b;">Python 3.10.12</span>
+                        </div>
+                        <div><span class="term-prompt">C:\Girgit-Master-Test&gt;</span> <span class="term-cmd">girgit login</span></div>
+                        <div style="color: #cbd5e1;">Email: pathakjijagdish1@gmail.com</div>
+                        <div class="term-success">&#10003; Successfully logged in as jagdish</div>
+                        
+                        <div style="margin-top: 6px;"><span class="term-prompt">C:\Girgit-Master-Test&gt;</span> <span class="term-cmd">girgit status</span></div>
+                        <div class="term-success">On branch master (Working tree clean &bull; Head synchronized)</div>
+                        
+                        <div style="margin-top: 6px;"><span class="term-prompt">C:\Girgit-Master-Test&gt;</span> <span class="term-cmd">girgit log</span></div>
+                        <div style="color: #fbbf24; font-size: 11.5px;">Traversing commit history chain...</div>
+                        <div style="color: #60a5fa; margin-top: 2px;">commit: <span class="term-hash">8ae02c5</span> <span class="term-success">(HEAD, master)</span> &mdash; added api key 2</div>
+                        <div style="color: #60a5fa;">commit: <span class="term-hash">1cda7a3</span> &mdash; added api key</div>
+                        <div style="color: #60a5fa;">commit: <span class="term-hash">f511f7c</span> <span style="color: #facc15;">(v1.0)</span> &mdash; experimental release</div>
+                        <div style="color: #60a5fa;">commit: <span class="term-hash">655fe1c</span> &mdash; initial commit</div>
+
+                        <div style="margin-top: 8px; border-top: 1px dashed #334155; padding-top: 6px; font-size: 11px; color: #94a3b8;">
+                            16 Available Commands: <span style="color: #38bdf8;">init, login, commit, status, diff, log, branch, checkout, merge, reset, tag, k, push, fetch, pull, clone</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 4: FRONTEND WEB PLATFORM                      -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="4">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Web Platform (Girgit Hub Frontend)</h2>
+                    </div>
+                    <span class="slide-tag">React 18 &bull; TypeScript &bull; Tailwind CSS</span>
+                </div>
+
+                <div class="module-layout">
+                    <!-- Left: Description and Core Points -->
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="module-card">
+                            <div class="card-header-pill">Description</div>
+                            <p class="card-description-text">
+                                <strong>Girgit Hub</strong> is a modern, responsive single-page web application engineered with React 18, TypeScript, and Tailwind CSS. It serves as the primary collaboration platform for developers to browse projects, inspect commit histories, edit files online, and manage team permissions.
+                            </p>
+                        </div>
+
+                        <div class="module-card" style="flex: 1;">
+                            <div class="card-header-pill">Core Points</div>
+                            <ul class="core-points-list">
+                                <li><strong>Interactive Dashboard:</strong> Displays all owned and collaborated repositories, latest push activities, community search, and quick repository creation.</li>
+                                <li><strong>Repository Code Explorer:</strong> Allows nested folder and file browsing, syntax-highlighted code viewing, and in-browser file creation or editing.</li>
+                                <li><strong>Visual Diff Viewer:</strong> Color-coded comparison showing exact added, deleted, and modified lines between two commits or branches.</li>
+                                <li><strong>Developer Profiles:</strong> Dedicated user portfolio pages showcasing hosted repositories, follower counts, and markdown-rendered README profile cards.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Right: Real UI Screenshots -->
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="visual-preview-box" style="flex: 1;">
+                            <img src="ui_dashboard.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792741388642_01942fed.png';" alt="Girgit Hub Dashboard">
+                            <div class="visual-caption">Girgit Hub: User Dashboard &amp; Activity Overview</div>
+                        </div>
+                        <div class="visual-preview-box" style="flex: 1;">
+                            <img src="ui_createrepo.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792752091391_596daf44.png';" alt="Create Repository Screen">
+                            <div class="visual-caption">Repository Creation: Setting Visibility (Public/Private) &amp; Naming</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 5: BACKEND API & LOGIC                        -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="5">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Backend API &amp; Server Architecture</h2>
+                    </div>
+                    <span class="slide-tag">Node.js &bull; Express 5 &bull; RESTful Architecture</span>
+                </div>
+
+                <div class="module-layout">
+                    <!-- Left: Description and Core Points -->
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="module-card">
+                            <div class="card-header-pill">Description</div>
+                            <p class="card-description-text">
+                                The <strong>Girgit Backend</strong> is a high-performance RESTful API service built with Node.js and Express 5. It acts as the central brain of the platform, handling incoming requests from both the CLI and Web interface, authenticating users, managing repository access, and executing version control operations.
+                            </p>
+                        </div>
+
+                        <div class="module-card" style="flex: 1;">
+                            <div class="card-header-pill">Core Points</div>
+                            <ul class="core-points-list">
+                                <li><strong>Secure Authentication &amp; Sessions:</strong> Uses JSON Web Tokens (JWT) and encrypted cookies to authenticate every user action, backed by Bcrypt password hashing.</li>
+                                <li><strong>Repository Coordination:</strong> Powers repository creation, cloning, collaborator invites, and acceptance workflows.</li>
+                                <li><strong>Difference Calculation Engine:</strong> Compares revisions using line-by-line comparison algorithms to compute additions and deletions.</li>
+                                <li><strong>Smart Auto-Merge Engine:</strong> Analyzes common commit history between branches to reconcile changes without manual intervention when no conflicts exist.</li>
+                                <li><strong>On-Demand ZIP Archiving:</strong> Dynamically packages any repository branch or commit snapshot into a downloadable ZIP file.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Right: Visual Cards -->
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="visual-preview-box" style="flex: 1;">
+                            <img src="ui_repo.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792741438784_30c84612.png';" alt="Repository Explorer View">
+                            <div class="visual-caption">Live Repository File Explorer &amp; Branch Commit History</div>
+                        </div>
+                        <div class="visual-preview-box" style="flex: 1;">
+                            <img src="ui_profile.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792741398794_7881aa55.png';" alt="Developer Profile View">
+                            <div class="visual-caption">User Profile &amp; Project Management Portal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 6: DATABASE & STORAGE LAYER                   -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="6">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Database &amp; Data Storage Layer</h2>
+                    </div>
+                    <span class="slide-tag">MongoDB Atlas &bull; Redis Cloud &bull; Brevo API</span>
+                </div>
+
+                <div class="module-full-layout">
+                    <div class="module-card">
+                        <div class="card-header-pill">Description</div>
+                        <p class="card-description-text">
+                            Girgit uses a multi-tier data architecture to separate structured application metadata from session caches and notification workflows. Each database technology is assigned a clear responsibility to guarantee fast response times, high reliability, and data durability.
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1;">
+                        <!-- MongoDB -->
+                        <div class="module-card" style="border-top: 4px solid #16a34a;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <strong style="font-size: 16px; color: #15803d;">MongoDB Atlas</strong>
+                                <span style="font-size: 11px; background: #dcfce7; color: #166534; font-weight: bold; padding: 2px 6px; border-radius: 4px;">Primary DB</span>
+                            </div>
+                            <p style="font-size: 13px; color: #475569; line-height: 1.45;">
+                                Serves as the primary document database for core application records and relations.
+                            </p>
+                            <ul class="core-points-list" style="margin-top: 4px;">
+                                <li>Stores user profiles, emails, and credentials.</li>
+                                <li>Maintains repository ownership and metadata.</li>
+                                <li>Tracks contributor invitations and permissions.</li>
+                                <li>Stores commit IDs, branch heads, and tags.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Redis Cloud -->
+                        <div class="module-card" style="border-top: 4px solid #dc2626;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <strong style="font-size: 16px; color: #b91c1c;">Redis Cloud</strong>
+                                <span style="font-size: 11px; background: #fee2e2; color: #991b1b; font-weight: bold; padding: 2px 6px; border-radius: 4px;">In-Memory Cache</span>
+                            </div>
+                            <p style="font-size: 13px; color: #475569; line-height: 1.45;">
+                                High-speed key-value memory store for sensitive and short-lived session information.
+                            </p>
+                            <ul class="core-points-list" style="margin-top: 4px;">
+                                <li>Stores 6-digit verification OTP codes with 10-minute expiry.</li>
+                                <li>Provides rate-limiting to prevent brute-force attacks.</li>
+                                <li>Caches active API tokens for instant access checks.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Brevo Email API -->
+                        <div class="module-card" style="border-top: 4px solid #9333ea;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <strong style="font-size: 16px; color: #7e22ce;">Brevo Email Service</strong>
+                                <span style="font-size: 11px; background: #f3e8ff; color: #6b21a8; font-weight: bold; padding: 2px 6px; border-radius: 4px;">Email Delivery</span>
+                            </div>
+                            <p style="font-size: 13px; color: #475569; line-height: 1.45;">
+                                Cloud transactional email provider delivering security and communication messages.
+                            </p>
+                            <ul class="core-points-list" style="margin-top: 4px;">
+                                <li>Delivers instant One-Time Password (OTP) verification emails.</li>
+                                <li>Ensures genuine user verification during sign-up.</li>
+                                <li>Sends collaboration alerts and repository updates.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 7: AWS S3 CLOUD STORAGE                       -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="7">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Cloud Storage (Amazon Web Services S3)</h2>
+                    </div>
+                    <span class="slide-tag">AWS S3 &bull; Distributed Storage &bull; 85.5% Deduplication</span>
+                </div>
+
+                <div class="module-layout">
+                    <!-- Left: Description and Core Points -->
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="module-card">
+                            <div class="card-header-pill">Description</div>
+                            <p class="card-description-text">
+                                <strong>Amazon Web Services (AWS) Simple Storage Service (S3)</strong> is utilized as the persistent cloud storage backend for Girgit. Instead of keeping files on fragile local servers, all committed project files, directory hierarchies, and repository states are stored securely in cloud storage buckets.
+                            </p>
+                        </div>
+
+                        <div class="module-card" style="flex: 1;">
+                            <div class="card-header-pill">Core Points</div>
+                            <ul class="core-points-list">
+                                <li><strong>Global Remote Storage:</strong> Every pushed repository is backed by AWS S3, guaranteeing 99.999999999% file durability and high availability.</li>
+                                <li><strong>Smart File Deduplication:</strong> When a developer commits changes, unchanged files are automatically reused rather than uploaded again, resulting in <strong>85.5% storage space savings</strong>.</li>
+                                <li><strong>Cloud Streaming &amp; Downloads:</strong> Users can preview files directly from the cloud or download the complete project as a ZIP archive at any point in history.</li>
+                                <li><strong>Direct Remote URL Format:</strong> Repositories are addressed via clear cloud paths like <code style="color: #0284c7;">s3://girgit-project/username/repo-name</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Right: Visual Diagram Box -->
+                    <div class="module-card" style="justify-content: space-around; background: #f0fdf4; border-color: #bbf7d0;">
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; background: #dcfce7; color: #15803d; font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px;">Cloud Pipeline</div>
+                            <h3 style="font-size: 18px; color: #166534; font-weight: 800; margin-top: 6px;">AWS S3 Remote Storage Flow</h3>
+                            <p style="font-size: 12.5px; color: #15803d; margin-top: 4px;">How Girgit stores files efficiently in the cloud</p>
+                        </div>
+
+                        <div style="background: white; border-radius: 8px; padding: 14px; border: 1px solid #86efac; display: flex; flex-direction: column; gap: 10px; font-size: 12.5px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="background: #e0f2fe; color: #0284c7; padding: 4px 8px; border-radius: 4px; font-weight: bold;">1. Developer Push</span>
+                                <span>CLI uploads modified file snapshots to API gateway</span>
+                            </div>
+                            <div style="text-align: center; color: #15803d; font-weight: bold;">&darr;</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 4px; font-weight: bold;">2. Hash Comparison</span>
+                                <span>Backend verifies existing files; skips unchanged files</span>
+                            </div>
+                            <div style="text-align: center; color: #15803d; font-weight: bold;">&darr;</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="background: #dcfce7; color: #15803d; padding: 4px 8px; border-radius: 4px; font-weight: bold;">3. S3 Persistence</span>
+                                <span>New files and commit logs saved permanently in S3 bucket</span>
+                            </div>
+                        </div>
+
+                        <div style="background: #dcfce7; border-radius: 6px; padding: 10px; text-align: center; font-size: 12px; font-weight: 700; color: #14532d;">
+                            Key Advantage: Ultra-fast sync times &bull; Massive cloud storage efficiency &bull; 100% crash recovery
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 8: SECURITY & SECRET SCANNER                  -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="8">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Built-In Security &amp; Secret Scanner</h2>
+                    </div>
+                    <span class="slide-tag">14-Rule Engine &bull; Leak Prevention &bull; Bcrypt</span>
+                </div>
+
+                <div class="module-layout">
+                    <!-- Left: Description and Core Points -->
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="module-card">
+                            <div class="card-header-pill">Description</div>
+                            <p class="card-description-text">
+                                To prevent accidental data leaks that commonly occur in software teams, Girgit integrates an <strong>Automated 14-Rule Security Scanner</strong>. It continuously examines all staged files during commit evaluation to detect passwords, private keys, and environment tokens before they reach the remote repository.
+                            </p>
+                        </div>
+
+                        <div class="module-card" style="flex: 1;">
+                            <div class="card-header-pill">Core Points</div>
+                            <ul class="core-points-list">
+                                <li><strong>Real-Time Pattern Scanning:</strong> Evaluates files line-by-line using 14 pre-configured security patterns.</li>
+                                <li><strong>Detected Secret Types:</strong> Identifies AWS Access Keys, Stripe payment tokens, database connection URLs (MongoDB/Postgres), private cryptographic keys, and sensitive <code style="color: #0284c7;">.env</code> variables.</li>
+                                <li><strong>Pre-Push Protection:</strong> Displays warning alerts on the web UI and in the terminal so developers can remove secrets before pushing.</li>
+                                <li><strong>Encrypted Passwords:</strong> All user login credentials are salted and hashed using Bcrypt before database storage.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Right: Visual Rules Table -->
+                    <div class="module-card" style="background: #fffaf0; border-color: #fed7aa; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 13px; font-weight: 800; color: #c2410c; text-transform: uppercase;">14 Security Detection Targets</span>
+                                <span style="font-size: 10px; background: #ffedd5; color: #9a3412; font-weight: bold; padding: 2px 6px; border-radius: 4px;">Active Guard</span>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+                                <div style="background: white; border: 1px solid #fed7aa; padding: 8px; border-radius: 6px;">
+                                    <strong>1. AWS Access Keys</strong>
+                                    <div style="color: #64748b; font-size: 11px;">AKIA... &amp; Secret Keys</div>
+                                </div>
+                                <div style="background: white; border: 1px solid #fed7aa; padding: 8px; border-radius: 6px;">
+                                    <strong>2. Database URIs</strong>
+                                    <div style="color: #64748b; font-size: 11px;">mongodb+srv:// &amp; SQL strings</div>
+                                </div>
+                                <div style="background: white; border: 1px solid #fed7aa; padding: 8px; border-radius: 6px;">
+                                    <strong>3. Stripe API Tokens</strong>
+                                    <div style="color: #64748b; font-size: 11px;">sk_live_... Payment Keys</div>
+                                </div>
+                                <div style="background: white; border: 1px solid #fed7aa; padding: 8px; border-radius: 6px;">
+                                    <strong>4. Private SSH / SSL Keys</strong>
+                                    <div style="color: #64748b; font-size: 11px;">RSA &amp; OpenSSH Certificates</div>
+                                </div>
+                                <div style="background: white; border: 1px solid #fed7aa; padding: 8px; border-radius: 6px;">
+                                    <strong>5. Environment Files</strong>
+                                    <div style="color: #64748b; font-size: 11px;">.env and config credentials</div>
+                                </div>
+                                <div style="background: white; border: 1px solid #fed7aa; padding: 8px; border-radius: 6px;">
+                                    <strong>6. Cloud Provider Secrets</strong>
+                                    <div style="color: #64748b; font-size: 11px;">Google &amp; Azure Service Keys</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: #fee2e2; border: 1px solid #fca5a5; padding: 10px; border-radius: 6px; font-size: 11.5px; color: #991b1b; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 800; color: #dc2626; font-size: 12px; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #f87171;">GUARD</span>
+                            <div><strong>Zero-Tolerance Security:</strong> Commits containing unredacted credentials trigger immediate warnings to safeguard cloud infrastructure.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 9: SYSTEM ARCHITECTURE WORKFLOW               -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="9">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">System Workflow &amp; Architecture Overview</h2>
+                    </div>
+                    <span class="slide-tag">End-to-End Integration</span>
+                </div>
+
+                <div class="module-full-layout" style="gap: 12px;">
+                    <div class="module-card" style="padding: 12px 18px; flex-shrink: 0;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div class="card-header-pill" style="margin-bottom: 0;">Description</div>
+                            <span style="font-size: 11px; color: #0e7490; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">End-to-End Operational Lifecycle</span>
+                        </div>
+                        <p class="card-description-text" style="font-size: 13px; line-height: 1.45; margin-top: 4px;">
+                            Girgit decouples client developer tools from cloud services through clean architectural tiers. Every commit flows seamlessly through automated security checks, API routing, and deduplicated cloud storage.
+                        </p>
+                    </div>
+
+                    <!-- Simplified, Elegant System Architecture Flow -->
+                    <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+
+                        <!-- 4-Stage Horizontal Pipeline Flow -->
+                        <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: stretch; gap: 8px;">
+
+                            <!-- STAGE 1: Client Layer -->
+                            <div class="module-card" style="border-top: 4px solid #0284c7; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between; background: #ffffff;">
+                                <div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 11px; font-weight: 800; background: #e0f2fe; color: #0284c7; padding: 2px 7px; border-radius: 5px; text-transform: uppercase;">Stage 1 &bull; Client</span>
+                                        <span style="font-size: 16px;">💻</span>
+                                    </div>
+                                    <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Developer Client</h3>
+                                    <p style="font-size: 11.5px; color: #64748b; line-height: 1.35; margin-bottom: 10px;">Developer workstation and local repository interfaces.</p>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #0369a1; display: block;">Python 3.10+ CLI Suite</strong>
+                                            <span style="font-size: 11px; color: #475569;">Standalone CLI (<code style="color: #0284c7;">commit, push, pull, diff</code>)</span>
+                                        </div>
+                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #0369a1; display: block;">React 18 Web UI</strong>
+                                            <span style="font-size: 11px; color: #475569;">In-browser code editor &amp; commit DAG viewer</span>
+                                        </div>
+                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #0369a1; display: block;">Local CAS Storage</strong>
+                                            <span style="font-size: 11px; color: #475569;">Direct snapshot under <code style="color: #0284c7;">.girgit/objects/</code></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 5px 8px; border-radius: 6px; text-align: center; font-size: 10.5px; font-weight: 700; color: #0284c7; margin-top: 8px;">
+                                    ⚡ Zero-Staging Direct Snapshots
+                                </div>
+                            </div>
+
+                            <!-- CONNECTOR 1 -->
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 1px;">
+                                <div style="font-size: 9.5px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 2px 6px; border-radius: 4px; text-align: center; white-space: nowrap;">COMMIT</div>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                                    <polyline points="14 6 20 12 14 18"></polyline>
+                                </svg>
+                                <div style="font-size: 8.5px; color: #64748b; font-weight: 600;">Myers Diff</div>
+                            </div>
+
+                            <!-- STAGE 2: Security & Engine -->
+                            <div class="module-card" style="border-top: 4px solid #f59e0b; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between; background: #ffffff;">
+                                <div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 11px; font-weight: 800; background: #fef3c7; color: #b45309; padding: 2px 7px; border-radius: 5px; text-transform: uppercase;">Stage 2 &bull; Engine</span>
+                                        <span style="font-size: 16px;">🛡️</span>
+                                    </div>
+                                    <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Security &amp; Hashing</h3>
+                                    <p style="font-size: 11.5px; color: #64748b; line-height: 1.35; margin-bottom: 10px;">Validates safety and builds immutable directory trees.</p>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <div style="background: #fffaf0; border: 1px solid #fed7aa; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #c2410c; display: block;">14-Rule Secret Scanner</strong>
+                                            <span style="font-size: 11px; color: #475569;">Blocks leaked AWS keys, DB URIs, and SSH tokens</span>
+                                        </div>
+                                        <div style="background: #fffaf0; border: 1px solid #fed7aa; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #b45309; display: block;">Myers O(ND) Algorithm</strong>
+                                            <span style="font-size: 11px; color: #475569;">Line-by-line file difference generation</span>
+                                        </div>
+                                        <div style="background: #fffaf0; border: 1px solid #fed7aa; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #92400e; display: block;">Immutable Commit Graph</strong>
+                                            <span style="font-size: 11px; color: #475569;">SHA-1 hashing for Blobs, Trees, and Commits</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 5px 8px; border-radius: 6px; text-align: center; font-size: 10.5px; font-weight: 700; color: #b45309; margin-top: 8px;">
+                                    🔒 Zero-Leak Pre-Commit Security
+                                </div>
+                            </div>
+
+                            <!-- CONNECTOR 2 -->
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 1px;">
+                                <div style="font-size: 9.5px; font-weight: 800; color: #0e7490; background: #ccfbf1; padding: 2px 6px; border-radius: 4px; text-align: center; white-space: nowrap;">PUSH</div>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0e7490" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                                    <polyline points="14 6 20 12 14 18"></polyline>
+                                </svg>
+                                <div style="font-size: 8.5px; color: #64748b; font-weight: 600;">HTTPS / JWT</div>
+                            </div>
+
+                            <!-- STAGE 3: Backend API -->
+                            <div class="module-card" style="border-top: 4px solid #0e7490; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between; background: #ffffff;">
+                                <div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 11px; font-weight: 800; background: #ccfbf1; color: #0f766e; padding: 2px 7px; border-radius: 5px; text-transform: uppercase;">Stage 3 &bull; Backend</span>
+                                        <span style="font-size: 16px;">⚙️</span>
+                                    </div>
+                                    <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Cloud Backend API</h3>
+                                    <p style="font-size: 11.5px; color: #64748b; line-height: 1.35; margin-bottom: 10px;">Manages authentication, sync, and branch operations.</p>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #0f766e; display: block;">Express 5 REST Gateway</strong>
+                                            <span style="font-size: 11px; color: #475569;">JWT sessions, Bcrypt security, and Brevo email OTP</span>
+                                        </div>
+                                        <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #0f766e; display: block;">Smart Auto-Merge Engine</strong>
+                                            <span style="font-size: 11px; color: #475569;">Automated conflict-free branch reconciliations</span>
+                                        </div>
+                                        <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #0f766e; display: block;">Sync &amp; ZIP Archiver</strong>
+                                            <span style="font-size: 11px; color: #475569;">On-the-fly repository archive downloads</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #f0fdfa; border: 1px solid #a7f3d0; padding: 5px 8px; border-radius: 6px; text-align: center; font-size: 10.5px; font-weight: 700; color: #0f766e; margin-top: 8px;">
+                                    🔄 Conflict-Free Automatic Merging
+                                </div>
+                            </div>
+
+                            <!-- CONNECTOR 3 -->
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 1px;">
+                                <div style="font-size: 9.5px; font-weight: 800; color: #16a34a; background: #dcfce7; padding: 2px 6px; border-radius: 4px; text-align: center; white-space: nowrap;">SYNC</div>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                                    <polyline points="14 6 20 12 14 18"></polyline>
+                                </svg>
+                                <div style="font-size: 8.5px; color: #64748b; font-weight: 600;">Dedup Blobs</div>
+                            </div>
+
+                            <!-- STAGE 4: Cloud Storage -->
+                            <div class="module-card" style="border-top: 4px solid #16a34a; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between; background: #ffffff;">
+                                <div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 11px; font-weight: 800; background: #dcfce7; color: #15803d; padding: 2px 7px; border-radius: 5px; text-transform: uppercase;">Stage 4 &bull; Storage</span>
+                                        <span style="font-size: 16px;">☁️</span>
+                                    </div>
+                                    <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Cloud Persistence</h3>
+                                    <p style="font-size: 11.5px; color: #64748b; line-height: 1.35; margin-bottom: 10px;">Durable cloud storage for files, metadata, and caches.</p>
+                                    
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #15803d; display: block;">AWS S3 CAS Object Store</strong>
+                                            <span style="font-size: 11px; color: #475569;">Global deduplicated storage (<strong>85.5% reduction</strong>)</span>
+                                        </div>
+                                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #15803d; display: block;">MongoDB Atlas Database</strong>
+                                            <span style="font-size: 11px; color: #475569;">Users, repo metadata, branch pointers &amp; commit index</span>
+                                        </div>
+                                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 7px 9px;">
+                                            <strong style="font-size: 12px; color: #dc2626; display: block;">Redis Cache</strong>
+                                            <span style="font-size: 11px; color: #475569;">In-memory session tokens &amp; Brevo OTP rate limiting</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 5px 8px; border-radius: 6px; text-align: center; font-size: 10.5px; font-weight: 700; color: #047857; margin-top: 8px;">
+                                    ✨ 85.5% Cloud Storage Deduplication
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Clean End-to-End Lifecycle Summary Strip -->
+                        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; flex-shrink: 0;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: #0284c7; color: white; font-weight: 800; font-size: 9.5px; padding: 2px 7px; border-radius: 4px;">FORWARD FLOW</span>
+                                <span style="color: #334155;"><strong>Push:</strong> Developer Code &rarr; Secret Scan &rarr; Express API &rarr; AWS S3 (Blobs) + MongoDB (Metadata)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: #0e7490; color: white; font-weight: 800; font-size: 9.5px; padding: 2px 7px; border-radius: 4px;">RETURN FLOW</span>
+                                <span style="color: #334155;"><strong>Pull / Clone:</strong> Fetch Manifest &rarr; Auto-Merge Reconcile &rarr; Hydrate Local Working Tree</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 10: CONCLUSION & FUTURE SCOPE                 -->
+            <!-- ==================================================== -->
+            <div class="slide" data-slide="10">
+                <div class="slide-header">
+                    <div class="slide-title-wrap">
+                        <h2 class="slide-title">Conclusion &amp; Future Scope</h2>
+                    </div>
+                    <span class="slide-tag">Project Summary</span>
+                </div>
+
+                <div class="module-layout">
+                    <!-- Left: Conclusion -->
+                    <div class="module-card" style="border-top: 4px solid #0e7490;">
+                        <div class="card-header-pill">Conclusion</div>
+                        <p class="card-description-text">
+                            The <strong>Girgit</strong> project successfully demonstrates that a complete, robust Version Control System and cloud repository hosting platform can be engineered from scratch without relying on external Git tools.
+                        </p>
+                        <ul class="core-points-list" style="margin-top: 8px;">
+                            <li><strong>Fully Independent Architecture:</strong> All hashing, snapshotting, diffing, and merging algorithms were implemented from ground up.</li>
+                            <li><strong>Dual Interface Experience:</strong> Combines a developer-friendly terminal CLI with a rich, interactive React 18 web collaboration platform.</li>
+                            <li><strong>Cloud-Native Efficiency:</strong> Leveraged AWS S3 and MongoDB to deliver 85.5% storage deduplication and enterprise cloud resilience.</li>
+                            <li><strong>Proactive Security:</strong> Automated 14-rule scanner prevents credential leakage before code leaves developer workstations.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Right: Future Scope -->
+                    <div class="module-card" style="border-top: 4px solid #7e22ce;">
+                        <div class="card-header-pill" style="background: #f3e8ff; color: #7e22ce;">Future Scope</div>
+                        <p class="card-description-text">
+                            Future development directions planned to elevate Girgit into an enterprise-ready continuous deployment ecosystem:
+                        </p>
+                        <ul class="core-points-list" style="margin-top: 8px;">
+                            <li><strong>Issues &amp; Bug Tracking System:</strong> Integrated issue discussion boards, label filtering, and milestone progress trackers.</li>
+                            <li><strong>Automated CI/CD Actions:</strong> GitHub Actions-style automated testing, container builds, and deployment pipelines triggered on push.</li>
+                            <li><strong>Pull Request &amp; Code Review:</strong> Formal multi-reviewer approval workflows with inline comments and branch merge protections.</li>
+                            <li><strong>Webhooks &amp; Chat Integrations:</strong> Real-time event notifications delivered to Discord, Slack, and third-party monitoring services.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- SLIDE 11: THANK YOU                                 -->
+            <!-- ==================================================== -->
+            <div class="slide thank-you-slide" data-slide="11">
+                <h1 class="thank-you-title">Thank You!</h1>
+                <p class="thank-you-sub">
+                    We sincerely thank our guide <strong>Prof. Disha Panchal</strong> and the <strong>Information Technology Department</strong> for their continuous guidance and support.
+                </p>
+
+                <div class="thank-you-cards">
+                    <div class="ty-card">
+                        <div class="ty-card-label">Project Guide</div>
+                        <div class="ty-card-val">Prof. Disha Panchal</div>
+                        <div class="ty-card-sub">Assistant Professor, IT Department &bull; BVM Engineering College</div>
+                    </div>
+
+                    <div class="ty-card">
+                        <div class="ty-card-label">Project Team</div>
+                        <div class="ty-card-val">Jagdish Pathakji &bull; Rudra Gohil</div>
+                        <div class="ty-card-val">Yug Dholakiya &bull; Harsh Tandel</div>
+                        <div class="ty-card-sub">B.Tech Information Technology (Final Year)</div>
+                    </div>
+                </div>
+
+                <div class="thank-you-badge">
+                    Questions &amp; Demonstration
+                </div>
+            </div>
+
+            </div><!-- /.slides-viewport -->
+
+            <!-- ==================================================== -->
+            <!-- DOCKED NAVIGATION CONSOLE BAR                        -->
+            <!-- ==================================================== -->
+            <div class="nav-controls">
+                <div class="nav-left">
+                    <button class="nav-btn" id="prevBtn" onclick="prevSlide()">
+                        <span>&larr;</span> Previous
+                    </button>
+                    <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                        Next <span>&rarr;</span>
+                    </button>
+                    <span class="nav-counter" id="slideCounter">Slide 1 / 11</span>
+                </div>
+
+                <div class="nav-hint">
+                    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>Space</kbd> to Navigate &bull; Press <kbd>F</kbd> for Fullscreen
+                </div>
+
+                <div class="nav-right">
+                    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">
+                        ⛶ Fullscreen
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Interactive Slide Navigation Script -->
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlide = 1;
+
+        const progressBar = document.getElementById('progressBar');
+        const slideCounter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateSlide(index) {
+            if (index < 1) index = 1;
+            if (index > totalSlides) index = totalSlides;
+
+            currentSlide = index;
+
+            slides.forEach((slide, i) => {
+                if (i + 1 === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update Progress Bar
+            const progressPercent = (currentSlide / totalSlides) * 100;
+            progressBar.style.width = progressPercent + '%';
+
+            // Update Slide Counter
+            slideCounter.textContent = `Slide ${currentSlide} / ${totalSlides}`;
+
+            // Update Buttons State
+            prevBtn.style.opacity = currentSlide === 1 ? '0.5' : '1';
+            nextBtn.style.opacity = currentSlide === totalSlides ? '0.5' : '1';
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                updateSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                updateSlide(currentSlide - 1);
+            }
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('slideDeck');
+            if (!document.fullscreenElement) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Keyboard Navigation (Arrow Keys, Space, PageUp/PageDown, F for fullscreen)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                updateSlide(1);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                updateSlide(totalSlides);
+            }
+        });
+
+        // Click anywhere on slide deck to advance (left 20% goes back, right 80% goes forward)
+        document.getElementById('slideDeck').addEventListener('click', (e) => {
+            if (e.target.closest('a, button, input, textarea')) return;
+            const rect = document.getElementById('slideDeck').getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            if (clickX < rect.width * 0.2) {
+                prevSlide();
+            } else {
+                nextSlide();
+            }
+        });
+
+        // Initialize First Slide
+        updateSlide(1);
+    </script>
+</body>
+</html>

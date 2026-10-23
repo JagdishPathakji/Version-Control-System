@@ -52,6 +52,19 @@ const repoSchema = new mongoose.Schema({
     s3Prefix: {
         type: String,
         required: true,
+    },
+    isFork: {
+        type: Boolean,
+        default: false,
+    },
+    forkedFrom: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Repository",
+        default: null,
+    },
+    forkCount: {
+        type: Number,
+        default: 0,
     }
 }, { timestamps: true });
 

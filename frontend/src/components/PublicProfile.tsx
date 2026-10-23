@@ -446,6 +446,26 @@ export default function PublicProfile({
                           <span className="text-[10px] font-medium text-[#57606a] border border-[#d0d7de] px-1.5 py-0.2 rounded-full">
                             {repo.isPrivate ? "Private" : "Public"}
                           </span>
+                          {repo.isFork && (
+                            <span className="text-[10px] font-medium text-[#0969da] bg-[#ddf4ff] border border-[#54aeff]/40 px-1.5 py-0.2 rounded-full">
+                              Forked
+                            </span>
+                          )}
+                        </div>
+                        {repo.isFork && repo.forkedFrom && (
+                          <div className="text-[11px] text-[#57606a] mb-1">
+                            <span>forked from </span>
+                            <Link 
+                              to={`/repo/${repo.forkedFrom.owner?.username || repo.forkedFrom.owner}/${repo.forkedFrom.name}`}
+                              className="text-[#0969da] hover:underline"
+                            >
+                              {repo.forkedFrom.owner?.username || repo.forkedFrom.owner}/{repo.forkedFrom.name}
+                            </Link>
+                          </div>
+                        )}
+                        <div className="hidden"><span>
+                            {repo.isPrivate ? "Private" : "Public"}
+                          </span>
                         </div>
                         {repo.description && (
                           <p className="text-xs text-[#57606a] mb-2">{repo.description}</p>

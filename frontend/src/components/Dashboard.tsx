@@ -265,6 +265,12 @@ export default function Dashboard({ setIsAuthenticated }: { setIsAuthenticated?:
                             Collab
                           </span>
                         )}
+                        {repo.isFork && (
+                          <span className="text-[9px] px-1.5 py-0.2 bg-[#ddf4ff] text-[#0969da] border border-[#54aeff]/40 rounded font-medium shrink-0">
+                            Fork
+
+                          </span>
+                        )}
                       </div>
                       {repo.isPrivate ? (
                         <Lock className="w-3 h-3 text-[#57606a] shrink-0" />

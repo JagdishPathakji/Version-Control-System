@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Girgit: Version Control System</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
 
         * {
             box-sizing: border-box;
@@ -14,13 +14,13 @@
         }
 
         html, body {
-            width: 100vw;
+            width: 100%;
             height: 100vh;
-            max-width: 100vw;
+            max-width: 100%;
             max-height: 100vh;
-            overflow: hidden !important; /* STRICTLY NON-SCROLLABLE */
+            overflow: hidden !important;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #519ca2; /* Exact teal cyan from sample poster */
+            background-color: #519ca2;
             color: #0f172a;
             display: flex;
             flex-direction: column;
@@ -29,21 +29,20 @@
             print-color-adjust: exact;
         }
 
-        /* Header matching Image 1 exactly */
         header {
-            background-color: #b9c6c7; /* Exact soft silver-teal header background */
-            padding: clamp(3px, 0.45vh, 6px) clamp(12px, 1.2vw, 24px);
+            background-color: #b9c6c7;
+            padding: 3px clamp(10px, 1.2vw, 20px);
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid #3b798a;
             flex-shrink: 0;
-            height: clamp(80px, 14vh, 102px);
+            height: clamp(98px, 13.5vh, 114px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
 
         .header-logo {
-            height: clamp(52px, 10.5vh, 78px);
+            height: clamp(65px, 9.5vh, 80px);
             object-fit: contain;
             flex-shrink: 0;
         }
@@ -55,7 +54,7 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            padding: 0 10px;
+            padding: 0 8px;
         }
 
         .college-title {
@@ -63,14 +62,15 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
             font-weight: 900;
-            color: #0f172a;
-            font-size: clamp(12px, 1.35vw, 20px);
-            line-height: 1.15;
+            color: #0b1728;
+            font-size: clamp(13px, 1.35vw, 19.5px);
+            line-height: 1.2;
+            margin-bottom: 1px;
         }
 
         .college-sub {
             font-family: 'Times New Roman', serif;
-            font-size: clamp(8.5px, 0.85vw, 13px);
+            font-size: clamp(8.5px, 0.82vw, 12px);
             color: #1e293b;
             font-weight: 600;
             line-height: 1.15;
@@ -78,7 +78,7 @@
 
         .dept-title {
             font-family: 'Times New Roman', serif;
-            font-size: clamp(9.5px, 0.95vw, 14.5px);
+            font-size: clamp(9.5px, 0.92vw, 13.5px);
             color: #0e6575;
             font-weight: 800;
             letter-spacing: 0.5px;
@@ -90,10 +90,10 @@
             font-family: 'Times New Roman', serif;
             letter-spacing: 1.2px;
             font-weight: 900;
-            font-size: clamp(13px, 1.6vw, 24px);
+            font-size: clamp(13px, 1.55vw, 22px);
             color: #ffffff;
             background: linear-gradient(180deg, #184e68 0%, #0e3b50 100%);
-            padding: clamp(2px, 0.35vh, 4px) clamp(16px, 2vw, 36px);
+            padding: 2px clamp(16px, 2vw, 32px);
             border-radius: 9999px;
             margin-top: 2px;
             line-height: 1.1;
@@ -102,35 +102,35 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
-        /* 4-Column Grid */
         .poster-body {
             flex: 1;
             display: grid;
-            grid-template-columns: 24.5% 25% 25% 25.5%;
-            gap: clamp(5px, 0.55vw, 9px);
-            padding: clamp(4px, 0.5vh, 8px) clamp(8px, 0.8vw, 14px) clamp(6px, 0.8vh, 10px) clamp(8px, 0.8vw, 14px);
-            height: calc(100vh - clamp(80px, 14vh, 102px));
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+            padding: 6px 10px 8px 10px;
+            min-height: 0;
             overflow: hidden;
+            max-width: 100%;
         }
 
         .poster-col {
             display: flex;
             flex-direction: column;
-            gap: clamp(4px, 0.5vh, 7px);
+            gap: 5px;
             height: 100%;
             overflow: hidden;
+            min-width: 0;
         }
 
-        /* Pill Header - Exact Match to Teal Sample (#187e93) */
         .pill-header {
             background-color: #187e93;
             color: #ffffff;
             font-weight: 800;
             font-size: clamp(9px, 0.82vw, 12.5px);
             text-align: center;
-            padding: clamp(2px, 0.3vh, 4px) 8px;
+            padding: 2px 8px;
             border-radius: 9999px;
-            margin-bottom: clamp(2px, 0.25vh, 3.5px);
+            margin-bottom: 3px;
             letter-spacing: 0.5px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.15);
             text-transform: uppercase;
@@ -148,19 +148,18 @@
             flex-shrink: 0;
         }
 
-        /* Clean White Cards */
         .poster-card {
             background: #ffffff;
             border-radius: 5px;
-            padding: clamp(4px, 0.5vh, 6px) clamp(5px, 0.5vw, 8px);
+            padding: 5px 7px;
             box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.08);
             border: 1px solid #c2dbe0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-width: 0;
         }
 
-        /* Bullet points */
         ul.dense-bullets {
             list-style: none;
             padding: 0;
@@ -169,8 +168,8 @@
 
         ul.dense-bullets li {
             position: relative;
-            padding-left: clamp(8px, 0.75vw, 11px);
-            margin-bottom: clamp(1.5px, 0.22vh, 3.5px);
+            padding-left: 10px;
+            margin-bottom: 2px;
             font-size: clamp(7px, 0.62vw, 9.5px);
             line-height: 1.25;
             color: #1e293b;
@@ -190,177 +189,141 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Images inside cards */
-        .fit-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 4px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-        }
-
-        /* Command pill grid */
         .cmd-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2.5px;
-            margin: 2px 0;
+            gap: 2px;
+            margin: 1.5px 0;
         }
 
         .cmd-pill {
             background: #f1f5f9;
             border: 1px solid #cbd5e1;
-            border-radius: 3px;
-            padding: 1.5px 2px;
+            border-radius: 2.5px;
+            padding: 1px 2px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(6px, 0.52vw, 8px);
+            font-size: clamp(5.6px, 0.48vw, 7.5px);
             font-weight: 700;
             color: #0f172a;
             text-align: center;
             white-space: nowrap;
+            overflow: hidden;
         }
 
         .cmd-pill span {
             color: #0e6575;
         }
-
-        /* Columnar Architecture Swimlanes */
-        .arch-columns {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 3.5px;
-            height: 100%;
-            min-height: 0;
-        }
-
-        .arch-col-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            padding: 3px 4px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .arch-col-title {
-            font-size: clamp(6.5px, 0.55vw, 8.5px);
-            font-weight: 800;
-            color: #ffffff;
-            background: #0e6575;
-            text-align: center;
-            padding: 1.5px 2px;
-            border-radius: 2px;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-        }
-
-        .arch-col-item {
-            font-size: clamp(6px, 0.5vw, 7.5px);
-            color: #1e293b;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 2px;
-            padding: 1.5px 2px;
-            margin-bottom: 2px;
-            line-height: 1.15;
-            font-weight: 600;
-        }
-
-        /* HTML/CSS Mockups */
-        .ui-mock-card {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            font-size: clamp(6px, 0.5vw, 7.5px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .mock-navbar {
-            background: #0d1117;
-            color: white;
-            padding: 2.5px 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: clamp(6.5px, 0.55vw, 8px);
-        }
-
-        .mock-pill {
-            background: #238636;
-            color: white;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-size: clamp(5.5px, 0.48vw, 7px);
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Exact Header Matching Image 1 -->
+    <!-- Header: Fully Visible College Title & Department Details -->
     <header>
         <img src="bvm_naac_logo.png" alt="BVM & NAAC Logo" class="header-logo">
-        
         <div class="header-center">
             <div class="college-title">BIRLA VISHWAKARMA MAHAVIDYALAYA ENGINEERING COLLEGE</div>
             <div class="college-sub">(An Autonomous Institution)</div>
-            <div class="college-sub" style="font-size: clamp(8px, 0.78vw, 11.5px);">Managed by Charutar Vidya Mandal</div>
+            <div class="college-sub" style="font-size: clamp(8px, 0.78vw, 11px);">Managed by Charutar Vidya Mandal</div>
             <div class="dept-title">INFORMATION TECHNOLOGY DEPARTMENT</div>
             <div class="main-project-banner">Girgit: Version Control System</div>
         </div>
-
         <img src="cvm_logo.png" alt="CVM Trust Logo" class="header-logo">
     </header>
 
-    <!-- 4-Column Poster Grid -->
     <div class="poster-body">
 
         <!-- ========================================== -->
-        <!-- COLUMN 1: Sections 1, 2, 3                 -->
+        <!-- COLUMN 1: Abstract, Introduction, CLI      -->
         <!-- ========================================== -->
         <div class="poster-col">
 
             <!-- 1. Abstract -->
-            <div class="poster-card" style="flex: 0 0 auto;">
+            <div class="poster-card" style="flex: 0.85 1 0; min-height: 0;">
                 <div class="pill-header">Abstract</div>
-                <ul class="dense-bullets">
-                    <li><strong>Girgit</strong> is a distributed version control system (DVCS) and cloud repository hosting platform engineered from scratch without invoking the standard <code class="mono">git</code> binary.</li>
-                    <li>Incorporates a <strong>Content-Addressable Storage (CAS)</strong> engine utilizing SHA-1 hashing, cryptographic Merkle tree hierarchies, Eugene Myers' $O(ND)$ difference algorithm, and 3-way Lowest Common Ancestor (LCA) merge reconciliation.</li>
-                    <li>Features an integrated 14-rule static secret/credential leak scanner preventing sensitive key exposure, coupled with serverless AWS S3 cloud remote synchronization.</li>
+                <ul class="dense-bullets" style="display: flex; flex-direction: column; justify-content: space-evenly; flex: 1; margin-top: 2px;">
+                    <li><strong>Girgit</strong> is a full-stack Version Control System (VCS) and cloud repository hosting platform engineered from first principles without relying on third-party Git binaries.</li>
+                    <li>Implements an independent <strong>Content-Addressable Storage (CAS)</strong> engine utilizing SHA-1 cryptographic hashing to construct immutable directory hierarchies for blobs, file trees, and commit records.</li>
+                    <li>Eliminates intermediate staging overhead through a direct working-tree snapshot pipeline, delivering <strong>85.5% storage deduplication</strong> through global object reuse across repository branches.</li>
                 </ul>
             </div>
 
             <!-- 2. Introduction -->
-            <div class="poster-card" style="flex: 0 0 auto;">
+            <div class="poster-card" style="flex: 0.85 1 0; min-height: 0;">
                 <div class="pill-header">Introduction</div>
                 <ul class="dense-bullets">
                     <li>Modern distributed software engineering requires decentralized version tracking, tamper-evident cryptographic verification, and collaborative cloud hosting.</li>
                     <li>Traditional setups depend on monolithic Git servers, external daemon protocols (SSH/Git daemon), and lack real-time secret detection during commit evaluation.</li>
-                    <li>Girgit resolves these challenges by combining an autonomous Python DVCS engine with a full-stack React 18 & Express 5 cloud platform backed directly by AWS S3 object storage.</li>
                 </ul>
+                <!-- SVG Visual: High-Level System Overview -->
+                <div style="flex: 1; min-height: 0; margin-top: 4px; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; background: #f8fafc;">
+                    <svg viewBox="0 0 360 140" width="100%" height="100%" style="font-family: 'Inter', sans-serif;">
+                        <defs>
+                            <marker id="a2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1L9 5L0 9z" fill="#0e6575"/></marker>
+                        </defs>
+                        <text x="180" y="14" text-anchor="middle" font-size="8" font-weight="800" fill="#0e6575">Girgit — System Overview</text>
+
+                        <!-- Developer box -->
+                        <rect x="10" y="24" width="75" height="48" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+                        <text x="47" y="40" text-anchor="middle" font-size="7" font-weight="700" fill="#0369a1">Developer</text>
+                        <text x="47" y="52" text-anchor="middle" font-size="6" fill="#0c4a6e">girgit CLI</text>
+                        <text x="47" y="62" text-anchor="middle" font-size="6" fill="#0c4a6e">Python 3.10+</text>
+
+                        <line x1="85" y1="48" x2="115" y2="48" stroke="#0e6575" stroke-width="1.5" marker-end="url(#a2)"/>
+
+                        <!-- Local CAS -->
+                        <rect x="117" y="24" width="75" height="48" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.2"/>
+                        <text x="154" y="38" text-anchor="middle" font-size="7" font-weight="700" fill="#b45309">Local CAS</text>
+                        <text x="154" y="50" text-anchor="middle" font-size="6" fill="#92400e">.girgit/objects/</text>
+                        <text x="154" y="60" text-anchor="middle" font-size="6" fill="#92400e">SHA-1 Blobs</text>
+
+                        <line x1="192" y1="48" x2="222" y2="48" stroke="#0e6575" stroke-width="1.5" marker-end="url(#a2)"/>
+                        <text x="207" y="42" text-anchor="middle" font-size="5.5" fill="#475569">push/fetch</text>
+
+                        <!-- Cloud Backend -->
+                        <rect x="224" y="20" width="126" height="56" rx="4" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+                        <text x="287" y="34" text-anchor="middle" font-size="7" font-weight="700" fill="#15803d">Cloud Backend</text>
+                        <text x="287" y="46" text-anchor="middle" font-size="6" fill="#166534">Express 5 API</text>
+                        <text x="287" y="56" text-anchor="middle" font-size="6" fill="#166534">S3 Remote • MongoDB</text>
+                        <text x="287" y="66" text-anchor="middle" font-size="6" fill="#166534">JWT Auth • Secret Scan</text>
+
+                        <!-- Web UI box -->
+                        <rect x="10" y="86" width="100" height="44" rx="4" fill="#faf5ff" stroke="#9333ea" stroke-width="1.2"/>
+                        <text x="60" y="102" text-anchor="middle" font-size="7" font-weight="700" fill="#6b21a8">Girgit Hub Web</text>
+                        <text x="60" y="114" text-anchor="middle" font-size="6" fill="#581c87">React 18 + TypeScript</text>
+                        <text x="60" y="124" text-anchor="middle" font-size="6" fill="#581c87">Code Explorer • Diffs</text>
+
+                        <line x1="110" y1="108" x2="222" y2="60" stroke="#9333ea" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#a2)"/>
+
+                        <!-- Features pills -->
+                        <rect x="140" y="92" width="68" height="16" rx="8" fill="#0e6575"/>
+                        <text x="174" y="103" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Myers O(ND) Diff</text>
+                        <rect x="215" y="92" width="65" height="16" rx="8" fill="#0e6575"/>
+                        <text x="247" y="103" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">3-Way Merge</text>
+                        <rect x="287" y="92" width="63" height="16" rx="8" fill="#b91c1c"/>
+                        <text x="318" y="103" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">14-Rule Scan</text>
+
+                        <rect x="140" y="114" width="72" height="16" rx="8" fill="#0284c7"/>
+                        <text x="176" y="125" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Object Tree Graph</text>
+                        <rect x="219" y="114" width="68" height="16" rx="8" fill="#b45309"/>
+                        <text x="253" y="125" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">85.5% Dedup</text>
+                        <rect x="294" y="114" width="56" height="16" rx="8" fill="#7e22ce"/>
+                        <text x="322" y="125" text-anchor="middle" font-size="6" fill="#fff" font-weight="700">Brevo OTP</text>
+                    </svg>
+                </div>
             </div>
 
             <!-- 3. Command Line Interface -->
-            <div class="poster-card" style="flex: 1 1 0; min-height: 0;">
+            <div class="poster-card" style="flex: 1.45 1 0; min-height: 0;">
                 <div class="pill-header">Command Line Interface</div>
-                <span class="sub-header-italic">Independent Python DVCS Engine &amp; Command Suite</span>
                 <ul class="dense-bullets" style="margin-bottom: 2px;">
                     <li>Engineered in pure Python 3.10+ implementing an independent CAS database under <code class="mono">.girgit/objects/</code>.</li>
-                    <li>Provides automated staging, cryptographic commit hashing, and Graphviz DAG graph visualization (<code class="mono">girgit k</code>).</li>
-                    <li>Synchronizes differential object payloads and branch references directly to cloud remote endpoints.</li>
+                    <li>Provides direct working-tree commit hashing, directory tree hierarchies, and Graphviz DAG visualization (<code class="mono">girgit k</code>).</li>
                 </ul>
 
-                <!-- 16 Commands Grid -->
+                <!-- 16 Working Commands Grid (No Add, Pull Included) -->
                 <div class="cmd-grid">
-                    <div class="cmd-pill">girgit <span>begin</span></div>
+                    <div class="cmd-pill">girgit <span>login</span></div>
                     <div class="cmd-pill">girgit <span>init</span></div>
-                    <div class="cmd-pill">girgit <span>add</span></div>
                     <div class="cmd-pill">girgit <span>commit</span></div>
                     <div class="cmd-pill">girgit <span>status</span></div>
                     <div class="cmd-pill">girgit <span>diff</span></div>
@@ -373,12 +336,12 @@
                     <div class="cmd-pill">girgit <span>k</span></div>
                     <div class="cmd-pill">girgit <span>push</span></div>
                     <div class="cmd-pill">girgit <span>fetch</span></div>
+                    <div class="cmd-pill">girgit <span>pull</span></div>
                     <div class="cmd-pill">girgit <span>clone</span></div>
                 </div>
 
-                <!-- High-Definition Vector CLI Terminal (Crisp at any zoom) -->
-                <div class="vector-terminal-window" style="flex: 1; min-height: 0; margin-top: 2px; overflow: hidden; border-radius: 4px; border: 1px solid #1e293b; background: #0c1017; display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                    <!-- Terminal Title Bar -->
+                <!-- Vector CLI Terminal -->
+                <div style="flex: 1; min-height: 0; margin-top: 2px; overflow: hidden; border-radius: 4px; border: 1px solid #1e293b; background: #0c1017; display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                     <div style="background: #1e293b; padding: 2px 6px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; flex-shrink: 0;">
                         <div style="display: flex; gap: 3.5px; align-items: center;">
                             <div style="width: 6px; height: 6px; border-radius: 50%; background: #ef4444;"></div>
@@ -388,34 +351,17 @@
                         </div>
                         <span style="font-size: clamp(5px, 0.4vw, 6.5px); color: #64748b;">Python 3.10.12</span>
                     </div>
-
-                    <!-- Terminal Content (Exact match to CLI Screenshot - Infinitely Scalable) -->
-                    <div style="flex: 1; padding: 3px 5px; font-size: clamp(5.6px, 0.46vw, 7.2px); line-height: 1.25; overflow: hidden; color: #f8fafc;">
-                        <div><span style="color: #94a3b8;">C:\Users\patha\OneDrive\Desktop\Girgit-Master-Test&gt;</span> <span style="color: #38bdf8; font-weight: bold;">girgit login</span></div>
-                        <div style="color: #cbd5e1;">Log in to Girgit</div>
-                        <div style="color: #cbd5e1;">Email: <span style="color: #e2e8f0;">pathakjijagdish1@gmail.com</span></div>
-                        <div style="color: #64748b;">Password: ••••••••••••</div>
-                        <div style="color: #fbbf24;">[Internals] Authenticating with backend server...</div>
-                        <div style="color: #4ade80; font-weight: bold;">Successfully logged in as jagdish (pathakjijagdish1@gmail.com).</div>
-
-                        <div style="margin-top: 2px;"><span style="color: #94a3b8;">C:\Users\patha\OneDrive\Desktop\Girgit-Master-Test&gt;</span> <span style="color: #38bdf8; font-weight: bold;">girgit status</span></div>
-                        <div style="color: #fbbf24;">[Internals] Reading HEAD reference to determine current state...</div>
-                        <div style="color: #4ade80; font-weight: bold;">On branch master</div>
-
-                        <div style="margin-top: 2px;"><span style="color: #94a3b8;">C:\Users\patha\OneDrive\Desktop\Girgit-Master-Test&gt;</span> <span style="color: #38bdf8; font-weight: bold;">girgit log</span></div>
+                    <div style="flex: 1; padding: 2.5px 5px; font-size: clamp(5.4px, 0.44vw, 7px); line-height: 1.25; overflow: hidden; color: #f8fafc; display: flex; flex-direction: column; justify-content: space-around;">
+                        <div><span style="color: #94a3b8;">C:\Girgit-Master-Test&gt;</span> <span style="color: #38bdf8; font-weight: bold;">girgit login</span></div>
+                        <div style="color: #cbd5e1;">Email: <span style="color: #e2e8f0;">pathakjijagdish1@gmail.com</span> &bull; <span style="color: #4ade80; font-weight: bold;">Successfully logged in</span></div>
+                        <div style="margin-top: 1.5px;"><span style="color: #94a3b8;">C:\Girgit-Master-Test&gt;</span> <span style="color: #38bdf8; font-weight: bold;">girgit status</span></div>
+                        <div style="color: #4ade80; font-weight: bold;">On branch master (HEAD CAS synchronized)</div>
+                        <div style="margin-top: 1.5px;"><span style="color: #94a3b8;">C:\Girgit-Master-Test&gt;</span> <span style="color: #38bdf8; font-weight: bold;">girgit log</span></div>
                         <div style="color: #fbbf24;">[Internals] Traversing commit graph using parent references...</div>
-                        
-                        <div style="color: #60a5fa; margin-top: 1px;">commit : <span style="color: #93c5fd; font-weight: bold;">8ae02c568fb3c2d8a94afeacdbe52f18862c8ce4</span> <span style="color: #4ade80;">(HEAD,refs/heads/master)</span></div>
-                        <div style="padding-left: 10px; color: #f1f5f9; font-weight: 600;">added api key 2</div>
-
-                        <div style="color: #60a5fa; margin-top: 1px;">commit : <span style="color: #93c5fd; font-weight: bold;">1cda7a3a9eceebafa97eb97c71f6ff0cfd2169f2</span></div>
-                        <div style="padding-left: 10px; color: #f1f5f9; font-weight: 600;">added api key</div>
-
-                        <div style="color: #60a5fa; margin-top: 1px;">commit : <span style="color: #93c5fd; font-weight: bold;">f511f7c4446e846606c447d47c643df01be15d18</span> <span style="color: #facc15;">(refs/tags/v1.0)</span></div>
-                        <div style="padding-left: 10px; color: #f1f5f9; font-weight: 600;">Experimental commit to be undone</div>
-
-                        <div style="color: #60a5fa; margin-top: 1px;">commit : <span style="color: #93c5fd; font-weight: bold;">655fe1ca446bed56e178abcba6ea2f3bfa3b62c9</span></div>
-                        <div style="padding-left: 10px; color: #f1f5f9; font-weight: 600;">Initial commit</div>
+                        <div style="color: #60a5fa; margin-top: 1px;">commit: <span style="color: #93c5fd; font-weight: bold;">8ae02c5</span> <span style="color: #4ade80;">(HEAD, master)</span> &mdash; <span style="color: #f1f5f9; font-weight: 600;">added api key 2</span></div>
+                        <div style="color: #60a5fa;">commit: <span style="color: #93c5fd; font-weight: bold;">1cda7a3</span> &mdash; <span style="color: #f1f5f9; font-weight: 600;">added api key</span></div>
+                        <div style="color: #60a5fa;">commit: <span style="color: #93c5fd; font-weight: bold;">f511f7c</span> <span style="color: #facc15;">(refs/tags/v1.0)</span> &mdash; <span style="color: #f1f5f9; font-weight: 600;">Experimental commit to be undone</span></div>
+                        <div style="color: #60a5fa;">commit: <span style="color: #93c5fd; font-weight: bold;">655fe1c</span> &mdash; <span style="color: #f1f5f9; font-weight: 600;">Initial commit</span></div>
                     </div>
                 </div>
             </div>
@@ -423,80 +369,90 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- COLUMN 2: Sections 4, 5                    -->
+        <!-- COLUMN 2: User Interface, DAG Topology     -->
         <!-- ========================================== -->
         <div class="poster-col">
 
-            <!-- 4. User Interface (2 lines + 2 self-made HTML/CSS mockups) -->
-            <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
+            <!-- 4. User Interface -->
+            <div class="poster-card" style="flex: 1 1 45%; min-height: 0;">
                 <div class="pill-header">User Interface</div>
                 <ul class="dense-bullets" style="margin-bottom: 3px;">
                     <li>Girgit Hub delivers a responsive single-page repository platform engineered with React 18, TypeScript, and Tailwind CSS.</li>
                     <li>Supports real-time repository file exploration, in-browser code editing, branch management, visual diffs, and developer collaboration.</li>
                 </ul>
+                <!-- SVG Visual: UI Architecture Flow -->
+                <div style="flex: 1; min-height: 0; margin-top: 3px; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; background: #f8fafc;">
+                    <svg viewBox="0 0 360 200" width="100%" height="100%" style="font-family: 'Inter', sans-serif;">
+                        <defs>
+                            <marker id="a3" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 1L9 5L0 9z" fill="#0e6575"/></marker>
+                        </defs>
+                        <text x="180" y="14" text-anchor="middle" font-size="8" font-weight="800" fill="#0e6575">Girgit Hub — UI Architecture</text>
 
-                <!-- 2 Self-Made HTML/CSS UI Screenshots / Mockups -->
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; min-height: 0;">
-                    
-                    <!-- Self-Made Mockup 1: Dashboard UI -->
-                    <div class="ui-mock-card" style="flex: 1;">
-                        <div class="mock-navbar">
-                            <span>🦎 Girgit Hub</span>
-                            <div style="display: flex; gap: 4px;">
-                                <span style="color: #94a3b8;">Dashboard</span>
-                                <span style="color: #94a3b8;">New Repo</span>
-                                <span class="mock-pill">+ New</span>
-                            </div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 35% 65%; gap: 3px; padding: 3px; background: #f8fafc; flex: 1;">
-                            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px;">
-                                <strong style="color: #0f172a; font-size: 6.5px;">Top Repositories</strong>
-                                <div style="font-size: 5.5px; color: #0284c7; margin-top: 1px;">📁 jagdish/Girgit-Master-Test</div>
-                                <div style="font-size: 5.5px; color: #0284c7;">📁 jagdish/part-2-demo</div>
-                                <div style="font-size: 5.5px; color: #0284c7;">📁 jagdish/basic-test</div>
-                            </div>
-                            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <strong style="color: #0f172a; font-size: 6.5px;">Latest Active Repo</strong>
-                                    <span style="font-size: 5px; background: #e0f2fe; color: #0284c7; padding: 1px 3px; border-radius: 2px;">View</span>
-                                </div>
-                                <div style="font-size: 6px; font-weight: bold; color: #0369a1; margin: 1px 0;">jagdish / Girgit-Test-Master-Present</div>
-                                <div style="font-size: 5.5px; color: #64748b;">Community Activity • 15 Active Developers</div>
-                            </div>
-                        </div>
-                    </div>
+                        <!-- React App -->
+                        <rect x="115" y="22" width="130" height="28" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+                        <text x="180" y="36" text-anchor="middle" font-size="7.5" font-weight="800" fill="#0369a1">React 18 + TypeScript SPA</text>
+                        <text x="180" y="46" text-anchor="middle" font-size="6" fill="#0c4a6e">Tailwind CSS • React Router v6</text>
 
-                    <!-- Self-Made Mockup 2: Repository Code Explorer -->
-                    <div class="ui-mock-card" style="flex: 1;">
-                        <div style="background: #f1f5f9; padding: 2px 4px; border-bottom: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: bold; color: #0f172a;">jagdish / <span style="color: #0284c7;">Girgit-Master-Test</span> <span style="font-size: 5px; border: 1px solid #cbd5e1; border-radius: 2px; padding: 0 2px;">Public</span></span>
-                            <div style="display: flex; gap: 2px; font-size: 5.5px;">
-                                <span style="background: white; border: 1px solid #cbd5e1; padding: 1px 3px; border-radius: 2px;">⭐ Star 0</span>
-                                <span style="background: white; border: 1px solid #cbd5e1; padding: 1px 3px; border-radius: 2px;">🍴 Fork 0</span>
-                            </div>
-                        </div>
-                        <div style="padding: 2px 4px; background: white; flex: 1;">
-                            <div style="display: flex; justify-content: space-between; font-size: 6px; margin-bottom: 2px; align-items: center;">
-                                <span style="background: #e2e8f0; padding: 1px 3px; border-radius: 2px; font-weight: bold;">🌱 branch: master</span>
-                                <span style="color: #64748b;">4 commits • commit: <code class="mono">8ae02c5</code></span>
-                                <span style="background: #238636; color: white; padding: 1px 4px; border-radius: 2px; font-weight: bold;">&lt;&gt; Code</span>
-                            </div>
-                            <div style="border: 1px solid #e2e8f0; border-radius: 2px; font-size: 5.5px;">
-                                <div style="padding: 1.5px 3px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: #334155;">jagdish added api key 2</div>
-                                <div style="padding: 1.5px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;"><span>📄 .env</span><span style="color: #94a3b8;">recently</span></div>
-                                <div style="padding: 1.5px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;"><span>📄 app.js</span><span style="color: #94a3b8;">recently</span></div>
-                                <div style="padding: 1.5px 3px; display: flex; justify-content: space-between;"><span>📄 app.jspp</span><span style="color: #94a3b8;">recently</span></div>
-                            </div>
-                        </div>
-                    </div>
+                        <!-- Arrows down to pages -->
+                        <line x1="100" y1="50" x2="55" y2="62" stroke="#0e6575" stroke-width="1.2" marker-end="url(#a3)"/>
+                        <line x1="180" y1="50" x2="180" y2="62" stroke="#0e6575" stroke-width="1.2" marker-end="url(#a3)"/>
+                        <line x1="260" y1="50" x2="310" y2="62" stroke="#0e6575" stroke-width="1.2" marker-end="url(#a3)"/>
 
+                        <!-- Page 1: Dashboard -->
+                        <rect x="10" y="64" width="90" height="42" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="1"/>
+                        <rect x="10" y="64" width="90" height="12" rx="4" fill="#0284c7"/>
+                        <text x="55" y="73" text-anchor="middle" font-size="6.5" font-weight="700" fill="#fff">Dashboard</text>
+                        <text x="55" y="86" text-anchor="middle" font-size="5.5" fill="#334155">• Repo listing</text>
+                        <text x="55" y="95" text-anchor="middle" font-size="5.5" fill="#334155">• Activity feed</text>
+                        <text x="55" y="104" text-anchor="middle" font-size="5.5" fill="#334155">• Search bar</text>
+
+                        <!-- Page 2: Repo Explorer -->
+                        <rect x="115" y="64" width="130" height="42" rx="4" fill="#ffffff" stroke="#16a34a" stroke-width="1"/>
+                        <rect x="115" y="64" width="130" height="12" rx="4" fill="#16a34a"/>
+                        <text x="180" y="73" text-anchor="middle" font-size="6.5" font-weight="700" fill="#fff">Repository Explorer</text>
+                        <text x="180" y="86" text-anchor="middle" font-size="5.5" fill="#334155">• File tree • Branch selector • Commit history</text>
+                        <text x="180" y="95" text-anchor="middle" font-size="5.5" fill="#334155">• In-browser code editor • Visual diff viewer</text>
+                        <text x="180" y="104" text-anchor="middle" font-size="5.5" fill="#334155">• Collaborator management • Download ZIP</text>
+
+                        <!-- Page 3: Profile -->
+                        <rect x="260" y="64" width="90" height="42" rx="4" fill="#ffffff" stroke="#9333ea" stroke-width="1"/>
+                        <rect x="260" y="64" width="90" height="12" rx="4" fill="#9333ea"/>
+                        <text x="305" y="73" text-anchor="middle" font-size="6.5" font-weight="700" fill="#fff">Developer Profile</text>
+                        <text x="305" y="86" text-anchor="middle" font-size="5.5" fill="#334155">• Avatar & bio</text>
+                        <text x="305" y="95" text-anchor="middle" font-size="5.5" fill="#334155">• README.md</text>
+                        <text x="305" y="104" text-anchor="middle" font-size="5.5" fill="#334155">• Repo list</text>
+
+                        <!-- Data Flow Section -->
+                        <line x1="180" y1="106" x2="180" y2="118" stroke="#0e6575" stroke-width="1.2" marker-end="url(#a3)"/>
+
+                        <rect x="60" y="120" width="240" height="20" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1"/>
+                        <text x="180" y="133" text-anchor="middle" font-size="6.5" font-weight="700" fill="#334155">Axios HTTP Client → Express 5 REST API (JWT Bearer Token)</text>
+
+                        <line x1="180" y1="140" x2="180" y2="152" stroke="#0e6575" stroke-width="1.2" marker-end="url(#a3)"/>
+
+                        <!-- Backend Services -->
+                        <rect x="15" y="154" width="100" height="36" rx="4" fill="#fffbeb" stroke="#f59e0b" stroke-width="1"/>
+                        <text x="65" y="166" text-anchor="middle" font-size="7" font-weight="700" fill="#b45309">S3 Git Plumbing</text>
+                        <text x="65" y="176" text-anchor="middle" font-size="5.5" fill="#92400e">Tree Serializer</text>
+                        <text x="65" y="185" text-anchor="middle" font-size="5.5" fill="#92400e">Auto-Merge Engine</text>
+
+                        <rect x="125" y="154" width="110" height="36" rx="4" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
+                        <text x="180" y="166" text-anchor="middle" font-size="7" font-weight="700" fill="#b91c1c">14-Rule Secret Scanner</text>
+                        <text x="180" y="176" text-anchor="middle" font-size="5.5" fill="#991b1b">AWS Keys • Stripe • DB URIs</text>
+                        <text x="180" y="185" text-anchor="middle" font-size="5.5" fill="#991b1b">Private Keys • .env leaks</text>
+
+                        <rect x="245" y="154" width="105" height="36" rx="4" fill="#f0fdf4" stroke="#16a34a" stroke-width="1"/>
+                        <text x="297" y="166" text-anchor="middle" font-size="7" font-weight="700" fill="#15803d">Auth & Collab</text>
+                        <text x="297" y="176" text-anchor="middle" font-size="5.5" fill="#166534">Bcrypt • Push Guard</text>
+                        <text x="297" y="185" text-anchor="middle" font-size="5.5" fill="#166534">ZIP Archiver</text>
+                    </svg>
                 </div>
             </div>
 
             <!-- 5. DAG Commit Topology -->
-            <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
+            <div class="poster-card" style="flex: 1 1 55%; min-height: 0;">
                 <div class="pill-header">DAG Commit Topology</div>
-                <span class="sub-header-italic">Cryptographic Parent Chaining &amp; Merkle Linkages (girgit k)</span>
+                <span class="sub-header-italic">Cryptographic Parent Chaining &amp; Tree Linkages (girgit k)</span>
 
                 <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; overflow: hidden; min-height: 0;">
                     <svg viewBox="0 0 380 250" style="width: 100%; height: 100%; font-family: 'JetBrains Mono', monospace; font-size: 10px;">
@@ -506,50 +462,39 @@
                             </marker>
                         </defs>
 
-                        <!-- HEAD & Branch Master Pointer -->
                         <rect x="235" y="8" width="135" height="28" rx="4" fill="#0284c7" stroke="#0369a1" stroke-width="1.5"/>
                         <text x="302" y="22" fill="#ffffff" font-weight="bold" font-size="9" text-anchor="middle">HEAD -&gt; refs/heads/master</text>
                         <text x="302" y="32" fill="#e0f2fe" font-size="7" text-anchor="middle">Active Working Pointer</text>
 
-                        <!-- Line from HEAD to latest commit -->
                         <line x1="302" y1="36" x2="302" y2="58" stroke="#0284c7" stroke-width="2" marker-end="url(#dag-arrow)" />
 
-                        <!-- Commit 4 (Latest) -->
                         <rect x="230" y="60" width="144" height="38" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
                         <text x="302" y="74" fill="#0369a1" font-weight="bold" font-size="9" text-anchor="middle">8ae02c568fb3...</text>
                         <text x="302" y="85" fill="#334155" font-size="7.5" text-anchor="middle">&quot;added api key 2&quot;</text>
                         <text x="302" y="94" fill="#64748b" font-size="6.5" text-anchor="middle">Tree: 7d1a4 • Author: jagdish</text>
 
-                        <!-- Line 4 to 3 -->
                         <line x1="302" y1="98" x2="302" y2="118" stroke="#0e6575" stroke-width="1.8" marker-end="url(#dag-arrow)" />
 
-                        <!-- Commit 3 -->
                         <rect x="230" y="120" width="144" height="38" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.2"/>
                         <text x="302" y="134" fill="#1e293b" font-weight="bold" font-size="9" text-anchor="middle">1cda7a3a9ece...</text>
                         <text x="302" y="145" fill="#334155" font-size="7.5" text-anchor="middle">&quot;added api key&quot;</text>
                         <text x="302" y="154" fill="#64748b" font-size="6.5" text-anchor="middle">Tree: 9b2e1 • Author: jagdish</text>
 
-                        <!-- Feature Branch Node -->
                         <rect x="15" y="120" width="140" height="38" rx="4" fill="#faf5ff" stroke="#9333ea" stroke-width="1.2"/>
                         <text x="85" y="134" fill="#6b21a8" font-weight="bold" font-size="8.5" text-anchor="middle">c83a1d9b04e...</text>
                         <text x="85" y="145" fill="#4b5563" font-size="7.5" text-anchor="middle">&quot;feature-auth setup&quot;</text>
                         <text x="85" y="154" fill="#9333ea" font-size="6.5" text-anchor="middle">branch: feature-auth</text>
 
-                        <!-- Line 3 to 2 -->
                         <line x1="302" y1="158" x2="250" y2="178" stroke="#0e6575" stroke-width="1.8" marker-end="url(#dag-arrow)" />
-                        <!-- Line Feature to 2 -->
                         <line x1="85" y1="158" x2="160" y2="178" stroke="#9333ea" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#dag-arrow)" />
 
-                        <!-- Commit 2 (Tagged v1.0) -->
                         <rect x="135" y="180" width="145" height="38" rx="4" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
                         <text x="207" y="194" fill="#854d0e" font-weight="bold" font-size="9" text-anchor="middle">f511f7c4446e...</text>
                         <text x="207" y="205" fill="#334155" font-size="7.5" text-anchor="middle">&quot;Experimental commit&quot;</text>
-                        <text x="207" y="214" fill="#a16207" font-weight="bold" font-size="7" text-anchor="middle">🏷️ Tag: refs/tags/v1.0</text>
+                        <text x="207" y="214" fill="#a16207" font-weight="bold" font-size="7" text-anchor="middle">Tag: refs/tags/v1.0</text>
 
-                        <!-- Line 2 to 1 -->
                         <line x1="207" y1="218" x2="207" y2="228" stroke="#0e6575" stroke-width="1.8" marker-end="url(#dag-arrow)" />
 
-                        <!-- Commit 1 (Root Commit) -->
                         <rect x="145" y="230" width="125" height="18" rx="3" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
                         <text x="207" y="242" fill="#0f172a" font-weight="bold" font-size="7.5" text-anchor="middle">655fe1ca... (Root Initial)</text>
                     </svg>
@@ -563,18 +508,17 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- COLUMN 3: Sections 6, 7 (Part 1)           -->
+        <!-- COLUMN 3: Architecture & UI Showcase Image -->
         <!-- ========================================== -->
         <div class="poster-col">
 
-            <!-- 6. Complete Architecture with Flow Diagram -->
+            <!-- 6. Complete Architecture -->
             <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
                 <div class="pill-header">Complete Architecture</div>
                 <span class="sub-header-italic">End-to-End System Architecture Flow Diagram</span>
 
-                <!-- Architecture Flow Diagram (Vector SVG) -->
                 <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; overflow: hidden; min-height: 0;">
-                    <svg viewBox="0 0 440 216" style="width: 100%; height: 100%; font-family: 'Inter', sans-serif;">
+                    <svg viewBox="0 0 430 358" style="width: 100%; height: 100%; font-family: 'Inter', sans-serif;">
                         <defs>
                             <marker id="flow-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                                 <path d="M 0 1 L 9 5 L 0 9 z" fill="#0e6575" />
@@ -585,89 +529,138 @@
                             <marker id="flow-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                                 <path d="M 0 1 L 9 5 L 0 9 z" fill="#15803d" />
                             </marker>
+                            <marker id="flow-arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" fill="#7e22ce" />
+                            </marker>
+                            <marker id="flow-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                <path d="M 0 1 L 9 5 L 0 9 z" fill="#0284c7" />
+                            </marker>
                         </defs>
 
-                        <!-- 1. Client Layer -->
-                        <rect x="5" y="3" width="430" height="40" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
-                        <text x="12" y="13" font-size="7" font-weight="800" fill="#475569" letter-spacing="0.5">CLIENT &amp; WORKSPACE LAYER</text>
+                        <!-- ======================================================== -->
+                        <!-- LAYER 1: CLIENT & WORKSPACE LAYER (y: 3 to 85)          -->
+                        <!-- ======================================================== -->
+                        <rect x="4" y="3" width="422" height="82" rx="4" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2"/>
+                        <rect x="10" y="7" width="160" height="14" rx="3" fill="#e0f2fe"/>
+                        <text x="90" y="17.5" text-anchor="middle" font-size="7" font-weight="800" fill="#0369a1" letter-spacing="0.5">CLIENT &amp; WORKSPACE LAYER</text>
 
-                        <!-- Box 1A: CLI -->
-                        <rect x="15" y="16" width="195" height="23" rx="3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
-                        <text x="22" y="27" font-size="7.5" font-weight="bold" fill="#0369a1">Girgit CLI (Python 3.10+)</text>
-                        <text x="22" y="35" font-size="6" fill="#0c4a6e">Local CAS Store (.girgit/objects) • Staging • Myers Diff</text>
+                        <!-- 1A: CLI -->
+                        <rect x="10" y="24" width="202" height="56" rx="3" fill="#ffffff" stroke="#bae6fd" stroke-width="1"/>
+                        <text x="16" y="36" font-size="7.5" font-weight="800" fill="#0369a1">Girgit CLI (Python 3.10+)</text>
+                        <text x="16" y="47" font-size="6" fill="#334155">&bull; Content-Addressable Storage (.girgit/objects)</text>
+                        <text x="16" y="57" font-size="6" fill="#334155">&bull; Direct working-tree snapshots (Zero staging)</text>
+                        <text x="16" y="67" font-size="6" fill="#0284c7" font-weight="600">&bull; Commands: commit, push, pull, diff, merge</text>
+                        <text x="16" y="76" font-size="5.5" fill="#64748b">Commit graph inspection: girgit k</text>
 
-                        <!-- Box 1B: Web -->
-                        <rect x="230" y="16" width="195" height="23" rx="3" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
-                        <text x="237" y="27" font-size="7.5" font-weight="bold" fill="#0369a1">Girgit Hub Web (React 18 / TS)</text>
-                        <text x="237" y="35" font-size="6" fill="#0c4a6e">Repository Explorer • In-Browser Editor • Diff Viewer</text>
+                        <!-- 1B: Web UI -->
+                        <rect x="218" y="24" width="202" height="56" rx="3" fill="#ffffff" stroke="#bae6fd" stroke-width="1"/>
+                        <text x="224" y="36" font-size="7.5" font-weight="800" fill="#0369a1">Girgit Hub Web (React 18 + TS)</text>
+                        <text x="224" y="47" font-size="6" fill="#334155">&bull; Interactive repository explorer &amp; file browser</text>
+                        <text x="224" y="57" font-size="6" fill="#334155">&bull; In-browser code editor &amp; visual diff viewer</text>
+                        <text x="224" y="67" font-size="6" fill="#0284c7" font-weight="600">&bull; Commit graph history &amp; branch management</text>
+                        <text x="224" y="76" font-size="5.5" fill="#64748b">Responsive Tailwind UI &amp; Lucide icons</text>
 
-                        <!-- Downward Connectors -->
-                        <line x1="112" y1="39" x2="112" y2="52" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
-                        <line x1="327" y1="39" x2="327" y2="52" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+                        <!-- ======================================================== -->
+                        <!-- TRANSPORT BAR & ARROWS (y: 87 to 125)                    -->
+                        <!-- ======================================================== -->
+                        <line x1="111" y1="80" x2="111" y2="92" stroke="#0284c7" stroke-width="1.4" marker-end="url(#flow-arrow-blue)"/>
+                        <line x1="319" y1="80" x2="319" y2="92" stroke="#0284c7" stroke-width="1.4" marker-end="url(#flow-arrow-blue)"/>
 
-                        <!-- 2. Secure Transport Pill -->
-                        <rect x="65" y="53" width="310" height="15" rx="7.5" fill="#f1f5f9" stroke="#64748b" stroke-width="1"/>
-                        <text x="220" y="63" font-size="6.5" font-weight="bold" fill="#334155" text-anchor="middle">RESTful HTTP Transport (JWT Bearer Token / HTTP-Only Cookie)</text>
-                        <line x1="220" y1="68" x2="220" y2="78" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+                        <rect x="25" y="93" width="380" height="18" rx="9" fill="#f1f5f9" stroke="#64748b" stroke-width="1"/>
+                        <text x="215" y="105" font-size="6.8" font-weight="800" fill="#1e293b" text-anchor="middle">RESTful HTTPS Transport (JWT Bearer Token &bull; Brevo 6-Digit Email OTP)</text>
 
-                        <!-- 3. API Gateway & Engine Layer -->
-                        <rect x="5" y="79" width="430" height="67" rx="4" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
-                        <text x="12" y="90" font-size="7" font-weight="800" fill="#0f766e" letter-spacing="0.5">EXPRESS 5 API GATEWAY &amp; ENGINE LAYER</text>
+                        <line x1="150" y1="111" x2="150" y2="124" stroke="#0e6575" stroke-width="1.4" marker-end="url(#flow-arrow)"/>
+                        <text x="125" y="120" font-size="5.8" font-weight="700" fill="#0e6575">PUSH ➔</text>
+                        <line x1="280" y1="124" x2="280" y2="111" stroke="#0e6575" stroke-width="1.4" marker-end="url(#flow-arrow)"/>
+                        <text x="305" y="120" font-size="5.8" font-weight="700" fill="#0e6575">➔ PULL</text>
 
-                        <!-- Engine Box 1: S3 Git Helper -->
-                        <rect x="15" y="94" width="130" height="46" rx="3" fill="#ffffff" stroke="#14b8a6" stroke-width="1"/>
-                        <text x="20" y="105" font-size="7" font-weight="bold" fill="#0f766e">S3 Git Plumbing</text>
-                        <text x="20" y="114" font-size="5.8" fill="#334155">• Merkle Tree Serializer</text>
-                        <text x="20" y="123" font-size="5.8" fill="#334155">• Commit Ancestry (DAG)</text>
-                        <text x="20" y="132" font-size="5.8" fill="#334155">• 3-Way LCA Merge Engine</text>
+                        <!-- ======================================================== -->
+                        <!-- LAYER 2: EXPRESS 5 BACKEND & ENGINES (y: 126 to 234)    -->
+                        <!-- ======================================================== -->
+                        <rect x="4" y="126" width="422" height="108" rx="4" fill="#f0fdf4" stroke="#0d9488" stroke-width="1.2"/>
+                        <rect x="10" y="130" width="220" height="14" rx="3" fill="#ccfbf1"/>
+                        <text x="120" y="140.5" text-anchor="middle" font-size="7" font-weight="800" fill="#0f766e" letter-spacing="0.5">EXPRESS 5 API GATEWAY &amp; ENGINE SERVICES</text>
 
-                        <!-- Engine Box 2: Secret Scanner -->
-                        <rect x="155" y="94" width="130" height="46" rx="3" fill="#ffffff" stroke="#ef4444" stroke-width="1"/>
-                        <text x="160" y="105" font-size="7" font-weight="bold" fill="#b91c1c">14-Rule Secret Scan</text>
-                        <text x="160" y="114" font-size="5.8" fill="#334155">• AWS / Stripe / DB URIs</text>
-                        <text x="160" y="123" font-size="5.8" fill="#334155">• Private Keys &amp; .env Leaks</text>
-                        <text x="160" y="132" font-size="5.8" fill="#334155">• Automated Redaction</text>
+                        <!-- 2A: VCS Core Plumbing -->
+                        <rect x="10" y="147" width="132" height="82" rx="3" fill="#ffffff" stroke="#14b8a6" stroke-width="1"/>
+                        <text x="16" y="159" font-size="7.5" font-weight="bold" fill="#0f766e">VCS Core Plumbing</text>
+                        <text x="16" y="170" font-size="5.8" fill="#334155">&bull; Smart Auto-Merge Engine</text>
+                        <text x="16" y="180" font-size="5.8" fill="#334155">&bull; Eugene Myers O(ND) Diff</text>
+                        <text x="16" y="190" font-size="5.8" fill="#334155">&bull; Directory Tree Serializer</text>
+                        <text x="16" y="200" font-size="5.8" fill="#334155">&bull; Commit Ancestry Graph</text>
+                        <text x="16" y="211" font-size="5.8" fill="#0f766e" font-weight="600">&bull; Collision Markers &lt;&lt;&lt;&lt; ==== &gt;&gt;&gt;&gt;</text>
+                        <text x="16" y="222" font-size="5.5" fill="#64748b">Zero 3rd-party git binaries</text>
 
-                        <!-- Engine Box 3: Auth & Access -->
-                        <rect x="295" y="94" width="130" height="46" rx="3" fill="#ffffff" stroke="#6366f1" stroke-width="1"/>
-                        <text x="300" y="105" font-size="7" font-weight="bold" fill="#4338ca">Auth &amp; Collaborator</text>
-                        <text x="300" y="114" font-size="5.8" fill="#334155">• Bcrypt 10 Salt Rounds</text>
-                        <text x="300" y="123" font-size="5.8" fill="#334155">• Push Permission Guard</text>
-                        <text x="300" y="132" font-size="5.8" fill="#334155">• Streaming ZIP Archiver</text>
+                        <!-- 2B: 14-Rule Secret Scanner -->
+                        <rect x="149" y="147" width="132" height="82" rx="3" fill="#ffffff" stroke="#ef4444" stroke-width="1"/>
+                        <text x="155" y="159" font-size="7.5" font-weight="bold" fill="#b91c1c">14-Rule Secret Scan</text>
+                        <text x="155" y="170" font-size="5.8" fill="#334155">&bull; AWS Access &amp; Secret Keys</text>
+                        <text x="155" y="180" font-size="5.8" fill="#334155">&bull; Stripe Live API Tokens</text>
+                        <text x="155" y="190" font-size="5.8" fill="#334155">&bull; MongoDB &amp; SQL DB URIs</text>
+                        <text x="155" y="200" font-size="5.8" fill="#334155">&bull; Private SSH &amp; RSA Keys</text>
+                        <text x="155" y="211" font-size="5.8" fill="#b91c1c" font-weight="600">&bull; Pre-Commit Push Guard</text>
+                        <text x="155" y="222" font-size="5.5" fill="#991b1b">Automated leak rejection</text>
 
-                        <!-- Downward Arrows to Storage Layer -->
-                        <line x1="80" y1="140" x2="60" y2="157" stroke="#b45309" stroke-width="1.5" marker-end="url(#flow-arrow-orange)"/>
-                        <line x1="220" y1="140" x2="165" y2="157" stroke="#15803d" stroke-width="1.5" marker-end="url(#flow-arrow-green)"/>
-                        <line x1="340" y1="140" x2="275" y2="157" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
-                        <line x1="380" y1="140" x2="380" y2="157" stroke="#0e6575" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+                        <!-- 2C: Auth & Collab -->
+                        <rect x="288" y="147" width="132" height="82" rx="3" fill="#ffffff" stroke="#6366f1" stroke-width="1"/>
+                        <text x="294" y="159" font-size="7.5" font-weight="bold" fill="#4338ca">Auth &amp; Archival</text>
+                        <text x="294" y="170" font-size="5.8" fill="#334155">&bull; Bcrypt 10 Salt Hash</text>
+                        <text x="294" y="180" font-size="5.8" fill="#334155">&bull; JWT Session Verifier</text>
+                        <text x="294" y="190" font-size="5.8" fill="#334155">&bull; Push Permission Guard</text>
+                        <text x="294" y="200" font-size="5.8" fill="#334155">&bull; Streaming ZIP Archiver</text>
+                        <text x="294" y="211" font-size="5.8" fill="#4338ca" font-weight="600">&bull; Live Event Status Feed</text>
+                        <text x="294" y="222" font-size="5.5" fill="#64748b">On-the-fly zip downloader</text>
 
-                        <!-- 4. Persistence & Cloud Services Layer -->
-                        <rect x="5" y="158" width="430" height="53" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
-                        <text x="12" y="168" font-size="7" font-weight="800" fill="#475569" letter-spacing="0.5">CLOUD PERSISTENCE &amp; SERVICE PROVIDERS</text>
+                        <!-- ======================================================== -->
+                        <!-- CONNECTING FLOW TO STORAGE (y: 234 to 251)              -->
+                        <!-- ======================================================== -->
+                        <line x1="58" y1="229" x2="58" y2="249" stroke="#b45309" stroke-width="1.3" marker-end="url(#flow-arrow-orange)"/>
+                        <line x1="162" y1="229" x2="162" y2="249" stroke="#15803d" stroke-width="1.3" marker-end="url(#flow-arrow-green)"/>
+                        <line x1="268" y1="229" x2="268" y2="249" stroke="#b91c1c" stroke-width="1.3" marker-end="url(#flow-arrow-orange)"/>
+                        <line x1="372" y1="229" x2="372" y2="249" stroke="#7e22ce" stroke-width="1.3" marker-end="url(#flow-arrow-purple)"/>
 
-                        <!-- Persistent Target 1: AWS S3 -->
-                        <rect x="15" y="171" width="95" height="35" rx="3" fill="#fffbeb" stroke="#f59e0b" stroke-width="1"/>
-                        <text x="20" y="181" font-size="6.8" font-weight="bold" fill="#b45309">AWS S3 Remote</text>
-                        <text x="20" y="190" font-size="5.5" fill="#78350f">• objects/xx/yyyy...</text>
-                        <text x="20" y="198" font-size="5.5" fill="#78350f">• refs/heads/&lt;branch&gt;</text>
+                        <!-- ======================================================== -->
+                        <!-- LAYER 3: CLOUD PERSISTENCE & SERVICES (y: 251 to 354)   -->
+                        <!-- ======================================================== -->
+                        <rect x="4" y="251" width="422" height="103" rx="4" fill="#f8fafc" stroke="#16a34a" stroke-width="1.2"/>
+                        <rect x="10" y="255" width="230" height="14" rx="3" fill="#dcfce7"/>
+                        <text x="125" y="265.5" text-anchor="middle" font-size="7" font-weight="800" fill="#15803d" letter-spacing="0.5">CLOUD PERSISTENCE &amp; SERVICE PROVIDERS</text>
 
-                        <!-- Persistent Target 2: MongoDB -->
-                        <rect x="120" y="171" width="95" height="35" rx="3" fill="#f0fdf4" stroke="#16a34a" stroke-width="1"/>
-                        <text x="125" y="181" font-size="6.8" font-weight="bold" fill="#15803d">MongoDB Atlas</text>
-                        <text x="125" y="190" font-size="5.5" fill="#166534">• User Profiles &amp; Auth</text>
-                        <text x="125" y="198" font-size="5.5" fill="#166534">• Repository Metadata</text>
+                        <!-- 3A: AWS S3 -->
+                        <rect x="10" y="272" width="98" height="77" rx="3" fill="#fffbeb" stroke="#f59e0b" stroke-width="1"/>
+                        <text x="15" y="284" font-size="7" font-weight="bold" fill="#b45309">AWS S3 Remote</text>
+                        <text x="15" y="295" font-size="5.6" fill="#78350f">&bull; objects/xx/yyyy...</text>
+                        <text x="15" y="305" font-size="5.6" fill="#78350f">&bull; refs/heads/&lt;branch&gt;</text>
+                        <text x="15" y="316" font-size="5.8" fill="#b45309" font-weight="800">&bull; 85.5% Dedup</text>
+                        <text x="15" y="327" font-size="5.6" fill="#78350f">&bull; 11 9's Durability</text>
+                        <text x="15" y="338" font-size="5.4" fill="#92400e">Global hash reuse</text>
 
-                        <!-- Persistent Target 3: Redis Cloud -->
-                        <rect x="225" y="171" width="95" height="35" rx="3" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
-                        <text x="230" y="181" font-size="6.8" font-weight="bold" fill="#b91c1c">Redis Cloud</text>
-                        <text x="230" y="190" font-size="5.5" fill="#991b1b">• OTP Secret Cache</text>
-                        <text x="230" y="198" font-size="5.5" fill="#991b1b">• Push Rate Limiting</text>
+                        <!-- 3B: MongoDB Atlas -->
+                        <rect x="114" y="272" width="98" height="77" rx="3" fill="#f0fdf4" stroke="#16a34a" stroke-width="1"/>
+                        <text x="119" y="284" font-size="7" font-weight="bold" fill="#15803d">MongoDB Atlas</text>
+                        <text x="119" y="295" font-size="5.6" fill="#166534">&bull; User Profiles &amp; Keys</text>
+                        <text x="119" y="305" font-size="5.6" fill="#166534">&bull; Repository Metadata</text>
+                        <text x="119" y="316" font-size="5.6" fill="#166534">&bull; Commit DAG Index</text>
+                        <text x="119" y="327" font-size="5.6" fill="#166534">&bull; Branch Head Pointers</text>
+                        <text x="119" y="338" font-size="5.4" fill="#15803d">B-Tree indexing</text>
 
-                        <!-- Persistent Target 4: Brevo Email API -->
-                        <rect x="330" y="171" width="95" height="35" rx="3" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
-                        <text x="335" y="181" font-size="6.8" font-weight="bold" fill="#7e22ce">Brevo Email API</text>
-                        <text x="335" y="190" font-size="5.5" fill="#581c87">• Transactional OTP</text>
-                        <text x="335" y="198" font-size="5.5" fill="#581c87">• Account Verification</text>
+                        <!-- 3C: Redis Cloud -->
+                        <rect x="218" y="272" width="98" height="77" rx="3" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
+                        <text x="223" y="284" font-size="7" font-weight="bold" fill="#b91c1c">Redis Cloud</text>
+                        <text x="223" y="295" font-size="5.6" fill="#991b1b">&bull; OTP Secret Cache</text>
+                        <text x="223" y="305" font-size="5.6" fill="#991b1b">&bull; 5-Min Expiry TTL</text>
+                        <text x="223" y="316" font-size="5.6" fill="#991b1b">&bull; Push Rate Limiting</text>
+                        <text x="223" y="327" font-size="5.6" fill="#991b1b">&bull; Active JWT Cache</text>
+                        <text x="223" y="338" font-size="5.4" fill="#b91c1c">&lt; 2ms access latency</text>
+
+                        <!-- 3D: Brevo Email API -->
+                        <rect x="322" y="272" width="98" height="77" rx="3" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
+                        <text x="327" y="284" font-size="7" font-weight="bold" fill="#7e22ce">Brevo Email API</text>
+                        <text x="327" y="295" font-size="5.6" fill="#581c87">&bull; Transactional OTP</text>
+                        <text x="327" y="305" font-size="5.6" fill="#581c87">&bull; Dynamic Delivery</text>
+                        <text x="327" y="316" font-size="5.6" fill="#581c87">&bull; Account Verification</text>
+                        <text x="327" y="327" font-size="5.6" fill="#581c87">&bull; Security Alerts</text>
+                        <text x="327" y="338" font-size="5.4" fill="#7e22ce">SMTP gateway relay</text>
                     </svg>
                 </div>
 
@@ -676,276 +669,61 @@
                 </div>
             </div>
 
-            <!-- 7. User Interface Showcase (Part 1: Dashboard) -->
+            <!-- 7. User Interface Showcase: Real Screenshots (Dashboard & Create Repo) -->
             <div class="poster-card" style="flex: 1 1 50%; min-height: 0;">
                 <div class="pill-header">User Interface Showcase</div>
-                <span class="sub-header-italic">Web Platform — User Dashboard &amp; Activity Feed</span>
+                <span class="sub-header-italic">Dashboard Activity Feed &amp; Repository Creation</span>
 
-                <!-- High-Definition Vector Dashboard Showcase (Crisp at any zoom) -->
-                <div class="vector-ui-window" style="flex: 1; min-height: 0; overflow: hidden; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; display: flex; flex-direction: column; box-shadow: 0 1.5px 4px rgba(0,0,0,0.06);">
-                    <!-- Top Navbar -->
-                    <div style="background: #0d1117; color: #ffffff; padding: 2px 6px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #30363d; flex-shrink: 0;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <div style="display: flex; align-items: center; gap: 2.5px; font-weight: 900; font-size: clamp(6.5px, 0.55vw, 8px);">
-                                <span style="color: #38bdf8;">🦎</span> Girgit
-                            </div>
-                            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 3px; padding: 1px 4px; font-size: clamp(5px, 0.42vw, 6px); color: #8b949e; display: flex; align-items: center; gap: 2px;">
-                                <span>🔍 Type <span style="background: #21262d; border: 1px solid #30363d; padding: 0 2px; border-radius: 2px;">/</span> to search</span>
-                            </div>
-                            <div style="display: flex; gap: 4px; font-size: clamp(5.2px, 0.44vw, 6.8px); color: #c9d1d9;">
-                                <span style="font-weight: bold; color: #ffffff;">Dashboard</span>
-                                <span>New Repo</span>
-                                <span>Profile</span>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 3.5px;">
-                            <span style="background: #238636; color: #ffffff; font-size: clamp(4.8px, 0.4vw, 6.2px); font-weight: bold; padding: 1px 3px; border-radius: 2px;">+ New</span>
-                            <span style="font-size: clamp(4.8px, 0.4vw, 6.2px); color: #8b949e;">🔔</span>
-                            <div style="width: 10px; height: 10px; border-radius: 50%; background: #30363d; border: 1px solid #8b949e; display: flex; align-items: center; justify-content: center; font-size: 5px; font-weight: bold; color: white;">J</div>
-                            <span style="font-size: clamp(5.2px, 0.44vw, 6.8px); color: #c9d1d9; font-weight: 600;">jagdish</span>
-                        </div>
+                <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
+                    <!-- Real Screenshot 1: Dashboard View -->
+                    <div style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border-radius: 4px; border: 1px solid #cbd5e1; padding: 2px;">
+                        <img src="ui_dashboard.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792741388642_01942fed.png';" alt="Girgit Hub Dashboard" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 3px;">
                     </div>
 
-                    <!-- Main Dashboard Body (3-Column Layout exactly like image 4) -->
-                    <div style="flex: 1; display: grid; grid-template-columns: 29% 45% 26%; gap: 3.5px; padding: 3px; background: #f8fafc; overflow: hidden;">
-                        
-                        <!-- Left Column: Top Repositories -->
-                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2.5px; display: flex; flex-direction: column; overflow: hidden;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5px;">
-                                <span style="font-weight: 800; font-size: clamp(5.8px, 0.5vw, 7.2px); color: #0f172a;">Top Repositories</span>
-                                <span style="background: #16a34a; color: white; font-size: 4.8px; font-weight: bold; padding: 0.5px 2px; border-radius: 2px;">+ New</span>
-                            </div>
-                            <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 2px; padding: 1px 2.5px; font-size: 4.8px; color: #64748b; margin-bottom: 1.5px;">
-                                🔍 Find a repository...
-                            </div>
-                            <div style="display: flex; gap: 2px; font-size: 4.8px; margin-bottom: 1.5px;">
-                                <span style="background: #e2e8f0; font-weight: bold; padding: 0.5px 2px; border-radius: 2px;">All (7)</span>
-                                <span style="color: #64748b;">Mine (7)</span>
-                                <span style="color: #64748b;">Collabs (0)</span>
-                            </div>
-                            <div style="font-size: clamp(5px, 0.42vw, 6.2px); color: #0284c7; font-weight: 600; line-height: 1.3; overflow: hidden;">
-                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🌐 jagdish/Girgit-Test-Master-Present</div>
-                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🌐 jagdish/Girgit-Master-Test</div>
-                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🌐 jagdish/part-2-demo</div>
-                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🌐 jagdish/hello</div>
-                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🌐 jagdish/my-new-project</div>
-                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🌐 jagdish/basic-test</div>
-                            </div>
-                            <div style="margin-top: auto; padding-top: 1.5px; border-top: 1px solid #f1f5f9; font-size: 4.8px; color: #0284c7;">
-                                <div>Your Profile • Docs</div>
-                            </div>
-                        </div>
-
-                        <!-- Center Column: Home & Latest Repo & Discover -->
-                        <div style="display: flex; flex-direction: column; gap: 2.5px; overflow: hidden;">
-                            <!-- Latest Repo Card -->
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2.5px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-weight: 800; font-size: clamp(5.8px, 0.5vw, 7.2px); color: #0f172a;">📖 Your Latest Repository</span>
-                                    <span style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 4.8px; font-weight: bold; padding: 0.5px 2.5px; border-radius: 2px;">View</span>
-                                </div>
-                                <div style="font-size: clamp(5.8px, 0.5vw, 7.2px); font-weight: bold; color: #0284c7; margin-top: 1px;">jagdish/Girgit-Test-Master-Present</div>
-                            </div>
-
-                            <!-- Discover Developers Card -->
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2.5px; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5px;">
-                                    <span style="font-weight: 800; font-size: clamp(5.8px, 0.5vw, 7.2px); color: #0f172a;">👥 Discover Developers</span>
-                                    <span style="font-size: 4.8px; color: #64748b;">15 developers</span>
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: 1.2px; font-size: clamp(4.8px, 0.4vw, 6px);">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 1px 2px; border-radius: 2px;">
-                                        <div><strong>yugdholakiya</strong> <span style="color: #64748b; font-size: 4.5px;">23it420@bvm...</span></div>
-                                        <span style="background: #16a34a; color: white; padding: 0.5px 2.5px; border-radius: 2px; font-weight: bold;">Follow</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 1px 2px; border-radius: 2px;">
-                                        <div><strong>harsh</strong> <span style="color: #64748b; font-size: 4.5px;">23it421@bvm...</span></div>
-                                        <span style="background: #16a34a; color: white; padding: 0.5px 2.5px; border-radius: 2px; font-weight: bold;">Follow</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 1px 2px; border-radius: 2px;">
-                                        <div><strong>Viral12</strong> <span style="color: #64748b; font-size: 4.5px;">23it440@bvm...</span></div>
-                                        <span style="background: #e2e8f0; color: #475569; padding: 0.5px 2.5px; border-radius: 2px; font-weight: bold;">Following</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right Column: About & CLI Quick Commands -->
-                        <div style="display: flex; flex-direction: column; gap: 2.5px; overflow: hidden;">
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px;">
-                                <div style="font-weight: 800; font-size: clamp(5.5px, 0.46vw, 6.8px); color: #b45309;">✨ About Girgit</div>
-                                <div style="font-size: clamp(4.6px, 0.38vw, 5.5px); color: #475569; line-height: 1.15; margin-top: 1px;">
-                                    Lightweight Git-compatible DVCS with cloud S3 storage.
-                                </div>
-                            </div>
-                            <div style="background: #0f172a; border-radius: 3px; padding: 2.5px; color: #ffffff; flex: 1; display: flex; flex-direction: column; font-family: 'JetBrains Mono', monospace;">
-                                <div style="display: flex; justify-content: space-between; font-size: clamp(5px, 0.42vw, 6.2px); color: #94a3b8; font-weight: bold; margin-bottom: 1px;">
-                                    <span>Girgit CLI</span>
-                                    <span style="color: #38bdf8;">Manual</span>
-                                </div>
-                                <div style="font-size: clamp(4.6px, 0.38vw, 5.5px); color: #cbd5e1; line-height: 1.25;">
-                                    <div style="color: #64748b;"># Start repo</div>
-                                    <div style="color: #38bdf8;">girgit init</div>
-                                    <div style="color: #64748b;"># Stage &amp; commit</div>
-                                    <div style="color: #38bdf8;">girgit add .</div>
-                                    <div style="color: #38bdf8;">girgit commit -m &quot;feat&quot;</div>
-                                    <div style="color: #64748b;"># Push S3</div>
-                                    <div style="color: #4ade80;">girgit push s3://...</div>
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- Real Screenshot 4: Create Repository View -->
+                    <div style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border-radius: 4px; border: 1px solid #cbd5e1; padding: 2px;">
+                        <img src="ui_createrepo.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792752091391_596daf44.png';" alt="Girgit Hub Create Repository" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 3px;">
                     </div>
-                </div>
-                <div style="font-size: clamp(6px, 0.52vw, 7.5px); color: #64748b; margin-top: 2px; text-align: center;">
-                    <strong>Dashboard:</strong> Real-time repository directory, latest repo activity card, developer network, and CLI reference.
                 </div>
             </div>
 
         </div>
 
         <!-- ========================================== -->
-        <!-- COLUMN 4: Sections 7 (Remaining), 8, 9, 10 -->
+        <!-- COLUMN 4: UI Showcase Images, Conclusion, Team -->
         <!-- ========================================== -->
         <div class="poster-col">
 
-            <!-- 7. UI Showcase (Remaining: Repo View & Profile) -->
-            <div class="poster-card" style="flex: 1 1 45%; min-height: 0;">
+            <!-- UI Showcase (Cont.): Real Screenshot 2 (Repo View) & Screenshot 3 (Developer Profile) -->
+            <div class="poster-card" style="flex: 1 1 0; min-height: 0;">
                 <div class="pill-header">UI Showcase (Cont.)</div>
                 <span class="sub-header-italic">Repository Code Explorer &amp; Developer Profile</span>
 
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 3.5px; min-height: 0;">
-                    <!-- High-Definition Vector Repository View (Crisp at any zoom) -->
-                    <div class="vector-ui-window" style="flex: 1; min-height: 0; overflow: hidden; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                        <!-- Repo Header Bar -->
-                        <div style="padding: 2px 4px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
-                            <div style="display: flex; align-items: center; gap: 2.5px; font-size: clamp(5.8px, 0.5vw, 7.2px);">
-                                <span>📖</span>
-                                <span style="color: #0284c7; font-weight: 600;">jagdish</span> / <strong style="color: #0f172a;">Girgit-Master-Test</strong>
-                                <span style="font-size: 4.8px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0 2.5px; border-radius: 9999px; font-weight: bold;">Public</span>
-                            </div>
-                            <div style="display: flex; gap: 2px; font-size: 4.8px;">
-                                <span style="background: white; border: 1px solid #cbd5e1; padding: 0.5px 2.5px; border-radius: 2px;">👁️ Watch 1</span>
-                                <span style="background: white; border: 1px solid #cbd5e1; padding: 0.5px 2.5px; border-radius: 2px;">🍴 Fork 0</span>
-                                <span style="background: white; border: 1px solid #cbd5e1; padding: 0.5px 2.5px; border-radius: 2px;">⭐ Star 0</span>
-                            </div>
-                        </div>
-
-                        <!-- Tab Bar -->
-                        <div style="padding: 1.5px 4px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; gap: 5px; font-size: clamp(5px, 0.42vw, 6.2px); color: #475569; font-weight: 600; flex-shrink: 0;">
-                            <span style="color: #0f172a; border-bottom: 1.5px solid #ea580c; padding-bottom: 0.5px; font-weight: bold;">&lt;&gt; Code</span>
-                            <span>Issues 0</span>
-                            <span>Pull requests 0</span>
-                            <span>Actions</span>
-                            <span>🛡️ Security</span>
-                            <span>👥 Collaborators 2</span>
-                        </div>
-
-                        <!-- Repo File Area & Sidebar -->
-                        <div style="flex: 1; display: grid; grid-template-columns: 75% 25%; gap: 3.5px; padding: 2.5px 3.5px; background: white; overflow: hidden;">
-                            <!-- File Explorer -->
-                            <div style="display: flex; flex-direction: column; border: 1px solid #e2e8f0; border-radius: 3px; overflow: hidden;">
-                                <div style="background: #f8fafc; padding: 1.5px 3px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 5px; flex-shrink: 0;">
-                                    <div style="display: flex; gap: 2.5px; align-items: center;">
-                                        <span style="background: #e2e8f0; padding: 0.5px 2.5px; border-radius: 2px; font-weight: bold; color: #0f172a;">🌱 master ▼</span>
-                                        <span style="color: #64748b;">4 commits</span>
-                                    </div>
-                                    <span style="background: #238636; color: white; padding: 0.5px 3px; border-radius: 2px; font-weight: bold;">&lt;&gt; Code ▼</span>
-                                </div>
-                                <!-- Commit Summary Bar -->
-                                <div style="background: #f1f5f9; padding: 1px 3px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 4.8px; color: #334155; font-weight: 600; flex-shrink: 0;">
-                                    <div><span style="background: #cbd5e1; border-radius: 50%; padding: 0 1.5px;">J</span> <strong>jagdish</strong> added api key 2</div>
-                                    <div><code class="mono" style="color: #0284c7;">8ae02c5</code> recently</div>
-                                </div>
-                                <!-- File Rows -->
-                                <div style="font-size: clamp(5px, 0.42vw, 6.2px); line-height: 1.25; padding: 1px 0; overflow: hidden;">
-                                    <div style="padding: 1px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #f8fafc;">
-                                        <span>📄 <strong>.env</strong></span><span style="color: #64748b;">added api key 2</span><span style="color: #94a3b8;">recently</span>
-                                    </div>
-                                    <div style="padding: 1px 3px; display: flex; justify-content: space-between; border-bottom: 1px solid #f8fafc;">
-                                        <span>📄 <strong>app.js</strong></span><span style="color: #64748b;">added api key 2</span><span style="color: #94a3b8;">recently</span>
-                                    </div>
-                                    <div style="padding: 1px 3px; display: flex; justify-content: space-between;">
-                                        <span>📄 <strong>app.jspp</strong></span><span style="color: #64748b;">added api key 2</span><span style="color: #94a3b8;">recently</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Sidebar -->
-                            <div style="font-size: 4.8px; color: #475569; display: flex; flex-direction: column; gap: 1.5px; overflow: hidden;">
-                                <div><strong style="color: #0f172a; font-size: 5.2px;">About</strong></div>
-                                <div style="color: #64748b; line-height: 1.15;">No description provided.</div>
-                                <div style="margin-top: 1.5px;"><strong style="color: #0f172a; font-size: 5.2px;">Contributors 2</strong> <span style="color: #0284c7; font-weight: bold;">+ Add</span></div>
-                                <div style="display: flex; gap: 2px; margin-top: 1px;">
-                                    <div style="width: 9px; height: 9px; border-radius: 50%; background: #16a34a; color: white; display: flex; align-items: center; justify-content: center; font-size: 4.5px; font-weight: bold;">J</div>
-                                    <div style="width: 9px; height: 9px; border-radius: 50%; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-size: 4.5px; font-weight: bold;">2</div>
-                                </div>
-                            </div>
-                        </div>
+                <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
+                    <!-- Real Screenshot 2: Repository View -->
+                    <div style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border-radius: 4px; border: 1px solid #cbd5e1; padding: 2px;">
+                        <img src="ui_repo.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792741438784_30c84612.png';" alt="Girgit Hub Repository View" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 3px;">
                     </div>
 
-                    <!-- High-Definition Vector Developer Profile (Crisp at any zoom) -->
-                    <div class="vector-ui-window" style="flex: 1; min-height: 0; overflow: hidden; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                        <!-- Profile Tabs -->
-                        <div style="padding: 1.5px 4px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; gap: 5px; font-size: clamp(5px, 0.42vw, 6.2px); color: #475569; font-weight: 600; flex-shrink: 0;">
-                            <span style="color: #0f172a; border-bottom: 1.5px solid #ea580c; padding-bottom: 0.5px; font-weight: bold;">📖 Overview</span>
-                            <span>📚 Repositories 7</span>
-                            <span>⭐ Stars 0</span>
-                        </div>
-
-                        <!-- Profile Grid -->
-                        <div style="flex: 1; display: grid; grid-template-columns: 30% 70%; gap: 3.5px; padding: 2.5px 3.5px; background: white; overflow: hidden;">
-                            <!-- Left: Avatar & Bio -->
-                            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; border-right: 1px solid #f1f5f9; padding-right: 2px;">
-                                <div style="width: 22px; height: 22px; border-radius: 50%; background: #f1f5f9; border: 1.5px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #475569; margin-bottom: 1px;">
-                                    J
-                                </div>
-                                <div style="font-size: clamp(6px, 0.52vw, 7.5px); font-weight: 900; color: #0f172a; line-height: 1.1;">jagdish</div>
-                                <div style="font-size: 4.5px; color: #64748b;">@jagdish</div>
-                                <div style="font-size: 4.5px; color: #334155; line-height: 1.1; margin: 1px 0;">
-                                    B.Tech IT • CPI 9.49 • Full-Stack DVCS
-                                </div>
-                                <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 2px; padding: 0.5px 2px; font-size: 4.5px; font-weight: 600; color: #0f172a; width: 100%;">
-                                    Edit profile
-                                </div>
-                                <div style="font-size: 4.5px; color: #64748b; margin-top: 1.5px;">
-                                    👥 6 followers • 5 following
-                                </div>
-                            </div>
-
-                            <!-- Right: README.md card -->
-                            <div style="border: 1px solid #e2e8f0; border-radius: 3px; padding: 2px 3.5px; background: #ffffff; display: flex; flex-direction: column; overflow: hidden;">
-                                <div style="font-size: 4.6px; color: #64748b; border-bottom: 1px solid #f1f5f9; padding-bottom: 1px; margin-bottom: 1px;">
-                                    jagdish / README.md ✏️
-                                </div>
-                                <div style="font-size: clamp(5.8px, 0.5vw, 7.2px); font-weight: 900; color: #0f172a; line-height: 1.15;">
-                                    👨‍💻 Jagdish Pathakji
-                                </div>
-                                <div style="font-size: 4.8px; font-weight: bold; color: #0284c7; margin-bottom: 1px;">
-                                    Software Engineer &amp; AI Enthusiast
-                                </div>
-                                <div style="font-size: 4.5px; color: #475569; line-height: 1.15;">
-                                    Pursuing B.Tech IT at Birla Vishwakarma Mahavidyalaya (CGPA: 9.49). Engineered Girgit DVCS from scratch with CAS, Myers Diff, and S3 sync.
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Real Screenshot 3: Developer Profile -->
+                    <div style="flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border-radius: 4px; border: 1px solid #cbd5e1; padding: 2px;">
+                        <img src="ui_profile.png" onerror="this.onerror=null; this.src='file:///C:/Users/patha/.gemini/antigravity/brain/3c5d73f7-1d55-4491-b79b-1cf22c2cd4f5/.user_uploaded/media_1792741398794_7881aa55.png';" alt="Girgit Hub Developer Profile" style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 3px;">
                     </div>
                 </div>
             </div>
 
-            <!-- 8. Conclusion & 9. Future Work -->
+            <!-- 8. Conclusion & Future Work (flex: 0 0 auto — Zero Empty Bottom Space) -->
             <div class="poster-card" style="flex: 0 0 auto;">
                 <div class="pill-header">Conclusion &amp; Future Work</div>
                 <ul class="dense-bullets">
-                    <li><strong>Conclusion:</strong> Successfully built an independent, fully functional DVCS and cloud platform from the ground up without third-party Git binaries. Features 85.5% storage deduplication, $O(ND)$ Myers diffing, and automated 14-rule commit secret scanning.</li>
-                    <li><strong>Future Work:</strong> Integration of packfile delta compression (<code class="mono">.pack</code>/<code class="mono">.idx</code>) for cloud network optimization, Git Large File Storage (LFS) support, and automated CI/CD webhook pipelines.</li>
+                    <li><strong>Conclusion:</strong> Successfully engineered an independent, production-grade Version Control System (VCS) and cloud repository platform from scratch without third-party Git binaries. Achieves 85.5% storage deduplication, O(ND) Myers diffing, and automated 14-rule commit secret scanning.</li>
+                    <li><strong>Future Work:</strong> Integration of an Issues tracking &amp; bug triage system, GitHub Actions-style CI/CD automated test &amp; build pipelines, Pull Request code review &amp; merge approval workflows, organization-level team access controls, and webhook-driven event integrations.</li>
                 </ul>
             </div>
 
-            <!-- 10. Team -->
+            <!-- 9. Team (flex: 0 0 auto — Zero Empty Bottom Space) -->
             <div class="poster-card" style="flex: 0 0 auto;">
                 <div class="pill-header">Project Team</div>
-                
                 <div style="display: grid; grid-template-columns: 35% 65%; gap: 6px; font-size: clamp(7.5px, 0.65vw, 9.5px); align-items: start;">
                     <div>
                         <span class="sub-header-italic" style="margin-bottom: 2px;">Project Guide:</span>

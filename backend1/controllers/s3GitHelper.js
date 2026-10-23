@@ -1,4 +1,4 @@
-const { S3Client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+const { S3Client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command, CopyObjectCommand } = require('@aws-sdk/client-s3');
 const zlib = require('zlib');
 
 // The SDK automatically picks up ~/.aws/credentials
@@ -139,6 +139,45 @@ async function getBranches(prefix) {
     }
 }
 
+async function copyRepoS3(sourcePrefix, targetPrefix) {
+    let isTruncated = true;
+    let continuationToken = undefined;
+
+    while (isTruncated) {
+        const listCommand = new ListObjectsV2Command({
+            Bucket: BUCKET_NAME,
+            Prefix: `${sourcePrefix}/`,
+            ContinuationToken: continuationToken
+        });
+        const listRes = await s3Client.send(listCommand);
+
+        if (listRes.Contents && listRes.Contents.length > 0) {
+            for (const item of listRes.Contents) {
+                const sourceKey = item.Key;
+                const relativePath = sourceKey.slice(sourcePrefix.length + 1);
+                const targetKey = `${targetPrefix}/${relativePath}`;
+
+                try {
+                    const copyCommand = new CopyObjectCommand({
+                        Bucket: BUCKET_NAME,
+                        CopySource: `${BUCKET_NAME}/${encodeURI(sourceKey)}`,
+                        Key: targetKey
+                    });
+                    await s3Client.send(copyCommand);
+                } catch (copyErr) {
+                    const content = await getS3Object(sourceKey);
+                    if (content) {
+                        await putS3Object(targetKey, content);
+                    }
+                }
+            }
+        }
+
+        isTruncated = listRes.IsTruncated;
+        continuationToken = listRes.NextContinuationToken;
+    }
+}
+
 module.exports = {
     getGitObject,
     getHeadRef,
@@ -147,5 +186,6 @@ module.exports = {
     parseCommit,
     getBranches,
     writeObject,
-    putS3Object
+    putS3Object,
+    copyRepoS3
 };

@@ -456,7 +456,17 @@ export default function Profile({
                             <h3 className="font-semibold text-[#0969da] text-xs hover:underline truncate pr-2">
                               {repo.name}
                             </h3>
-                            <span className="text-[10px] font-medium text-[#57606a] border border-[#d0d7de] px-1.5 py-0.2 rounded-full shrink-0">
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {repo.isFork && (
+                                <span className="text-[10px] font-medium text-[#0969da] bg-[#ddf4ff] border border-[#54aeff]/40 px-1.5 py-0.2 rounded-full">
+                                  Forked
+                                </span>
+                              )}
+                              <span className="text-[10px] font-medium text-[#57606a] border border-[#d0d7de] px-1.5 py-0.2 rounded-full">
+                                {repo.isPrivate ? "Private" : "Public"}
+                              </span>
+                            </div>
+                            <span className="hidden">
                               {repo.isPrivate ? "Private" : "Public"}
                             </span>
                           </div>
@@ -517,6 +527,26 @@ export default function Profile({
                             {repo.name}
                           </Link>
                           <span className="text-[10px] font-medium text-[#57606a] border border-[#d0d7de] px-1.5 py-0.2 rounded-full">
+                            {repo.isPrivate ? "Private" : "Public"}
+                          </span>
+                          {repo.isFork && (
+                            <span className="text-[10px] font-medium text-[#0969da] bg-[#ddf4ff] border border-[#54aeff]/40 px-1.5 py-0.2 rounded-full">
+                              Forked
+                            </span>
+                          )}
+                        </div>
+                        {repo.isFork && repo.forkedFrom && (
+                          <div className="text-[11px] text-[#57606a] mb-1">
+                            <span>forked from </span>
+                            <Link 
+                              to={`/repo/${repo.forkedFrom.owner?.username || repo.forkedFrom.owner}/${repo.forkedFrom.name}`}
+                              className="text-[#0969da] hover:underline"
+                            >
+                              {repo.forkedFrom.owner?.username || repo.forkedFrom.owner}/{repo.forkedFrom.name}
+                            </Link>
+                          </div>
+                        )}
+                        <div className="hidden"><span>
                             {repo.isPrivate ? "Private" : "Public"}
                           </span>
                         </div>

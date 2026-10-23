@@ -28,7 +28,8 @@ const getAuthorizedRepo = async (req, username, repoName) => {
     })
     .populate('owner')
     .populate('contributors.user')
-    .populate('contributors.invitedBy');
+    .populate('contributors.invitedBy')
+    .populate({ path: 'forkedFrom', populate: { path: 'owner', select: 'username email' } });
     
     if (!repo) return { error: { status: 404, message: "Repository not found" } };
 
@@ -87,7 +88,9 @@ const getUserRepos = async (req, res) => {
         const user = await getUser(req);
         if (!user) return res.status(401).json({ status: false, message: "Unauthorized" });
 
-        const repos = await Repository.find({ owner: user._id }).sort({ createdAt: -1 });
+        const repos = await Repository.find({ owner: user._id })
+            .populate({ path: 'forkedFrom', populate: { path: 'owner', select: 'username' } })
+            .sort({ createdAt: -1 });
         const contributedRepos = await Repository.find({
             "contributors.user": user._id,
             "contributors.status": "accepted"
@@ -249,7 +252,9 @@ const getPublicRepos = async (req, res) => {
         const owner = await User.findOne({ username });
         if (!owner) return res.status(404).json({ status: false, message: "User not found" });
 
-        const repos = await Repository.find({ owner: owner._id, isPrivate: false }).sort({ createdAt: -1 });
+        const repos = await Repository.find({ owner: owner._id, isPrivate: false })
+            .populate({ path: 'forkedFrom', populate: { path: 'owner', select: 'username' } })
+            .sort({ createdAt: -1 });
         return res.status(200).json({ status: true, repos });
     } catch (error) {
         return res.status(500).json({ status: false, message: "Internal server error" });
@@ -892,6 +897,78 @@ const scanRepoSecrets = async (req, res) => {
     }
 };
 
+const forkRepo = async (req, res) => {
+    try {
+        const user = await getUser(req);
+        if (!user) return res.status(401).json({ status: false, message: "Unauthorized: Please log in to fork a repository." });
+
+        const { username, repoName } = req.params;
+        const sourceOwner = await User.findOne({ username: { $regex: new RegExp(`^${username}$`, "i") } });
+        if (!sourceOwner) return res.status(404).json({ status: false, message: "Source repository owner not found" });
+
+        const sourceRepo = await Repository.findOne({ 
+            name: { $regex: new RegExp(`^${repoName}$`, "i") }, 
+            owner: sourceOwner._id 
+        });
+        if (!sourceRepo) return res.status(404).json({ status: false, message: "Repository not found" });
+
+        if (sourceOwner._id.toString() === user._id.toString()) {
+            return res.status(400).json({ status: false, message: "You cannot fork your own repository." });
+        }
+
+        if (sourceRepo.isPrivate) {
+            const isContributor = sourceRepo.contributors && sourceRepo.contributors.some(
+                c => c.user && c.user.toString() === user._id.toString() && c.status === 'accepted'
+            );
+            if (!isContributor) {
+                return res.status(403).json({ status: false, message: "Access denied: Cannot fork a private repository." });
+            }
+        }
+
+        const existingRepo = await Repository.findOne({
+            name: { $regex: new RegExp(`^${sourceRepo.name}$`, "i") },
+            owner: user._id
+        });
+        if (existingRepo) {
+            return res.status(400).json({ 
+                status: false, 
+                message: `You already have a repository named '${sourceRepo.name}'.` 
+            });
+        }
+
+        const sourcePrefix = sourceRepo.s3Prefix || `${sourceOwner.username}/${sourceRepo.name}`;
+        const targetPrefix = `${user.username}/${sourceRepo.name}`;
+
+        await s3Git.copyRepoS3(sourcePrefix, targetPrefix);
+
+        const forkedRepo = new Repository({
+            name: sourceRepo.name,
+            description: sourceRepo.description || "",
+            isPrivate: false,
+            owner: user._id,
+            s3Prefix: targetPrefix,
+            contributors: [],
+            isFork: true,
+            forkedFrom: sourceRepo._id,
+            forkCount: 0
+        });
+
+        await forkedRepo.save();
+
+        sourceRepo.forkCount = (sourceRepo.forkCount || 0) + 1;
+        await sourceRepo.save();
+
+        return res.status(201).json({
+            status: true,
+            message: `Successfully forked repository to @${user.username}/${sourceRepo.name}`,
+            repo: forkedRepo
+        });
+    } catch (error) {
+        console.error("Error forking repository:", error);
+        return res.status(500).json({ status: false, message: "Internal server error while forking repository" });
+    }
+};
+
 module.exports = {
     createRepo,
     getUserRepos,
@@ -911,7 +988,8 @@ module.exports = {
     declineInvitation,
     removeContributor,
     getUserInvitations,
-    scanRepoSecrets
+    scanRepoSecrets,
+    forkRepo
 };
 
 

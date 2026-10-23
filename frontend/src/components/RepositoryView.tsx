@@ -54,6 +54,7 @@ const RepositoryView = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isMerging, setIsMerging] = useState(false);
+    const [isForking, setIsForking] = useState(false);
     
     // UI interactive states
     const [copiedClone, setCopiedClone] = useState(false);
@@ -154,6 +155,46 @@ const RepositoryView = () => {
             alert(err.message || 'Error merging');
         } finally {
             setIsMerging(false);
+        }
+    };
+
+    const handleFork = async () => {
+        const loggedInUser = localStorage.getItem("username");
+        if (!loggedInUser) {
+            alert("Please log in to fork a repository.");
+            navigate("/login");
+            return;
+        }
+
+        if (isOwner) {
+            alert("You cannot fork your own repository.");
+            return;
+        }
+
+        if (!confirm(`Fork ${username}/${repoName} to @${loggedInUser}?`)) {
+            return;
+        }
+
+        setIsForking(true);
+        try {
+            const res = await fetch(`https://version-control-system-mebn.onrender.com/repo/${username}/${repoName}/fork`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (data.status) {
+                clearCache('user/repos');
+                clearCache(`/repo/${loggedInUser}/${repoName}`);
+                navigate(`/repo/${loggedInUser}/${repoName}`);
+            } else {
+                alert(data.message || 'Failed to fork repository');
+            }
+        } catch (err: any) {
+            console.error('Error forking repo:', err);
+            alert(err.message || 'Failed to fork repository');
+        } finally {
+            setIsForking(false);
         }
     };
 
@@ -447,7 +488,8 @@ const RepositoryView = () => {
                 <div className="max-w-7xl mx-auto">
                     {/* Top line: owner / repo, Public/Private badge, Watch/Fork/Star buttons */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
-                        <div className="flex items-center flex-wrap gap-2 text-xl">
+                        <div>
+                            <div className="flex items-center flex-wrap gap-2 text-xl">
                             <BookOpen className="w-5 h-5 text-[#57606a] shrink-0" />
                             <Link to={username?.toLowerCase() === localStorage.getItem("username")?.toLowerCase() ? "/profile" : `/publicProfile/${username}`} className="text-[#0969da] hover:underline font-normal">
                                 {username}
@@ -458,6 +500,25 @@ const RepositoryView = () => {
                             </Link>
                             <span className="ml-1 px-2 py-0.5 text-xs font-medium border border-[#d0d7de] rounded-full text-[#57606a] bg-white">
                                 {repoInfo?.isPrivate ? 'Private' : 'Public'}
+                            </span>
+                            {repoInfo?.isFork && (
+                                <span className="ml-1 px-2 py-0.5 text-xs font-medium border border-[#54aeff]/40 rounded-full text-[#0969da] bg-[#ddf4ff]">
+                                    Forked
+                                </span>
+                            )}
+                        </div>
+                        {repoInfo?.isFork && repoInfo?.forkedFrom && (
+                            <div className="text-xs text-[#57606a] flex items-center gap-1 mt-1 pl-7">
+                                <span>forked from</span>
+                                <Link 
+                                    to={`/repo/${repoInfo.forkedFrom.owner?.username || repoInfo.forkedFrom.owner}/${repoInfo.forkedFrom.name}`} 
+                                    className="text-[#0969da] hover:underline font-medium"
+                                >
+                                    {repoInfo.forkedFrom.owner?.username || repoInfo.forkedFrom.owner}/{repoInfo.forkedFrom.name}
+                                </Link>
+                            </div>
+                        )}
+                        <span className="hidden">
                             </span>
                         </div>
 
@@ -474,12 +535,37 @@ const RepositoryView = () => {
 
                             {/* Fork button */}
                             <div className="inline-flex items-center border border-[#d0d7de] rounded-md shadow-sm bg-[#f6f8fa] hover:bg-[#f3f4f6]">
-                                <button className="flex items-center gap-1.5 px-3 py-1 text-[#24292f] border-r border-[#d0d7de]">
-                                    <GitFork className="w-3.5 h-3.5 text-[#57606a]" />
-                                    <span>Fork</span>
+                                <button 
+                                    onClick={handleFork}
+                                    disabled={isForking || isOwner}
+                                    title={isOwner ? "You cannot fork your own repository" : "Fork this repository to your account"}
+                                    className={`flex items-center gap-1.5 px-3 py-1 text-[#24292f] border-r border-[#d0d7de] transition-colors ${
+                                        isOwner ? "opacity-50 cursor-not-allowed" : "hover:bg-[#eaeef2]"
+                                    }`}
+                                >
+                                    {isForking ? (
+                                        <div className="inline-block w-3.5 h-3.5 border-2 border-[#0969da] border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <GitFork className="w-3.5 h-3.5 text-[#57606a]" />
+                                    )}
+                                    <span>{isForking ? "Forking..." : "Fork"}</span>
                                 </button>
-                                <span className="px-2 py-1 text-[#57606a] bg-white rounded-r-md font-semibold">0</span>
+                                <span className="px-2 py-1 text-[#57606a] bg-white rounded-r-md font-semibold">{repoInfo?.forkCount ?? 0}</span>
                             </div>
+                            {false && (
+                            <div className="inline-flex items-center border border-[#d0d7de] rounded-md shadow-sm bg-[#f6f8fa] hover:bg-[#f3f4f6]">
+                                <button className="flex items-center gap-1.5 px-3 py-1 text-[#24292f] border-r border-[#d0d7de]">
+                                    {isForking ? (
+                                        <div className="inline-block w-3.5 h-3.5 border-2 border-[#0969da] border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <GitFork className="w-3.5 h-3.5 text-[#57606a]" />
+                                    )}
+                                    <span>{isForking ? "Forking..." : "Fork"}</span>
+                                </button>
+                                <span className="px-2 py-1 text-[#57606a] bg-white rounded-r-md font-semibold">{repoInfo?.forkCount ?? 0}</span>
+                            </div>
+
+                            )}
 
                             {/* Star button */}
                             <div className="inline-flex items-center border border-[#d0d7de] rounded-md shadow-sm bg-[#f6f8fa] hover:bg-[#f3f4f6]">
